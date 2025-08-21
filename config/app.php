@@ -123,4 +123,19 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Aliases (ad-hoc)
+    |--------------------------------------------------------------------------
+    |
+    | Registro leve da facade 'Rh' para uso rápido durante desenvolvimento.
+    |
+    */
+    'aliases' => [
+        'Rh' => App\Facades\Rh::class,
+        // nomes explícitos para helpers comuns usados em views/compiled blades
+        'Str' => Illuminate\Support\Str::class,
+        'Arr' => Illuminate\Support\Arr::class,
+    ],
+
 ];

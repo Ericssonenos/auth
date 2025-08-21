@@ -42,5 +42,5 @@ Route::prefix('rh')->group(function () {
     Route::delete('categorias/{id}', [\App\Http\Controllers\RH\CategoriaController::class, 'RemoverCategoria']);
 
     // Demo de acesso (usando middleware rh.auth)
-    Route::get('demo', [\App\Http\Controllers\RH\AccessDemoController::class, 'Demo'])->middleware('rh.auth');
+    Route::get('/', [\App\Http\Controllers\RH\AccessDemoController::class, 'Demo'])->middleware('rh.auth');
 });

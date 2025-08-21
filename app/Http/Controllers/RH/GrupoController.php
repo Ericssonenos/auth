@@ -4,6 +4,7 @@ namespace App\Http\Controllers\RH;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Facades\Rh;
 use App\Models\RH\grupo;
 
 class GrupoController extends Controller
@@ -31,7 +32,9 @@ class GrupoController extends Controller
     public function CriarGrupo(Request $request)
     {
         $payload = $request->all();
-        return response()->json($this->grupoModel->CriarGrupo($payload));
+    $res = $this->grupoModel->CriarGrupo($payload);
+    Rh::invalidate(null);
+    return response()->json($res);
     }
 
     // corresponde a grupo->AtualizarGrupo()
@@ -39,7 +42,9 @@ class GrupoController extends Controller
     {
         $payload = $request->all();
         $payload['id_grupo'] = $id;
-        return response()->json($this->grupoModel->AtualizarGrupo($payload));
+    $res = $this->grupoModel->AtualizarGrupo($payload);
+    Rh::invalidate(null);
+    return response()->json($res);
     }
 
     // corresponde a grupo->RemoverGrupo()
@@ -47,34 +52,46 @@ class GrupoController extends Controller
     {
         $payload = $request->all();
         $payload['id_grupo'] = $id;
-        return response()->json($this->grupoModel->RemoverGrupo($payload));
+    $res = $this->grupoModel->RemoverGrupo($payload);
+    Rh::invalidate(null);
+    return response()->json($res);
     }
 
     // atribui permissão a um grupo
     public function AtribuirPermissaoGrupo(Request $request)
     {
         $payload = $request->all();
-        return response()->json($this->grupoModel->AtribuirPermissaoGrupo($payload));
+    $res = $this->grupoModel->AtribuirPermissaoGrupo($payload);
+    $mat = $payload['matricula_cod'] ?? null;
+    Rh::invalidate($mat);
+    return response()->json($res);
     }
 
     // remove permissão de um grupo
     public function RemoverPermissaoGrupo(Request $request)
     {
         $payload = $request->all();
-        return response()->json($this->grupoModel->RemoverPermissaoGrupo($payload));
+    $res = $this->grupoModel->RemoverPermissaoGrupo($payload);
+    $mat = $payload['matricula_cod'] ?? null;
+    Rh::invalidate($mat);
+    return response()->json($res);
     }
 
     // cria relação pai->filho entre grupos
     public function AtribuirGrupoGrupo(Request $request)
     {
         $payload = $request->all();
-        return response()->json($this->grupoModel->AtribuirGrupoGrupo($payload));
+    $res = $this->grupoModel->AtribuirGrupoGrupo($payload);
+    Rh::invalidate(null);
+    return response()->json($res);
     }
 
     // remove relação entre grupos
     public function RemoverGrupoGrupo(Request $request)
     {
         $payload = $request->all();
-        return response()->json($this->grupoModel->RemoverGrupoGrupo($payload));
+    $res = $this->grupoModel->RemoverGrupoGrupo($payload);
+    Rh::invalidate(null);
+    return response()->json($res);
     }
 }

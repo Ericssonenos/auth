@@ -4,6 +4,7 @@ namespace App\Http\Controllers\RH;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Facades\Rh;
 use App\Models\RH\usuario;
 
 class UsuarioController extends Controller
@@ -32,27 +33,40 @@ class UsuarioController extends Controller
     public function AtribuirPermissoes(Request $request)
     {
         $payload = $request->all();
-        return response()->json($this->usuarioModel->AtribuirPermissoes($payload));
+    $res = $this->usuarioModel->AtribuirPermissoes($payload);
+    // invalidar cache para a matrícula afetada se informado
+    $mat = $payload['matricula_cod'] ?? null;
+    Rh::invalidate($mat);
+    return response()->json($res);
     }
 
     // atribui grupo ao usuário
     public function AtribuirGrupo(Request $request)
     {
         $payload = $request->all();
-        return response()->json($this->usuarioModel->AtribuirGrupo($payload));
+    $res = $this->usuarioModel->AtribuirGrupo($payload);
+    $mat = $payload['matricula_cod'] ?? null;
+    Rh::invalidate($mat);
+    return response()->json($res);
     }
 
     // remove vínculo permissão->usuário
     public function RemoverPermissoes(Request $request)
     {
         $payload = $request->all();
-        return response()->json($this->usuarioModel->RemoverPermissoes($payload));
+    $res = $this->usuarioModel->RemoverPermissoes($payload);
+    $mat = $payload['matricula_cod'] ?? null;
+    Rh::invalidate($mat);
+    return response()->json($res);
     }
 
     // remove vínculo grupo->usuário
     public function RemoverGrupo(Request $request)
     {
         $payload = $request->all();
-        return response()->json($this->usuarioModel->RemoverGrupo($payload));
+    $res = $this->usuarioModel->RemoverGrupo($payload);
+    $mat = $payload['matricula_cod'] ?? null;
+    Rh::invalidate($mat);
+    return response()->json($res);
     }
 }
