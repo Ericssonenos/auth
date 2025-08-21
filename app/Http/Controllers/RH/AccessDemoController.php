@@ -27,8 +27,6 @@ class AccessDemoController extends Controller
         $canManage = Gate::check('PERM_GERENCIAR_PERMISSOES');
 
         return view('rh.access_demo', [
-            'perms' => $perms,
-            'matricula' => $matricula,
             'can_manage' => $canManage,
         ]);
     }

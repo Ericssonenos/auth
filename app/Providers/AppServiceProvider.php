@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Routing\Router;
 use App\Http\Middleware\RhPermissionMiddleware;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -45,6 +46,21 @@ class AppServiceProvider extends ServiceProvider
             });
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::info('Gate::before not registered: ' . $e->getMessage());
+        }
+
+        // Compartilhar permissões e matrícula em todas as views para evitar passar manualmente
+        try {
+            $mat = session('rh_matricula') ?: request()->header('X-Matricula');
+            $perms = [];
+            if (!empty($mat)) {
+                $perms = session("rh_permissions.{$mat}", []);
+            }
+            View::share('perms', $perms);
+            View::share('rh_matricula', $mat);
+            // Compatibilidade: algumas views esperam $matricula em vez de $rh_matricula
+            View::share('matricula', $mat);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::info('View::share rh perms failed: ' . $e->getMessage());
         }
     }
 }
