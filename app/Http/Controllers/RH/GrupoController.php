@@ -4,7 +4,7 @@ namespace App\Http\Controllers\RH;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Facades\Rh;
+use Illuminate\Support\Facades\Session;
 use App\Models\RH\grupo;
 
 class GrupoController extends Controller
@@ -33,7 +33,10 @@ class GrupoController extends Controller
     {
         $payload = $request->all();
     $res = $this->grupoModel->CriarGrupo($payload);
-    Rh::invalidate(null);
+    $current = Session::get('rh_matricula');
+    if ($current) {
+        Session::forget("rh_permissions.{$current}");
+    }
     return response()->json($res);
     }
 
@@ -43,7 +46,10 @@ class GrupoController extends Controller
         $payload = $request->all();
         $payload['id_grupo'] = $id;
     $res = $this->grupoModel->AtualizarGrupo($payload);
-    Rh::invalidate(null);
+    $current = Session::get('rh_matricula');
+    if ($current) {
+        Session::forget("rh_permissions.{$current}");
+    }
     return response()->json($res);
     }
 
@@ -53,7 +59,10 @@ class GrupoController extends Controller
         $payload = $request->all();
         $payload['id_grupo'] = $id;
     $res = $this->grupoModel->RemoverGrupo($payload);
-    Rh::invalidate(null);
+    $current = Session::get('rh_matricula');
+    if ($current) {
+        Session::forget("rh_permissions.{$current}");
+    }
     return response()->json($res);
     }
 
@@ -63,7 +72,14 @@ class GrupoController extends Controller
         $payload = $request->all();
     $res = $this->grupoModel->AtribuirPermissaoGrupo($payload);
     $mat = $payload['matricula_cod'] ?? null;
-    Rh::invalidate($mat);
+    if ($mat) {
+        Session::forget("rh_permissions.{$mat}");
+    } else {
+        $current = Session::get('rh_matricula');
+        if ($current) {
+            Session::forget("rh_permissions.{$current}");
+        }
+    }
     return response()->json($res);
     }
 
@@ -73,7 +89,14 @@ class GrupoController extends Controller
         $payload = $request->all();
     $res = $this->grupoModel->RemoverPermissaoGrupo($payload);
     $mat = $payload['matricula_cod'] ?? null;
-    Rh::invalidate($mat);
+    if ($mat) {
+        Session::forget("rh_permissions.{$mat}");
+    } else {
+        $current = Session::get('rh_matricula');
+        if ($current) {
+            Session::forget("rh_permissions.{$current}");
+        }
+    }
     return response()->json($res);
     }
 
@@ -82,7 +105,10 @@ class GrupoController extends Controller
     {
         $payload = $request->all();
     $res = $this->grupoModel->AtribuirGrupoGrupo($payload);
-    Rh::invalidate(null);
+    $current = Session::get('rh_matricula');
+    if ($current) {
+        Session::forget("rh_permissions.{$current}");
+    }
     return response()->json($res);
     }
 
@@ -91,7 +117,10 @@ class GrupoController extends Controller
     {
         $payload = $request->all();
     $res = $this->grupoModel->RemoverGrupoGrupo($payload);
-    Rh::invalidate(null);
+    $current = Session::get('rh_matricula');
+    if ($current) {
+        Session::forget("rh_permissions.{$current}");
+    }
     return response()->json($res);
     }
 }

@@ -35,13 +35,13 @@ class AppServiceProvider extends ServiceProvider
 
         // Gate global: verifica permissões armazenadas na session (ex.: use @can('PERM_X') nas views)
         try {
-            Gate::before(function ($user, $ability) {
-                $mat = session('rh_matricula') ?: request()->attributes->get('rh_matricula');
-                if (empty($mat)) {
+            Gate::before(function ($_user, $ability) {
+                $matricula = session('rh_matricula') ?: request()->attributes->get('rh_matricula');
+                if (empty($matricula)) {
                     return null; // não decidimos, deixa o fluxo padrão decidir
                 }
 
-                $perms = session("rh_permissions.{$mat}", []);
+                $perms = session("rh_permissions.{$matricula}", []);
                 return in_array($ability, $perms) ? true : null;
             });
         } catch (\Exception $e) {
@@ -51,11 +51,8 @@ class AppServiceProvider extends ServiceProvider
         // Compartilhar permissões e matrícula em todas as views para evitar passar manualmente
         try {
             $mat = session('rh_matricula') ?: request()->header('X-Matricula');
-            $perms = [];
-            if (!empty($mat)) {
-                $perms = session("rh_permissions.{$mat}", []);
-            }
-            View::share('perms', $perms);
+            // Não compartilhamos mais a lista completa de permissões; use o Gate/@can nas views
+            // para centralizar a autorização. Mantemos apenas a matrícula para exibição.
             View::share('rh_matricula', $mat);
             // Compatibilidade: algumas views esperam $matricula em vez de $rh_matricula
             View::share('matricula', $mat);

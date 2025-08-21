@@ -4,7 +4,7 @@ namespace App\Http\Controllers\RH;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Facades\Rh;
+use Illuminate\Support\Facades\Session;
 use App\Models\RH\permissao;
 
 class PermissaoController extends Controller
@@ -34,7 +34,10 @@ class PermissaoController extends Controller
         $payload = $request->all();
     $res = $this->permissaoModel->CriarPermissao($payload);
     // permissão criada: invalidar cache global
-    Rh::invalidate(null);
+    $current = Session::get('rh_matricula');
+    if ($current) {
+        Session::forget("rh_permissions.{$current}");
+    }
     return response()->json($res);
     }
 
@@ -44,7 +47,10 @@ class PermissaoController extends Controller
         $payload = $request->all();
         $payload['id_permissao'] = $id;
     $res = $this->permissaoModel->AtualizarPermissao($payload);
-    Rh::invalidate(null);
+    $current = Session::get('rh_matricula');
+    if ($current) {
+        Session::forget("rh_permissions.{$current}");
+    }
     return response()->json($res);
     }
 
@@ -54,7 +60,10 @@ class PermissaoController extends Controller
         $payload = $request->all();
         $payload['id_permissao'] = $id;
     $res = $this->permissaoModel->RemoverPermissao($payload);
-    Rh::invalidate(null);
+    $current = Session::get('rh_matricula');
+    if ($current) {
+        Session::forget("rh_permissions.{$current}");
+    }
     return response()->json($res);
     }
 }

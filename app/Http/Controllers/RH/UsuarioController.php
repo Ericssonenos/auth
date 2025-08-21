@@ -4,7 +4,7 @@ namespace App\Http\Controllers\RH;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Facades\Rh;
+use Illuminate\Support\Facades\Session;
 use App\Models\RH\usuario;
 
 class UsuarioController extends Controller
@@ -36,7 +36,14 @@ class UsuarioController extends Controller
     $res = $this->usuarioModel->AtribuirPermissoes($payload);
     // invalidar cache para a matrícula afetada se informado
     $mat = $payload['matricula_cod'] ?? null;
-    Rh::invalidate($mat);
+    if ($mat) {
+        Session::forget("rh_permissions.{$mat}");
+    } else {
+        $current = Session::get('rh_matricula');
+        if ($current) {
+            Session::forget("rh_permissions.{$current}");
+        }
+    }
     return response()->json($res);
     }
 
@@ -46,7 +53,14 @@ class UsuarioController extends Controller
         $payload = $request->all();
     $res = $this->usuarioModel->AtribuirGrupo($payload);
     $mat = $payload['matricula_cod'] ?? null;
-    Rh::invalidate($mat);
+    if ($mat) {
+        Session::forget("rh_permissions.{$mat}");
+    } else {
+        $current = Session::get('rh_matricula');
+        if ($current) {
+            Session::forget("rh_permissions.{$current}");
+        }
+    }
     return response()->json($res);
     }
 
@@ -56,7 +70,14 @@ class UsuarioController extends Controller
         $payload = $request->all();
     $res = $this->usuarioModel->RemoverPermissoes($payload);
     $mat = $payload['matricula_cod'] ?? null;
-    Rh::invalidate($mat);
+    if ($mat) {
+        Session::forget("rh_permissions.{$mat}");
+    } else {
+        $current = Session::get('rh_matricula');
+        if ($current) {
+            Session::forget("rh_permissions.{$current}");
+        }
+    }
     return response()->json($res);
     }
 
@@ -66,7 +87,14 @@ class UsuarioController extends Controller
         $payload = $request->all();
     $res = $this->usuarioModel->RemoverGrupo($payload);
     $mat = $payload['matricula_cod'] ?? null;
-    Rh::invalidate($mat);
+    if ($mat) {
+        Session::forget("rh_permissions.{$mat}");
+    } else {
+        $current = Session::get('rh_matricula');
+        if ($current) {
+            Session::forget("rh_permissions.{$current}");
+        }
+    }
     return response()->json($res);
     }
 }

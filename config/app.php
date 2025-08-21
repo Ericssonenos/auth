@@ -132,7 +132,6 @@ return [
     |
     */
     'aliases' => [
-        'Rh' => App\Facades\Rh::class,
         // nomes explícitos para helpers comuns usados em views/compiled blades
         'Str' => Illuminate\Support\Str::class,
         'Arr' => Illuminate\Support\Arr::class,
