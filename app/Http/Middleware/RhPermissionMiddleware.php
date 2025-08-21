@@ -32,15 +32,14 @@ class RhPermissionMiddleware
                     // normalizar para lista simples de códigos
                     $perms = array_map(function ($p) { return $p['txt_cod_permissao']; }, $res['data']);
                     Session::put($sessionKey, $perms);
+                    // também guardar a matrícula na session para uso pelos Gates
+                    Session::put('rh_matricula', $matricula);
                 } else {
                     Session::put($sessionKey, []);
                 }
             }
 
-            // anexar ao request as permissões (facilita uso nos controllers)
-            $permsFromSession = Session::get($sessionKey, []);
-            $request->attributes->set('rh_permissions', $permsFromSession);
-            $request->attributes->set('rh_matricula', $matricula);
+            // permissões e matrícula já estão na session; o Gate e controllers devem ler da session
 
             return $next($request);
         } catch (\Exception $e) {

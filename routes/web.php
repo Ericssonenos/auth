@@ -40,4 +40,7 @@ Route::prefix('rh')->group(function () {
     Route::post('categorias', [\App\Http\Controllers\RH\CategoriaController::class, 'CriarCategoria']);
     Route::put('categorias/{id}', [\App\Http\Controllers\RH\CategoriaController::class, 'AtualizarCategoria']);
     Route::delete('categorias/{id}', [\App\Http\Controllers\RH\CategoriaController::class, 'RemoverCategoria']);
+
+    // Demo de acesso (usando middleware rh.auth)
+    Route::get('demo', [\App\Http\Controllers\RH\AccessDemoController::class, 'Demo'])->middleware('rh.auth');
 });

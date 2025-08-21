@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Routing\Router;
 use App\Http\Middleware\RhPermissionMiddleware;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,21 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             // ambiente sem Router disponível no bootstrap: ignorar com log
             \Illuminate\Support\Facades\Log::info('Não foi possível registrar alias rh.auth: ' . $e->getMessage());
+        }
+
+        // Gate global: verifica permissões armazenadas na session (ex.: use @can('PERM_X') nas views)
+        try {
+            Gate::before(function ($user, $ability) {
+                $mat = session('rh_matricula') ?: request()->attributes->get('rh_matricula');
+                if (empty($mat)) {
+                    return null; // não decidimos, deixa o fluxo padrão decidir
+                }
+
+                $perms = session("rh_permissions.{$mat}", []);
+                return in_array($ability, $perms) ? true : null;
+            });
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::info('Gate::before not registered: ' . $e->getMessage());
         }
     }
 }
