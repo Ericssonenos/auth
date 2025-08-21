@@ -9,7 +9,7 @@ User story (comportamento esperado)
 Como os dados são usados (principais operações)
 1. Atribuir usuário → grupo
 ```sql
-INSERT INTO RH.Tbl_Rel_Usuarios_Grupos (matricula_cod, grupo_id, matricula_criado_em, dat_criado_em)
+INSERT INTO RH.Tbl_Rel_Usuarios_Grupos (matricula_cod, grupo_id, matricula_criado_por, dat_criado_em)
 VALUES (@matricula, @grupo_id, @mat_logado, GETDATE());
 ```
 
@@ -62,7 +62,7 @@ GrpHierarchy AS (
       AND (rg.dat_cancelamento_em IS NULL OR rg.dat_cancelamento_em > @data)
 )
 -- permissões diretas do usuário
-SELECT DISTINCT p.id_permissao, p.txt_nome_permissao
+SELECT DISTINCT p.id_permissao, p.txt_cod_permissao
 FROM RH.Tbl_Permissoes p
 JOIN RH.Tbl_Rel_Usuarios_Permissoes rup ON rup.permissao_id = p.id_permissao
 WHERE rup.matricula_cod = @matricula
@@ -72,7 +72,7 @@ WHERE rup.matricula_cod = @matricula
 UNION
 
 -- permissões vindas de grupos (diretos e via hierarquia)
-SELECT DISTINCT p.id_permissao, p.txt_nome_permissao
+SELECT DISTINCT p.id_permissao, p.txt_cod_permissao
 FROM RH.Tbl_Permissoes p
 JOIN RH.Tbl_Rel_Grupos_Permissoes gp ON gp.permissao_id = p.id_permissao
 JOIN (SELECT DISTINCT id_grupo FROM GrpHierarchy) gh ON gh.id_grupo = gp.grupo_id
