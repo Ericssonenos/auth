@@ -17,9 +17,9 @@ class permissao extends Model
     public function ListaPermissoes()
     {
         try {
-            $consultaSql = "SELECT id_permissao, txt_cod_permissao, txt_descricao_permissao
+            $consultaSql = "SELECT id_permissao, cod_permissao, descricao_permissao
                             FROM RH.Tbl_Permissoes
-                            WHERE txt_cod_permissao IS NOT NULL";
+                            WHERE cod_permissao IS NOT NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute();
@@ -42,8 +42,8 @@ class permissao extends Model
     public function ObterPermissaoPorId($id_permissao)
     {
         try {
-        $consultaSql = "SELECT id_permissao, txt_cod_permissao, txt_descricao_permissao,
-                    matricula_criado_por, dat_criado_em, matricula_cancelamento_em, dat_cancelamento_em
+        $consultaSql = "SELECT id_permissao, cod_permissao, descricao_permissao,
+                    criado_Usuario_id, dat_criado_em, cancelamento_Usuario_id, dat_cancelamento_em
                 FROM RH.Tbl_Permissoes
                 WHERE id_permissao = :id_permissao";
 
@@ -68,19 +68,19 @@ class permissao extends Model
     public function CriarPermissao($params)
     {
         try {
-            $txt_cod_permissao = $params['txt_cod_permissao'];
-            $txt_descricao_permissao = $params['txt_descricao_permissao'] ?? null;
-            $matricula_criado_por = $params['matricula_criado_por'];
+            $cod_permissao = $params['cod_permissao'];
+            $descricao_permissao = $params['descricao_permissao'] ?? null;
+            $criado_Usuario_id = $params['criado_Usuario_id'];
 
             $consultaSql = "INSERT INTO RH.Tbl_Permissoes (
-                            txt_cod_permissao, txt_descricao_permissao, matricula_criado_por
-                        ) VALUES (:txt_cod_permissao, :txt_descricao_permissao, :matricula_criado_por)";
+                            cod_permissao, descricao_permissao, criado_Usuario_id
+                        ) VALUES (:cod_permissao, :descricao_permissao, :criado_Usuario_id)";
 
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute([
-                ':txt_cod_permissao' => $txt_cod_permissao,
-                ':txt_descricao_permissao' => $txt_descricao_permissao,
-                ':matricula_criado_por' => $matricula_criado_por
+                ':cod_permissao' => $cod_permissao,
+                ':descricao_permissao' => $descricao_permissao,
+                ':criado_Usuario_id' => $criado_Usuario_id
             ]);
 
             $rows = $comando->rowCount();
@@ -104,23 +104,23 @@ class permissao extends Model
     {
         try {
             $id_permissao = $params['id_permissao'];
-            $txt_cod_permissao = $params['txt_cod_permissao'];
-            $txt_descricao_permissao = $params['txt_descricao_permissao'] ?? null;
-            $matricula_atualizado_por = $params['matricula_atualizado_por'];
+            $cod_permissao = $params['cod_permissao'];
+            $descricao_permissao = $params['descricao_permissao'] ?? null;
+            $usuario_atualizado_por = $params['usuario_atualizado_por'];
 
             $consultaSql = "UPDATE RH.Tbl_Permissoes
-                            SET txt_cod_permissao = :txt_cod_permissao,
-                                txt_descricao_permissao = :txt_descricao_permissao,
-                                matricula_atualizado_em = :matricula_atualizado_por,
+                            SET cod_permissao = :cod_permissao,
+                                descricao_permissao = :descricao_permissao,
+                                atualizado_Usuario_id = :usuario_atualizado_por,
                                 dat_atualizado_em = GETDATE()
                             WHERE id_permissao = :id_permissao
                               AND dat_cancelamento_em IS NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute([
-                ':txt_cod_permissao' => $txt_cod_permissao,
-                ':txt_descricao_permissao' => $txt_descricao_permissao,
-                ':matricula_atualizado_por' => $matricula_atualizado_por,
+                ':cod_permissao' => $cod_permissao,
+                ':descricao_permissao' => $descricao_permissao,
+                ':usuario_atualizado_por' => $usuario_atualizado_por,
                 ':id_permissao' => $id_permissao
             ]);
 
@@ -145,17 +145,17 @@ class permissao extends Model
     {
         try {
             $id_permissao = $params['id_permissao'];
-            $matricula_cancelamento_em = $params['matricula_cancelamento_em'];
+            $cancelamento_Usuario_id = $params['cancelamento_Usuario_id'];
 
             $consultaSql = "UPDATE RH.Tbl_Permissoes
-                            SET matricula_cancelamento_em = :matricula_cancelamento_em,
+                            SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
                                 dat_cancelamento_em = GETDATE()
                             WHERE id_permissao = :id_permissao
                               AND dat_cancelamento_em IS NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute([
-                ':matricula_cancelamento_em' => $matricula_cancelamento_em,
+                ':cancelamento_Usuario_id' => $cancelamento_Usuario_id,
                 ':id_permissao' => $id_permissao
             ]);
 

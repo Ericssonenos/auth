@@ -36,13 +36,13 @@ class AppServiceProvider extends ServiceProvider
         // Gate global: verifica permissões armazenadas na session (ex.: use @can('PERM_X') nas views)
         try {
             Gate::before(function ($_user, $ability) {
-                $matricula = session('rh_matricula') ?: request()->attributes->get('rh_matricula');
-                if (empty($matricula)) {
+                $usuario = session('rh_usuario') ?: request()->attributes->get('rh_usuario');
+                if (empty($usuario)) {
                     return null; // não decidimos, deixa o fluxo padrão decidir
                 }
 
-                $perms = session("rh_permissions.{$matricula}", []);
-                return in_array($ability, $perms) ? true : null;
+                $permissao = session("rh_permissions.{$usuario}", []);
+                return in_array($ability, $permissao) ? true : null;
             });
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::info('Gate::before not registered: ' . $e->getMessage());
@@ -50,14 +50,14 @@ class AppServiceProvider extends ServiceProvider
 
         // Compartilhar permissões e matrícula em todas as views para evitar passar manualmente
         try {
-            $mat = session('rh_matricula') ?: request()->header('X-Matricula');
+            $mat = session('rh_usuario') ?: request()->header('X-id_Usuario');
             // Não compartilhamos mais a lista completa de permissões; use o Gate/@can nas views
             // para centralizar a autorização. Mantemos apenas a matrícula para exibição.
-            View::share('rh_matricula', $mat);
-            // Compatibilidade: algumas views esperam $matricula em vez de $rh_matricula
-            View::share('matricula', $mat);
+            View::share('rh_usuario', $mat);
+            // Compatibilidade: algumas views esperam $usuario em vez de $rh_usuario
+            View::share('usuario', $mat);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::info('View::share rh perms failed: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::info('View::share rh permissao failed: ' . $e->getMessage());
         }
     }
 }

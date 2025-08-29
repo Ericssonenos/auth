@@ -17,7 +17,7 @@ class usuario extends Model
     public function ListaUsuarios()
     {
         try {
-            $consultaSql = "SELECT Matricula, Nome_Completo FROM RH.Users WHERE Matricula IS NOT NULL AND Nome_Completo IS NOT NULL";
+            $consultaSql = "SELECT id_Usuario, Nome_Completo FROM RH.Users WHERE id_Usuario IS NOT NULL AND Nome_Completo IS NOT NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute();
@@ -40,35 +40,35 @@ class usuario extends Model
     public function ObterPermissoesMatricula($params)
     {
         try {
-            $matricula = $params['matricula_cod'];
+            $usuario = $params['Usuario_id'];
 
-                        $consultaSql = "SELECT DISTINCT txt_cod_permissao FROM (
+                        $consultaSql = "SELECT DISTINCT cod_permissao FROM (
                                 -- Permissões diretas do usuário
-                                SELECT p.txt_cod_permissao
+                                SELECT p.cod_permissao
                                 FROM RH.Tbl_Permissoes p
                                 INNER JOIN RH.Tbl_Rel_Usuarios_Permissoes rup ON rup.permissao_id = p.id_permissao
-                                WHERE rup.matricula_cod = :matricula1
+                                WHERE rup.Usuario_id = :usuario1
                                     AND rup.dat_cancelamento_em IS NULL
                                     AND p.dat_cancelamento_em IS NULL
 
                                 UNION
 
                                 -- Permissões via grupos
-                                SELECT p.txt_cod_permissao
+                                SELECT p.cod_permissao
                                 FROM RH.Tbl_Permissoes p
                                 INNER JOIN RH.Tbl_Rel_Grupos_Permissoes gp ON gp.permissao_id = p.id_permissao
-                                INNER JOIN RH.Tbl_Grupos g ON g.id_grupo = gp.grupo_id
-                                INNER JOIN RH.Tbl_Rel_Usuarios_Grupos ug ON ug.grupo_id = g.id_grupo
-                                WHERE ug.matricula_cod = :matricula2
+                                INNER JOIN RH.Tbl_Grupos g ON g.id_Grupo = gp.grupo_id
+                                INNER JOIN RH.Tbl_Rel_Usuarios_Grupos ug ON ug.grupo_id = g.id_Grupo
+                                WHERE ug.Usuario_id = :usuario2
                                     AND ug.dat_cancelamento_em IS NULL
                                     AND gp.dat_cancelamento_em IS NULL
                                     AND g.dat_cancelamento_em IS NULL
                                     AND p.dat_cancelamento_em IS NULL
-                        ) AS perms
-                        ORDER BY txt_cod_permissao";
+                        ) AS permissao
+                        ORDER BY cod_permissao";
 
             $comando = $this->conexao->prepare($consultaSql);
-            $comando->execute([':matricula1' => $matricula, ':matricula2' => $matricula]);
+            $comando->execute([':usuario1' => $usuario, ':usuario2' => $usuario]);
             $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
 
             return [
@@ -88,22 +88,22 @@ class usuario extends Model
     public function AtribuirPermissoes($params)
     {
         try {
-            $matricula_cod = $params['matricula_cod'];
+            $Usuario_id = $params['Usuario_id'];
             $permissao_id = $params['permissao_id'];
-            $matricula_criado_por = $params['matricula_criado_por'];
+            $criado_Usuario_id = $params['criado_Usuario_id'];
 
             $consultaSql = "INSERT INTO RH.Tbl_Rel_Usuarios_Permissoes (
-                        matricula_cod
+                        Usuario_id
                     ,   permissao_id
-                    ,   matricula_criado_por
-                    ) VALUES (:matricula_cod, :permissao_id, :matricula_criado_por)";
+                    ,   criado_Usuario_id
+                    ) VALUES (:Usuario_id, :permissao_id, :criado_Usuario_id)";
 
             $comando = $this->conexao->prepare($consultaSql);
 
             $comando->execute([
-                ':matricula_cod' => $matricula_cod,
+                ':Usuario_id' => $Usuario_id,
                 ':permissao_id' => $permissao_id,
-                ':matricula_criado_por' => $matricula_criado_por
+                ':criado_Usuario_id' => $criado_Usuario_id
             ]);
 
             $rows = $comando->rowCount();
@@ -126,22 +126,22 @@ class usuario extends Model
     public function AtribuirGrupo($params)
     {
         try {
-            $matricula_cod = $params['matricula_cod'];
+            $Usuario_id = $params['Usuario_id'];
             $grupo_id = $params['grupo_id'];
-            $matricula_criado_por = $params['matricula_criado_por'];
+            $criado_Usuario_id = $params['criado_Usuario_id'];
 
             $consultaSql = "INSERT INTO RH.Tbl_Rel_Usuarios_Grupos (
-                        matricula_cod
+                        Usuario_id
                     ,   grupo_id
-                    ,   matricula_criado_por
-                    ) VALUES (:matricula_cod, :grupo_id, :matricula_criado_por)";
+                    ,   criado_Usuario_id
+                    ) VALUES (:Usuario_id, :grupo_id, :criado_Usuario_id)";
 
             $comando = $this->conexao->prepare($consultaSql);
 
             $comando->execute([
-                ':matricula_cod' => $matricula_cod,
+                ':Usuario_id' => $Usuario_id,
                 ':grupo_id' => $grupo_id,
-                ':matricula_criado_por' => $matricula_criado_por
+                ':criado_Usuario_id' => $criado_Usuario_id
             ]);
 
             $rows = $comando->rowCount();
@@ -165,10 +165,10 @@ class usuario extends Model
     {
         try {
             $id_rel_usuario_permissao = $params['id_rel_usuario_permissao'];
-            $matricula_cancelamento_em = $params['matricula_cancelamento_em'];
+            $cancelamento_Usuario_id = $params['cancelamento_Usuario_id'];
 
             $consultaSql = "UPDATE RH.Tbl_Rel_Usuarios_Permissoes
-                            SET matricula_cancelamento_em = :matricula_cancelamento_em,
+                            SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
                                 data_cancelamento_em = GETDATE()
                             WHERE id_rel_usuario_permissao = :id_rel_usuario_permissao
                             AND data_cancelamento_em IS NULL";
@@ -177,7 +177,7 @@ class usuario extends Model
 
             $comando->execute([
                 ':id_rel_usuario_permissao' => $id_rel_usuario_permissao,
-                ':matricula_cancelamento_em' => $matricula_cancelamento_em
+                ':cancelamento_Usuario_id' => $cancelamento_Usuario_id
             ]);
 
             $rows = $comando->rowCount();
@@ -201,10 +201,10 @@ class usuario extends Model
     {
         try {
             $id_rel_usuario_grupo = $params['id_rel_usuario_grupo'];
-            $matricula_cancelamento_em = $params['matricula_cancelamento_em'];
+            $cancelamento_Usuario_id = $params['cancelamento_Usuario_id'];
 
             $consultaSql = "UPDATE RH.Tbl_Rel_Usuarios_Grupos
-                            SET matricula_cancelamento_em = :matricula_cancelamento_em,
+                            SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
                                 data_cancelamento_em = GETDATE()
                             WHERE id_rel_usuario_grupo = :id_rel_usuario_grupo
                             AND data_cancelamento_em IS NULL";
@@ -213,7 +213,7 @@ class usuario extends Model
 
             $comando->execute([
                 ':id_rel_usuario_grupo' => $id_rel_usuario_grupo,
-                ':matricula_cancelamento_em' => $matricula_cancelamento_em
+                ':cancelamento_Usuario_id' => $cancelamento_Usuario_id
             ]);
 
             $rows = $comando->rowCount();

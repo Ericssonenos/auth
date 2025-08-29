@@ -77,7 +77,7 @@ BEGIN
     SELECT TOP(1) @sql = N'DROP TABLE [' + s.name + N'].[' + t.name + N']'
     FROM sys.tables t
     JOIN sys.schemas s ON t.schema_id = s.schema_id
-    WHERE s.name = 'RH' AND t.name <> 'Users';
+    WHERE s.name = 'RH';
 
     PRINT @sql;
     EXEC sp_executesql @sql;

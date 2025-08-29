@@ -11,29 +11,29 @@ use App\Models\RH\usuario;
 class RhPermissionMiddleware
 {
     /**
-     * Simula obter matrícula via LDAP: prioriza header X-Matricula, depois fallback C000000
+     * Simula obter matrícula via LDAP: prioriza header X-id_Usuario, depois fallback C000000
      */
     public function handle(Request $request, Closure $next)
     {
         try {
-            $matricula = $request->header('X-Matricula');
-            if (empty($matricula)) {
+            $usuario = $request->header('X-id_Usuario');
+            if (empty($usuario)) {
                 // fallback: usuário local de teste
-                $matricula = 'C000000';
+                $usuario = 'C000000';
             }
 
-            $sessionKey = "rh_permissions.{$matricula}";
+            $sessionKey = "rh_permissions.{$usuario}";
 
             if (!Session::has($sessionKey)) {
                 // buscar do DB e armazenar
                 $usuarioModel = new usuario();
-                $res = $usuarioModel->ObterPermissoesMatricula(['matricula_cod' => $matricula]);
+                $res = $usuarioModel->ObterPermissoesMatricula(['Usuario_id' => $usuario]);
                 if (isset($res['status']) && $res['status'] === true && is_array($res['data'])) {
                     // normalizar para lista simples de códigos
-                    $perms = array_map(function ($p) { return $p['txt_cod_permissao']; }, $res['data']);
-                    Session::put($sessionKey, $perms);
+                    $permissao = array_map(function ($p) { return $p['cod_permissao']; }, $res['data']);
+                    Session::put($sessionKey, $permissao);
                     // também guardar a matrícula na session para uso pelos Gates
-                    Session::put('rh_matricula', $matricula);
+                    Session::put('rh_usuario', $usuario);
                 } else {
                     Session::put($sessionKey, []);
                 }

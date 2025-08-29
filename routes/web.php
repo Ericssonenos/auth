@@ -10,7 +10,7 @@ Route::get('/', function () {
 Route::prefix('rh')->group(function () {
     // Usuários
     Route::get('usuarios', [\App\Http\Controllers\RH\UsuarioController::class, 'ListaUsuarios']);
-    Route::get('usuarios/{matricula}/permissoes', [\App\Http\Controllers\RH\UsuarioController::class, 'ObterPermissoesMatricula']);
+    Route::get('usuarios/{usuario}/permissoes', [\App\Http\Controllers\RH\UsuarioController::class, 'ObterPermissoesMatricula']);
     Route::post('usuarios/permissoes', [\App\Http\Controllers\RH\UsuarioController::class, 'AtribuirPermissoes']);
     Route::post('usuarios/grupos', [\App\Http\Controllers\RH\UsuarioController::class, 'AtribuirGrupo']);
     Route::delete('usuarios/permissoes', [\App\Http\Controllers\RH\UsuarioController::class, 'RemoverPermissoes']);

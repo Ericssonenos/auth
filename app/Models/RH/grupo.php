@@ -17,9 +17,9 @@ class grupo extends Model
     public function ListaGrupos()
     {
         try {
-            $consultaSql = "SELECT id_grupo, txt_nome_grupo, txt_descricao_grupo, categoria_id
+            $consultaSql = "SELECT id_Grupo, nome_Grupo, descricao_Grupo, categoria_id
                             FROM RH.Tbl_Grupos
-                            WHERE txt_nome_grupo IS NOT NULL";
+                            WHERE nome_Grupo IS NOT NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute();
@@ -39,16 +39,16 @@ class grupo extends Model
         }
     }
 
-    public function ObterGrupoPorId($id_grupo)
+    public function ObterGrupoPorId($id_Grupo)
     {
         try {
-            $consultaSql = "SELECT id_grupo, txt_nome_grupo, txt_descricao_grupo, categoria_id,
-                                    matricula_criado_por, dat_criado_em, matricula_cancelamento_em, dat_cancelamento_em
+            $consultaSql = "SELECT id_Grupo, nome_Grupo, descricao_Grupo, categoria_id,
+                                    criado_Usuario_id, dat_criado_em, cancelamento_Usuario_id, dat_cancelamento_em
                             FROM RH.Tbl_Grupos
-                            WHERE id_grupo = :id_grupo";
+                            WHERE id_Grupo = :id_Grupo";
 
             $comando = $this->conexao->prepare($consultaSql);
-            $comando->execute([':id_grupo' => $id_grupo]);
+            $comando->execute([':id_Grupo' => $id_Grupo]);
             $data = $comando->fetch(\PDO::FETCH_ASSOC);
 
             return [
@@ -68,21 +68,21 @@ class grupo extends Model
     public function CriarGrupo($params)
     {
         try {
-            $txt_nome_grupo = $params['txt_nome_grupo'];
-            $txt_descricao_grupo = $params['txt_descricao_grupo'] ?? null;
+            $nome_Grupo = $params['nome_Grupo'];
+            $descricao_Grupo = $params['descricao_Grupo'] ?? null;
             $categoria_id = $params['categoria_id'] ?? null;
-            $matricula_criado_por = $params['matricula_criado_por'];
+            $criado_Usuario_id = $params['criado_Usuario_id'];
 
             $consultaSql = "INSERT INTO RH.Tbl_Grupos (
-                            txt_nome_grupo, txt_descricao_grupo, categoria_id, matricula_criado_por
-                        ) VALUES (:txt_nome_grupo, :txt_descricao_grupo, :categoria_id, :matricula_criado_por)";
+                            nome_Grupo, descricao_Grupo, categoria_id, criado_Usuario_id
+                        ) VALUES (:nome_Grupo, :descricao_Grupo, :categoria_id, :criado_Usuario_id)";
 
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute([
-                ':txt_nome_grupo' => $txt_nome_grupo,
-                ':txt_descricao_grupo' => $txt_descricao_grupo,
+                ':nome_Grupo' => $nome_Grupo,
+                ':descricao_Grupo' => $descricao_Grupo,
                 ':categoria_id' => $categoria_id,
-                ':matricula_criado_por' => $matricula_criado_por
+                ':criado_Usuario_id' => $criado_Usuario_id
             ]);
 
             $rows = $comando->rowCount();
@@ -105,28 +105,28 @@ class grupo extends Model
     public function AtualizarGrupo($params)
     {
         try {
-            $id_grupo = $params['id_grupo'];
-            $txt_nome_grupo = $params['txt_nome_grupo'];
-            $txt_descricao_grupo = $params['txt_descricao_grupo'] ?? null;
+            $id_Grupo = $params['id_Grupo'];
+            $nome_Grupo = $params['nome_Grupo'];
+            $descricao_Grupo = $params['descricao_Grupo'] ?? null;
             $categoria_id = $params['categoria_id'] ?? null;
-            $matricula_atualizado_por = $params['matricula_atualizado_por'];
+            $usuario_atualizado_por = $params['usuario_atualizado_por'];
 
             $consultaSql = "UPDATE RH.Tbl_Grupos
-                            SET txt_nome_grupo = :txt_nome_grupo,
-                                txt_descricao_grupo = :txt_descricao_grupo,
+                            SET nome_Grupo = :nome_Grupo,
+                                descricao_Grupo = :descricao_Grupo,
                                 categoria_id = :categoria_id,
-                                matricula_atualizado_em = :matricula_atualizado_por,
+                                atualizado_Usuario_id = :usuario_atualizado_por,
                                 dat_atualizado_em = GETDATE()
-                            WHERE id_grupo = :id_grupo
+                            WHERE id_Grupo = :id_Grupo
                               AND dat_cancelamento_em IS NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute([
-                ':txt_nome_grupo' => $txt_nome_grupo,
-                ':txt_descricao_grupo' => $txt_descricao_grupo,
+                ':nome_Grupo' => $nome_Grupo,
+                ':descricao_Grupo' => $descricao_Grupo,
                 ':categoria_id' => $categoria_id,
-                ':matricula_atualizado_por' => $matricula_atualizado_por,
-                ':id_grupo' => $id_grupo
+                ':usuario_atualizado_por' => $usuario_atualizado_por,
+                ':id_Grupo' => $id_Grupo
             ]);
 
             $rows = $comando->rowCount();
@@ -149,19 +149,19 @@ class grupo extends Model
     public function RemoverGrupo($params)
     {
         try {
-            $id_grupo = $params['id_grupo'];
-            $matricula_cancelamento_em = $params['matricula_cancelamento_em'];
+            $id_Grupo = $params['id_Grupo'];
+            $cancelamento_Usuario_id = $params['cancelamento_Usuario_id'];
 
             $consultaSql = "UPDATE RH.Tbl_Grupos
-                            SET matricula_cancelamento_em = :matricula_cancelamento_em,
+                            SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
                                 dat_cancelamento_em = GETDATE()
-                            WHERE id_grupo = :id_grupo
+                            WHERE id_Grupo = :id_Grupo
                               AND dat_cancelamento_em IS NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute([
-                ':matricula_cancelamento_em' => $matricula_cancelamento_em,
-                ':id_grupo' => $id_grupo
+                ':cancelamento_Usuario_id' => $cancelamento_Usuario_id,
+                ':id_Grupo' => $id_Grupo
             ]);
 
             $rows = $comando->rowCount();
@@ -186,7 +186,7 @@ class grupo extends Model
     {
         $grupo_id = $params['grupo_id'];
         $permissao_id = $params['permissao_id'];
-        $matricula_criado_por = $params['matricula_criado_por'];
+        $criado_Usuario_id = $params['criado_Usuario_id'];
 
         // verificar se já existe vínculo ativo
         $checkSql = "SELECT 1 FROM RH.Tbl_Rel_Grupos_Permissoes WHERE grupo_id = :grupo_id AND permissao_id = :permissao_id AND dat_cancelamento_em IS NULL";
@@ -199,12 +199,12 @@ class grupo extends Model
             return; // já existe vínculo ativo
         }
 
-        $consultaSql = "INSERT INTO RH.Tbl_Rel_Grupos_Permissoes (grupo_id, permissao_id, matricula_criado_por) VALUES (:grupo_id, :permissao_id, :matricula_criado_por)";
+        $consultaSql = "INSERT INTO RH.Tbl_Rel_Grupos_Permissoes (grupo_id, permissao_id, criado_Usuario_id) VALUES (:grupo_id, :permissao_id, :criado_Usuario_id)";
         $comando = $this->conexao->prepare($consultaSql);
         $comando->execute([
             ':grupo_id' => $grupo_id,
             ':permissao_id' => $permissao_id,
-            ':matricula_criado_por' => $matricula_criado_por
+            ':criado_Usuario_id' => $criado_Usuario_id
         ]);
         $comando->closeCursor();
     }
@@ -213,10 +213,10 @@ class grupo extends Model
     public function RemoverPermissaoGrupo($params)
     {
         $id_rel_grupo_permissao = $params['id_rel_grupo_permissao'];
-        $matricula_cancelamento_em = $params['matricula_cancelamento_em'];
+        $cancelamento_Usuario_id = $params['cancelamento_Usuario_id'];
 
         $consultaSql = "UPDATE RH.Tbl_Rel_Grupos_Permissoes
-                        SET matricula_cancelamento_em = :matricula_cancelamento_em,
+                        SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
                             dat_cancelamento_em = GETDATE()
                         WHERE id_rel_grupo_permissao = :id_rel_grupo_permissao
                           AND dat_cancelamento_em IS NULL";
@@ -224,7 +224,7 @@ class grupo extends Model
         $comando = $this->conexao->prepare($consultaSql);
         $comando->execute([
             ':id_rel_grupo_permissao' => $id_rel_grupo_permissao,
-            ':matricula_cancelamento_em' => $matricula_cancelamento_em
+            ':cancelamento_Usuario_id' => $cancelamento_Usuario_id
         ]);
         $comando->closeCursor();
     }
@@ -234,7 +234,7 @@ class grupo extends Model
     {
         $grupo_pai_id = $params['grupo_pai_id'];
         $grupo_filho_id = $params['grupo_filho_id'];
-        $matricula_criado_por = $params['matricula_criado_por'];
+        $criado_Usuario_id = $params['criado_Usuario_id'];
 
         if ($grupo_pai_id == $grupo_filho_id) {
             return; // evita self-link
@@ -250,12 +250,12 @@ class grupo extends Model
             return; // já existe vínculo ativo
         }
 
-        $consultaSql = "INSERT INTO RH.Tbl_Rel_Grupos_Grupos (grupo_pai_id, grupo_filho_id, matricula_criado_por) VALUES (:pai, :filho, :matricula_criado_por)";
+        $consultaSql = "INSERT INTO RH.Tbl_Rel_Grupos_Grupos (grupo_pai_id, grupo_filho_id, criado_Usuario_id) VALUES (:pai, :filho, :criado_Usuario_id)";
         $comando = $this->conexao->prepare($consultaSql);
         $comando->execute([
             ':pai' => $grupo_pai_id,
             ':filho' => $grupo_filho_id,
-            ':matricula_criado_por' => $matricula_criado_por
+            ':criado_Usuario_id' => $criado_Usuario_id
         ]);
         $comando->closeCursor();
     }
@@ -264,10 +264,10 @@ class grupo extends Model
     public function RemoverGrupoGrupo($params)
     {
         $id_rel_grupo_grupo = $params['id_rel_grupo_grupo'];
-        $matricula_cancelamento_em = $params['matricula_cancelamento_em'];
+        $cancelamento_Usuario_id = $params['cancelamento_Usuario_id'];
 
         $consultaSql = "UPDATE RH.Tbl_Rel_Grupos_Grupos
-                        SET matricula_cancelamento_em = :matricula_cancelamento_em,
+                        SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
                             dat_cancelamento_em = GETDATE()
                         WHERE id_rel_grupo_grupo = :id_rel_grupo_grupo
                           AND dat_cancelamento_em IS NULL";
@@ -275,7 +275,7 @@ class grupo extends Model
         $comando = $this->conexao->prepare($consultaSql);
         $comando->execute([
             ':id_rel_grupo_grupo' => $id_rel_grupo_grupo,
-            ':matricula_cancelamento_em' => $matricula_cancelamento_em
+            ':cancelamento_Usuario_id' => $cancelamento_Usuario_id
         ]);
         $comando->closeCursor();
     }

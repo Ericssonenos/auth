@@ -45,9 +45,9 @@ try {
     }
 
     // Exemplo de consulta de permissões por matrícula (usar matrícula existente ou a que você seedou)
-    $matriculaExemplo = 'C000000';
-    $permsByMat = $userModel->ObterPermissoesMatricula(['matricula_cod' => $matriculaExemplo]);
-    dumpResult('ObterPermissoesMatricula('.$matriculaExemplo.')', $permsByMat);
+    $usuarioExemplo = 'C000000';
+    $permsByMat = $userModel->ObterPermissoesMatricula(['Usuario_id' => $usuarioExemplo]);
+    dumpResult('ObterPermissoesMatricula('.$usuarioExemplo.')', $permsByMat);
 
     echo "Smoke test concluído.\n";
     exit(0);

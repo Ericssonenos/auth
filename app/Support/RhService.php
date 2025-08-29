@@ -11,24 +11,24 @@ class RhService
      */
     public function can(string $perm): bool
     {
-        $mat = Session::get('rh_matricula') ?: request()->header('X-Matricula');
+        $mat = Session::get('rh_usuario') ?: request()->header('X-id_Usuario');
         if (empty($mat)) {
             return false;
         }
-        $perms = Session::get("rh_permissions.{$mat}", []);
-        return in_array($perm, $perms);
+        $permissao = Session::get("rh_permissions.{$mat}", []);
+        return in_array($perm, $permissao);
     }
 
     /**
      * Invalida cache de permissões para uma matrícula ou todas se null
      */
-    public function invalidate(?string $matricula = null): void
+    public function invalidate(?string $usuario = null): void
     {
-        if ($matricula) {
-            Session::forget("rh_permissions.{$matricula}");
+        if ($usuario) {
+            Session::forget("rh_permissions.{$usuario}");
         } else {
             // remover chave principal caso exista
-            $current = Session::get('rh_matricula');
+            $current = Session::get('rh_usuario');
             if ($current) {
                 Session::forget("rh_permissions.{$current}");
             }

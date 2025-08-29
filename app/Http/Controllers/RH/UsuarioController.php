@@ -22,10 +22,10 @@ class UsuarioController extends Controller
         return response()->json($this->usuarioModel->ListaUsuarios());
     }
 
-    // corresponde a usuario->ObterPermissoesMatricula(['matricula_cod' => $matricula])
-    public function ObterPermissoesMatricula($matricula)
+    // corresponde a usuario->ObterPermissoesMatricula(['Usuario_id' => $usuario])
+    public function ObterPermissoesMatricula($usuario)
     {
-        $res = $this->usuarioModel->ObterPermissoesMatricula(['matricula_cod' => $matricula]);
+        $res = $this->usuarioModel->ObterPermissoesMatricula(['Usuario_id' => $usuario]);
         return response()->json($res);
     }
 
@@ -35,11 +35,11 @@ class UsuarioController extends Controller
         $payload = $request->all();
     $res = $this->usuarioModel->AtribuirPermissoes($payload);
     // invalidar cache para a matrícula afetada se informado
-    $mat = $payload['matricula_cod'] ?? null;
+    $mat = $payload['Usuario_id'] ?? null;
     if ($mat) {
         Session::forget("rh_permissions.{$mat}");
     } else {
-        $current = Session::get('rh_matricula');
+        $current = Session::get('rh_usuario');
         if ($current) {
             Session::forget("rh_permissions.{$current}");
         }
@@ -52,11 +52,11 @@ class UsuarioController extends Controller
     {
         $payload = $request->all();
     $res = $this->usuarioModel->AtribuirGrupo($payload);
-    $mat = $payload['matricula_cod'] ?? null;
+    $mat = $payload['Usuario_id'] ?? null;
     if ($mat) {
         Session::forget("rh_permissions.{$mat}");
     } else {
-        $current = Session::get('rh_matricula');
+        $current = Session::get('rh_usuario');
         if ($current) {
             Session::forget("rh_permissions.{$current}");
         }
@@ -69,11 +69,11 @@ class UsuarioController extends Controller
     {
         $payload = $request->all();
     $res = $this->usuarioModel->RemoverPermissoes($payload);
-    $mat = $payload['matricula_cod'] ?? null;
+    $mat = $payload['Usuario_id'] ?? null;
     if ($mat) {
         Session::forget("rh_permissions.{$mat}");
     } else {
-        $current = Session::get('rh_matricula');
+        $current = Session::get('rh_usuario');
         if ($current) {
             Session::forget("rh_permissions.{$current}");
         }
@@ -86,11 +86,11 @@ class UsuarioController extends Controller
     {
         $payload = $request->all();
     $res = $this->usuarioModel->RemoverGrupo($payload);
-    $mat = $payload['matricula_cod'] ?? null;
+    $mat = $payload['Usuario_id'] ?? null;
     if ($mat) {
         Session::forget("rh_permissions.{$mat}");
     } else {
-        $current = Session::get('rh_matricula');
+        $current = Session::get('rh_usuario');
         if ($current) {
             Session::forget("rh_permissions.{$current}");
         }

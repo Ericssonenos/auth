@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>RH Access Demo</h1>
-    <p>Matrícula: {{ $matricula }}</p>
+    <p>Matrícula: {{ $usuario }}</p>
 
     <hr/>
 

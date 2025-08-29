@@ -20,8 +20,8 @@ class AccessDemoController extends Controller
     public function Demo(Request $request)
     {
         // Ler permissões/matrícula da session (middleware grava em session)
-        $matricula = Session::get('rh_matricula', $request->header('X-Matricula'));
-        $perms = Session::get("rh_permissions.{$matricula}", []);
+        $usuario = Session::get('rh_usuario', $request->header('X-id_Usuario'));
+        $permissao = Session::get("rh_permissions.{$usuario}", []);
 
         // Expor um boolean via Gate também para conveniência na view
         $canManage = Gate::check('PERM_GERENCIAR_PERMISSOES');

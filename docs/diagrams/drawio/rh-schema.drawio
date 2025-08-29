@@ -1,0 +1,49 @@
+<mxfile host="65bd71144e">
+    <diagram name="RH Schema" id="0">
+        <mxGraphModel dx="970" dy="1776" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="light-dark(#FFFFFF,#121212)" math="0" shadow="1" adaptiveColors="auto">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="u1" value="Tbl_Usuario\nid_Usuario: CHAR(7)\nnome_Completo\nemail" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;sketch=1;curveFitting=1;jiggle=2;glass=1;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="46" y="-389" width="220" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="g1" value="Tbl_Grupos\nid_Grupo: INT\nnome_Grupo\ncategoria_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#8E6E9E;sketch=1;curveFitting=1;jiggle=2;glass=1;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="478" y="-422" width="240" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="p1" value="Tbl_Permissoes\nid_permissao: INT\ncod_permissao" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#6AA84F;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="200" width="240" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="ug1" value="Rel_Usuarios_Grupos\nUsuario_id\ngrupo_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="200" width="240" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="up1" value="Rel_Usuarios_Permissoes\nUsuario_id\npermissao_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="340" width="240" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="gp1" value="Rel_Grupos_Permissoes\ngrupo_id\npermissao_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="340" width="240" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="u1" target="ug1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;exitX=0;exitY=0.5;exitDx=0;exitDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="g1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="410" y="20" as="sourcePoint"/>
+                        <mxPoint x="300" y="210" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="u1" target="up1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="p1" target="up1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="g1" target="gp1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="p1" target="gp1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

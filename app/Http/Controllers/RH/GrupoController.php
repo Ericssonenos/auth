@@ -33,7 +33,7 @@ class GrupoController extends Controller
     {
         $payload = $request->all();
     $res = $this->grupoModel->CriarGrupo($payload);
-    $current = Session::get('rh_matricula');
+    $current = Session::get('rh_usuario');
     if ($current) {
         Session::forget("rh_permissions.{$current}");
     }
@@ -44,9 +44,9 @@ class GrupoController extends Controller
     public function AtualizarGrupo(Request $request, $id)
     {
         $payload = $request->all();
-        $payload['id_grupo'] = $id;
+        $payload['id_Grupo'] = $id;
     $res = $this->grupoModel->AtualizarGrupo($payload);
-    $current = Session::get('rh_matricula');
+    $current = Session::get('rh_usuario');
     if ($current) {
         Session::forget("rh_permissions.{$current}");
     }
@@ -57,9 +57,9 @@ class GrupoController extends Controller
     public function RemoverGrupo(Request $request, $id)
     {
         $payload = $request->all();
-        $payload['id_grupo'] = $id;
+        $payload['id_Grupo'] = $id;
     $res = $this->grupoModel->RemoverGrupo($payload);
-    $current = Session::get('rh_matricula');
+    $current = Session::get('rh_usuario');
     if ($current) {
         Session::forget("rh_permissions.{$current}");
     }
@@ -71,11 +71,11 @@ class GrupoController extends Controller
     {
         $payload = $request->all();
     $res = $this->grupoModel->AtribuirPermissaoGrupo($payload);
-    $mat = $payload['matricula_cod'] ?? null;
+    $mat = $payload['Usuario_id'] ?? null;
     if ($mat) {
         Session::forget("rh_permissions.{$mat}");
     } else {
-        $current = Session::get('rh_matricula');
+        $current = Session::get('rh_usuario');
         if ($current) {
             Session::forget("rh_permissions.{$current}");
         }
@@ -88,11 +88,11 @@ class GrupoController extends Controller
     {
         $payload = $request->all();
     $res = $this->grupoModel->RemoverPermissaoGrupo($payload);
-    $mat = $payload['matricula_cod'] ?? null;
+    $mat = $payload['Usuario_id'] ?? null;
     if ($mat) {
         Session::forget("rh_permissions.{$mat}");
     } else {
-        $current = Session::get('rh_matricula');
+        $current = Session::get('rh_usuario');
         if ($current) {
             Session::forget("rh_permissions.{$current}");
         }
@@ -105,7 +105,7 @@ class GrupoController extends Controller
     {
         $payload = $request->all();
     $res = $this->grupoModel->AtribuirGrupoGrupo($payload);
-    $current = Session::get('rh_matricula');
+    $current = Session::get('rh_usuario');
     if ($current) {
         Session::forget("rh_permissions.{$current}");
     }
@@ -117,7 +117,7 @@ class GrupoController extends Controller
     {
         $payload = $request->all();
     $res = $this->grupoModel->RemoverGrupoGrupo($payload);
-    $current = Session::get('rh_matricula');
+    $current = Session::get('rh_usuario');
     if ($current) {
         Session::forget("rh_permissions.{$current}");
     }

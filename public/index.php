@@ -3,18 +3,21 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
+// Define o tempo de início do Laravel
 define('LARAVEL_START', microtime(true));
 
-// Determine if the application is in maintenance mode...
+// Determina se a aplicação está em modo de manutenção...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
-// Register the Composer autoloader...
+// Registra o autoloader do Composer
 require __DIR__.'/../vendor/autoload.php';
 
-// Bootstrap Laravel and handle the request...
+
+// Bootstrap Laravel e processa a requisição
 /** @var Application $app */
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
+// Processa a requisição
 $app->handleRequest(Request::capture());

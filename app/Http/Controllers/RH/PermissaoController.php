@@ -34,7 +34,7 @@ class PermissaoController extends Controller
         $payload = $request->all();
     $res = $this->permissaoModel->CriarPermissao($payload);
     // permissão criada: invalidar cache global
-    $current = Session::get('rh_matricula');
+    $current = Session::get('rh_usuario');
     if ($current) {
         Session::forget("rh_permissions.{$current}");
     }
@@ -47,7 +47,7 @@ class PermissaoController extends Controller
         $payload = $request->all();
         $payload['id_permissao'] = $id;
     $res = $this->permissaoModel->AtualizarPermissao($payload);
-    $current = Session::get('rh_matricula');
+    $current = Session::get('rh_usuario');
     if ($current) {
         Session::forget("rh_permissions.{$current}");
     }
@@ -60,7 +60,7 @@ class PermissaoController extends Controller
         $payload = $request->all();
         $payload['id_permissao'] = $id;
     $res = $this->permissaoModel->RemoverPermissao($payload);
-    $current = Session::get('rh_matricula');
+    $current = Session::get('rh_usuario');
     if ($current) {
         Session::forget("rh_permissions.{$current}");
     }
