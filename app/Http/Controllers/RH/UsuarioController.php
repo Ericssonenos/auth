@@ -13,88 +13,62 @@ class UsuarioController extends Controller
 
     public function __construct()
     {
+        // [ ] validar uso
         $this->usuarioModel = new usuario();
     }
 
     // corresponde a usuario->ListaUsuarios()
     public function ListaUsuarios()
     {
+        // [ ] validar uso
         return response()->json($this->usuarioModel->ListaUsuarios());
     }
 
-    // corresponde a usuario->ObterPermissoesMatricula(['Usuario_id' => $usuario])
-    public function ObterPermissoesMatricula($usuario)
+    // corresponde a usuario->ObterPermissoesUsuario(['Usuario_id' => $usuario])
+    public function ObterPermissoesUsuario($usuario)
     {
-        $res = $this->usuarioModel->ObterPermissoesMatricula(['Usuario_id' => $usuario]);
-        return response()->json($res);
+        // [ ] validar uso
+        $respostaPermissoesUsuario = $this->usuarioModel->ObterPermissoesUsuario(['Usuario_id' => $usuario]);
+        return response()->json($respostaPermissoesUsuario);
     }
 
     // atribui permissão direta ao usuário
     public function AtribuirPermissoes(Request $request)
     {
         $payload = $request->all();
-    $res = $this->usuarioModel->AtribuirPermissoes($payload);
-    // invalidar cache para a matrícula afetada se informado
-    $mat = $payload['Usuario_id'] ?? null;
-    if ($mat) {
-        Session::forget("rh_permissions.{$mat}");
-    } else {
-        $current = Session::get('rh_usuario');
-        if ($current) {
-            Session::forget("rh_permissions.{$current}");
-        }
-    }
-    return response()->json($res);
+        $respostaStatusAtribuicao = $this->usuarioModel->AtribuirPermissoes($payload);
+
+        // [ ] validar uso
+        return response()->json($respostaStatusAtribuicao);
     }
 
     // atribui grupo ao usuário
     public function AtribuirGrupo(Request $request)
     {
         $payload = $request->all();
-    $res = $this->usuarioModel->AtribuirGrupo($payload);
-    $mat = $payload['Usuario_id'] ?? null;
-    if ($mat) {
-        Session::forget("rh_permissions.{$mat}");
-    } else {
-        $current = Session::get('rh_usuario');
-        if ($current) {
-            Session::forget("rh_permissions.{$current}");
-        }
-    }
-    return response()->json($res);
+        $respostaStatusAtribuicao = $this->usuarioModel->AtribuirGrupo($payload);
+
+        // [ ] validar uso
+        return response()->json($respostaStatusAtribuicao);
     }
 
     // remove vínculo permissão->usuário
     public function RemoverPermissoes(Request $request)
     {
         $payload = $request->all();
-    $res = $this->usuarioModel->RemoverPermissoes($payload);
-    $mat = $payload['Usuario_id'] ?? null;
-    if ($mat) {
-        Session::forget("rh_permissions.{$mat}");
-    } else {
-        $current = Session::get('rh_usuario');
-        if ($current) {
-            Session::forget("rh_permissions.{$current}");
-        }
-    }
-    return response()->json($res);
+        $respostaStatusRemocao = $this->usuarioModel->RemoverPermissoes($payload);
+
+        // [ ] validar uso
+        return response()->json($respostaStatusRemocao);
     }
 
     // remove vínculo grupo->usuário
     public function RemoverGrupo(Request $request)
     {
         $payload = $request->all();
-    $res = $this->usuarioModel->RemoverGrupo($payload);
-    $mat = $payload['Usuario_id'] ?? null;
-    if ($mat) {
-        Session::forget("rh_permissions.{$mat}");
-    } else {
-        $current = Session::get('rh_usuario');
-        if ($current) {
-            Session::forget("rh_permissions.{$current}");
-        }
-    }
-    return response()->json($res);
+        $respostaStatusRemocao = $this->usuarioModel->RemoverGrupo($payload);
+
+        // [ ] validar uso
+        return response()->json($respostaStatusRemocao);
     }
 }

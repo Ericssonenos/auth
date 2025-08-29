@@ -1,11 +1,11 @@
 -- Script: 002_drop_rh.sql
 -- Objetivo: remover objetos do schema RH (DROP) de forma segura.
--- Observação importante: este script NÃO remove a tabela RH.Users (pertence ao cliente).
+-- Observação importante: este script NÃO remove a tabela RH.Tbl_Usuarios (pertence ao cliente).
 -- Execute com cuidado em ambiente de produção.
 
 SET NOCOUNT ON;
 
-PRINT 'Iniciando limpeza do schema RH (exceto RH.Users)...';
+PRINT 'Iniciando limpeza do schema RH (exceto RH.Tbl_Usuarios)...';
 
 DECLARE @sql NVARCHAR(MAX);
 DECLARE @name SYSNAME;
@@ -70,9 +70,9 @@ BEGIN
     EXEC sp_executesql @sql;
 END
 
--- 3) Dropar tabelas do schema RH exceto RH.Users
-PRINT '3) Removendo tabelas do schema RH (exceto RH.Users)...';
-WHILE EXISTS (SELECT 1 FROM sys.tables t JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE s.name = 'RH' AND t.name <> 'Users')
+-- 3) Dropar tabelas do schema RH exceto RH.Tbl_Usuarios
+PRINT '3) Removendo tabelas do schema RH (exceto RH.Tbl_Usuarios)...';
+WHILE EXISTS (SELECT 1 FROM sys.tables t JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE s.name = 'RH' AND t.name <> 'Tbl_Usuarios')
 BEGIN
     SELECT TOP(1) @sql = N'DROP TABLE [' + s.name + N'].[' + t.name + N']'
     FROM sys.tables t
@@ -107,7 +107,7 @@ BEGIN
     EXEC sp_executesql @sql;
 END
 
--- 5) Tentar dropar schema RH (só funciona se não houver objetos, inclusive RH.Users)
+-- 5) Tentar dropar schema RH (só funciona se não houver objetos, inclusive RH.Tbl_Usuarios)
 PRINT '5) Tentando dropar schema RH (só será removido se estiver vazio)...';
 IF NOT EXISTS (SELECT 1 FROM sys.objects o JOIN sys.schemas s ON o.schema_id = s.schema_id WHERE s.name = 'RH')
 BEGIN
@@ -116,7 +116,7 @@ BEGIN
 END
 ELSE
 BEGIN
-    PRINT 'Schema RH não está vazio. Alguns objetos (ex.: RH.Users) permanecerão. Schema não foi removido.';
+    PRINT 'Schema RH não está vazio. Alguns objetos (ex.: RH.Tbl_Usuarios) permanecerão. Schema não foi removido.';
 END
 
 PRINT 'Limpeza do schema RH finalizada.';

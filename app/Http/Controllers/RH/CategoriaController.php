@@ -12,18 +12,21 @@ class CategoriaController extends Controller
 
     public function __construct()
     {
+        // [ ] validar uso
         $this->categoriaModel = new categoria();
     }
 
     // corresponde a categoria->ListaCategorias()
     public function ListaCategorias()
     {
+        // [ ] validar uso
         return response()->json($this->categoriaModel->ListaCategorias());
     }
 
     // corresponde a categoria->ObterCategoriaPorId()
     public function ObterCategoriaPorId($id)
     {
+        // [ ] validar uso
         return response()->json($this->categoriaModel->ObterCategoriaPorId($id));
     }
 
@@ -31,6 +34,7 @@ class CategoriaController extends Controller
     public function CriarCategoria(Request $request)
     {
         $payload = $request->all();
+        // [ ] validar uso
         return response()->json($this->categoriaModel->CriarCategoria($payload));
     }
 
@@ -39,6 +43,7 @@ class CategoriaController extends Controller
     {
         $payload = $request->all();
         $payload['id_categoria'] = $id;
+        // [ ] validar uso
         return response()->json($this->categoriaModel->AtualizarCategoria($payload));
     }
 
@@ -47,6 +52,7 @@ class CategoriaController extends Controller
     {
         $payload = $request->all();
         $payload['id_categoria'] = $id;
+        // [ ] validar uso
         return response()->json($this->categoriaModel->RemoverCategoria($payload));
     }
 }

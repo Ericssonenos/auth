@@ -23,8 +23,8 @@ try {
     $catModel = new \App\Models\RH\categoria();
 
     // Lista basica (read-only)
-    $resUsers = $userModel->ListaUsuarios();
-    dumpResult('ListaUsuarios', $resUsers);
+    $resTbl_Usuarios = $userModel->ListaUsuarios();
+    dumpResult('ListaUsuarios', $resTbl_Usuarios);
 
     $resGroups = $groupModel->ListaGrupos();
     dumpResult('ListaGrupos', $resGroups);
@@ -44,10 +44,10 @@ try {
         }
     }
 
-    // Exemplo de consulta de permissões por matrícula (usar matrícula existente ou a que você seedou)
+    // Exemplo de consulta de permissões por is_usuario (usar is_usuario existente ou a que você seedou)
     $usuarioExemplo = 'C000000';
-    $permsByMat = $userModel->ObterPermissoesMatricula(['Usuario_id' => $usuarioExemplo]);
-    dumpResult('ObterPermissoesMatricula('.$usuarioExemplo.')', $permsByMat);
+    $permsByMat = $userModel->ObterPermissoesUsuario(['Usuario_id' => $usuarioExemplo]);
+    dumpResult('ObterPermissoesUsuario('.$usuarioExemplo.')', $permsByMat);
 
     echo "Smoke test concluído.\n";
     exit(0);

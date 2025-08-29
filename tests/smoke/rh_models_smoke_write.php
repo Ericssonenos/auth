@@ -67,7 +67,7 @@ try {
     echo "Grupo atribuído ao usuário.\n";
 
     // 6) verificar permissões do usuário (deverá retornar as SMOKE_TEST_P1 e SMOKE_TEST_P2)
-    $permissao = $userModel->ObterPermissoesMatricula(['Usuario_id' => $usuario]);
+    $permissao = $userModel->ObterPermissoesUsuario(['Usuario_id' => $usuario]);
     echo "Permissoes do usuario apos atribuicao: "; print_r($permissao); echo "\n";
 
     // rollback para não deixar alterações

@@ -13,18 +13,21 @@ class PermissaoController extends Controller
 
     public function __construct()
     {
+        // [ ] validar uso
         $this->permissaoModel = new permissao();
     }
 
     // corresponde a permissao->ListaPermissoes()
     public function ListaPermissoes()
     {
+        // [ ] validar uso
         return response()->json($this->permissaoModel->ListaPermissoes());
     }
 
     // corresponde a permissao->ObterPermissaoPorId()
     public function ObterPermissaoPorId($id)
     {
+        // [ ] validar uso
         return response()->json($this->permissaoModel->ObterPermissaoPorId($id));
     }
 
@@ -32,13 +35,10 @@ class PermissaoController extends Controller
     public function CriarPermissao(Request $request)
     {
         $payload = $request->all();
-    $res = $this->permissaoModel->CriarPermissao($payload);
-    // permissão criada: invalidar cache global
-    $current = Session::get('rh_usuario');
-    if ($current) {
-        Session::forget("rh_permissions.{$current}");
-    }
-    return response()->json($res);
+        $respostaStatusCriacao = $this->permissaoModel->CriarPermissao($payload);
+
+        // [ ] validar uso
+        return response()->json($respostaStatusCriacao);
     }
 
     // corresponde a permissao->AtualizarPermissao()
@@ -46,12 +46,10 @@ class PermissaoController extends Controller
     {
         $payload = $request->all();
         $payload['id_permissao'] = $id;
-    $res = $this->permissaoModel->AtualizarPermissao($payload);
-    $current = Session::get('rh_usuario');
-    if ($current) {
-        Session::forget("rh_permissions.{$current}");
-    }
-    return response()->json($res);
+        $respostaStatusAtualizacao = $this->permissaoModel->AtualizarPermissao($payload);
+
+        // [ ] validar uso
+        return response()->json($respostaStatusAtualizacao);
     }
 
     // corresponde a permissao->RemoverPermissao()
@@ -59,11 +57,9 @@ class PermissaoController extends Controller
     {
         $payload = $request->all();
         $payload['id_permissao'] = $id;
-    $res = $this->permissaoModel->RemoverPermissao($payload);
-    $current = Session::get('rh_usuario');
-    if ($current) {
-        Session::forget("rh_permissions.{$current}");
-    }
-    return response()->json($res);
+        $respostaStatusRemocao = $this->permissaoModel->RemoverPermissao($payload);
+
+        // [ ] validar uso
+        return response()->json($respostaStatusRemocao);
     }
 }

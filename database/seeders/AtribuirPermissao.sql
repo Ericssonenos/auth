@@ -1,6 +1,6 @@
 -- B) Atribuir várias permissões (evita duplicatas ativas) — insira os códigos abaixo
-DECLARE @usuario CHAR(7)      = 'C000000';
-DECLARE @mat_criado_por CHAR(7) = 'C000002';
+DECLARE @usuario int     = 1;
+DECLARE @criado_Usuario_id int= 2;
 
 DECLARE @Perms TABLE (txt_cod NVARCHAR(200));
 INSERT INTO @Perms (txt_cod) VALUES
@@ -12,7 +12,7 @@ INSERT INTO RH.Tbl_Rel_Usuarios_Permissoes (Usuario_id, permissao_id, criado_Usu
 SELECT
     @usuario,
     p.id_permissao,
-    @mat_criado_por
+    @criado_Usuario_id
 FROM RH.Tbl_Permissoes p
 INNER JOIN @Perms t ON t.txt_cod = p.cod_permissao
 WHERE p.dat_cancelamento_em IS NULL

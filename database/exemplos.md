@@ -38,7 +38,7 @@ WHERE r.Usuario_id = @usuario
 
 Exemplo (SQL Server):
 ```sql
-DECLARE @usuario CHAR(7) = '0000001';
+DECLARE @usuario int= '0000001';
 DECLARE @data DATETIME2 = GETDATE();
 
 -- grupos diretos ativos

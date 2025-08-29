@@ -10,7 +10,7 @@ Route::get('/', function () {
 Route::prefix('rh')->group(function () {
     // Usuários
     Route::get('usuarios', [\App\Http\Controllers\RH\UsuarioController::class, 'ListaUsuarios']);
-    Route::get('usuarios/{usuario}/permissoes', [\App\Http\Controllers\RH\UsuarioController::class, 'ObterPermissoesMatricula']);
+    Route::get('usuarios/{usuario}/permissoes', [\App\Http\Controllers\RH\UsuarioController::class, 'ObterPermissoesUsuario']);
     Route::post('usuarios/permissoes', [\App\Http\Controllers\RH\UsuarioController::class, 'AtribuirPermissoes']);
     Route::post('usuarios/grupos', [\App\Http\Controllers\RH\UsuarioController::class, 'AtribuirGrupo']);
     Route::delete('usuarios/permissoes', [\App\Http\Controllers\RH\UsuarioController::class, 'RemoverPermissoes']);
@@ -41,7 +41,7 @@ Route::prefix('rh')->group(function () {
     Route::put('categorias/{id}', [\App\Http\Controllers\RH\CategoriaController::class, 'AtualizarCategoria']);
     Route::delete('categorias/{id}', [\App\Http\Controllers\RH\CategoriaController::class, 'RemoverCategoria']);
 
-    // Demo de acesso (usando middleware rh.auth)
-    Route::get('demo', [\App\Http\Controllers\RH\AccessDemoController::class, 'Demo'])->middleware('rh.auth');
-    Route::get('/', [\App\Http\Controllers\RH\AccessDemoController::class, 'Demo'])->middleware('rh.auth');
+    Route::get('/', function () {
+        return view('welcome');
+    });
 });

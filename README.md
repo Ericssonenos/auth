@@ -7,7 +7,7 @@ O que é
 
 User stories / UX (alto nível)
 - Como administrador, ao vincular um usuário a um grupo, eu crio um novo registro histórico — histórico preservado.
-- Como administrador, ao revogar um vínculo, eu marco o registro com matrícula + data de cancelamento; não deleto.
+- Como administrador, ao revogar um vínculo, eu marco o registro com is_usuario + data de cancelamento; não deleto.
 - Como sistema, para calcular permissões atuais de um usuário, eu:
   1) coleto vínculos ativos do usuário → grupos ativos;
   2) expando hierarquia de grupos (quando aplicável);

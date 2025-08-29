@@ -11,7 +11,7 @@ use App\Models\RH\usuario;
 class RhPermissionMiddleware
 {
     /**
-     * Simula obter matrícula via LDAP: prioriza header X-id_Usuario, depois fallback C000000
+     * Simula obter is_usuario via LDAP: prioriza header X-id_Usuario, depois fallback C000000
      */
     public function handle(Request $request, Closure $next)
     {
@@ -19,27 +19,37 @@ class RhPermissionMiddleware
             $usuario = $request->header('X-id_Usuario');
             if (empty($usuario)) {
                 // fallback: usuário local de teste
-                $usuario = 'C000000';
+                $usuario = '1';
             }
 
-            $sessionKey = "rh_permissions.{$usuario}";
+            $sessionKey = "list_Permissoes_session.{$usuario}";
 
             if (!Session::has($sessionKey)) {
                 // buscar do DB e armazenar
                 $usuarioModel = new usuario();
-                $res = $usuarioModel->ObterPermissoesMatricula(['Usuario_id' => $usuario]);
-                if (isset($res['status']) && $res['status'] === true && is_array($res['data'])) {
+                $respostaStatus = $usuarioModel->ObterPermissoesUsuario(['Usuario_id' => $usuario]);
+
+                if (isset($respostaStatus['status']) && $respostaStatus['status'] === true && is_array($respostaStatus['data'])) {
                     // normalizar para lista simples de códigos
-                    $permissao = array_map(function ($p) { return $p['cod_permissao']; }, $res['data']);
+                    $permissao = []; // array destino
+
+                    // percorre cada item retornado e extrai 'cod_permissao' quando presente
+                    foreach ($respostaStatus['data'] as $item) {
+                        // válida estrutura esperada antes de acessar a chave
+                        if (is_array($item) && array_key_exists('cod_permissao', $item)) {
+                            $permissao[] = $item['cod_permissao'];
+                        }
+                    }
+
                     Session::put($sessionKey, $permissao);
-                    // também guardar a matrícula na session para uso pelos Gates
-                    Session::put('rh_usuario', $usuario);
+                    // também guardar a is_usuario na session para uso pelos Gates
+                    Session::put('id_Usuario_session', $usuario);
                 } else {
                     Session::put($sessionKey, []);
                 }
             }
 
-            // permissões e matrícula já estão na session; o Gate e controllers devem ler da session
+            // permissões e is_usuario já estão na session; o Gate e controllers devem ler da session
 
             return $next($request);
         } catch (\Exception $e) {

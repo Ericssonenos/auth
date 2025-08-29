@@ -17,7 +17,7 @@ class usuario extends Model
     public function ListaUsuarios()
     {
         try {
-            $consultaSql = "SELECT id_Usuario, Nome_Completo FROM RH.Users WHERE id_Usuario IS NOT NULL AND Nome_Completo IS NOT NULL";
+            $consultaSql = "SELECT id_Usuario, Nome_Completo FROM RH.Tbl_Usuarios WHERE id_Usuario IS NOT NULL AND Nome_Completo IS NOT NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute();
@@ -37,7 +37,7 @@ class usuario extends Model
         }
     }
 
-    public function ObterPermissoesMatricula($params)
+    public function ObterPermissoesUsuario($params)
     {
         try {
             $usuario = $params['Usuario_id'];

@@ -13,12 +13,14 @@ class GrupoController extends Controller
 
     public function __construct()
     {
+        // [ ] validar uso
         $this->grupoModel = new grupo();
     }
 
     // corresponde a grupo->ListaGrupos()
     public function ListaGrupos()
     {
+        // [ ] validar uso
         return response()->json($this->grupoModel->ListaGrupos());
     }
 
@@ -32,12 +34,10 @@ class GrupoController extends Controller
     public function CriarGrupo(Request $request)
     {
         $payload = $request->all();
-    $res = $this->grupoModel->CriarGrupo($payload);
-    $current = Session::get('rh_usuario');
-    if ($current) {
-        Session::forget("rh_permissions.{$current}");
-    }
-    return response()->json($res);
+        $respostaStatusCriacao = $this->grupoModel->CriarGrupo($payload);
+
+        // [ ] validar uso
+        return response()->json($respostaStatusCriacao);
     }
 
     // corresponde a grupo->AtualizarGrupo()
@@ -45,12 +45,10 @@ class GrupoController extends Controller
     {
         $payload = $request->all();
         $payload['id_Grupo'] = $id;
-    $res = $this->grupoModel->AtualizarGrupo($payload);
-    $current = Session::get('rh_usuario');
-    if ($current) {
-        Session::forget("rh_permissions.{$current}");
-    }
-    return response()->json($res);
+        $respostaStatusAtualizacao = $this->grupoModel->AtualizarGrupo($payload);
+
+        // [ ] validar uso
+        return response()->json($respostaStatusAtualizacao);
     }
 
     // corresponde a grupo->RemoverGrupo()
@@ -58,69 +56,49 @@ class GrupoController extends Controller
     {
         $payload = $request->all();
         $payload['id_Grupo'] = $id;
-    $res = $this->grupoModel->RemoverGrupo($payload);
-    $current = Session::get('rh_usuario');
-    if ($current) {
-        Session::forget("rh_permissions.{$current}");
-    }
-    return response()->json($res);
+        $respostaStatusRemocao = $this->grupoModel->RemoverGrupo($payload);
+
+        // [ ] validar uso
+        return response()->json($respostaStatusRemocao);
     }
 
     // atribui permissão a um grupo
     public function AtribuirPermissaoGrupo(Request $request)
     {
         $payload = $request->all();
-    $res = $this->grupoModel->AtribuirPermissaoGrupo($payload);
-    $mat = $payload['Usuario_id'] ?? null;
-    if ($mat) {
-        Session::forget("rh_permissions.{$mat}");
-    } else {
-        $current = Session::get('rh_usuario');
-        if ($current) {
-            Session::forget("rh_permissions.{$current}");
-        }
-    }
-    return response()->json($res);
+        $respostaStatusAtribuicao = $this->grupoModel->AtribuirPermissaoGrupo($payload);
+
+        // [ ] validar uso
+        return response()->json($respostaStatusAtribuicao);
     }
 
     // remove permissão de um grupo
     public function RemoverPermissaoGrupo(Request $request)
     {
         $payload = $request->all();
-    $res = $this->grupoModel->RemoverPermissaoGrupo($payload);
-    $mat = $payload['Usuario_id'] ?? null;
-    if ($mat) {
-        Session::forget("rh_permissions.{$mat}");
-    } else {
-        $current = Session::get('rh_usuario');
-        if ($current) {
-            Session::forget("rh_permissions.{$current}");
-        }
-    }
-    return response()->json($res);
+        $respostaStatusRemocao = $this->grupoModel->RemoverPermissaoGrupo($payload);
+
+        // [ ] validar uso
+        return response()->json($respostaStatusRemocao);
     }
 
     // cria relação pai->filho entre grupos
     public function AtribuirGrupoGrupo(Request $request)
     {
         $payload = $request->all();
-    $res = $this->grupoModel->AtribuirGrupoGrupo($payload);
-    $current = Session::get('rh_usuario');
-    if ($current) {
-        Session::forget("rh_permissions.{$current}");
-    }
-    return response()->json($res);
+        $respostaStatusAtribuicao = $this->grupoModel->AtribuirGrupoGrupo($payload);
+
+        // [ ] validar uso
+        return response()->json($respostaStatusAtribuicao);
     }
 
     // remove relação entre grupos
     public function RemoverGrupoGrupo(Request $request)
     {
         $payload = $request->all();
-    $res = $this->grupoModel->RemoverGrupoGrupo($payload);
-    $current = Session::get('rh_usuario');
-    if ($current) {
-        Session::forget("rh_permissions.{$current}");
-    }
-    return response()->json($res);
+        $respostaStatusRemocao = $this->grupoModel->RemoverGrupoGrupo($payload);
+
+        // [ ] validar uso
+        return response()->json($respostaStatusRemocao);
     }
 }
