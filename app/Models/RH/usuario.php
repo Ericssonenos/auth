@@ -14,6 +14,30 @@ class usuario extends Model
         $this->conexao = DB::connection()->getPdo();
     }
 
+    public function ObterDadosUsuario($params)
+    {
+        try {
+            $usuario = $params['Usuario_id'];
+
+            $consultaSql = "SELECT id_Usuario, Nome_Completo FROM RH.Tbl_Usuarios WHERE id_Usuario = :usuario";
+            $comando = $this->conexao->prepare($consultaSql);
+            $comando->execute([':usuario' => $usuario]);
+            $data = $comando->fetch(\PDO::FETCH_ASSOC);
+
+            return [
+                'status' => true,
+                'message' => 'Dados do usuário recuperados.',
+                'data' => $data
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => false,
+                'message' => $e->getMessage(),
+                'data' => null
+            ];
+        }
+    }
+
     public function ListaUsuarios()
     {
         try {

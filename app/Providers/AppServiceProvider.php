@@ -28,7 +28,9 @@ class AppServiceProvider extends ServiceProvider
 
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('rh.auth', RhPermissionMiddleware::class);
-
+        // Aplica o middleware RhPermissionMiddleware por padrão a todas as rotas do grupo 'web'
+        // (rotas em routes/web.php normalmente usam o grupo 'web')
+        $router->pushMiddlewareToGroup('web', RhPermissionMiddleware::class);
 
         // Gate global: verifica permissões armazenadas na session (ex.: use @can('PERM_X') nas views)
         Gate::before(function ($_user, $ability) {

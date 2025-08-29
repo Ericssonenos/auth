@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use App\Models\RH\usuario;
+use Illuminate\Support\Facades\Auth;
 
 class RhPermissionMiddleware
 {
@@ -19,7 +20,7 @@ class RhPermissionMiddleware
             $usuario = $request->header('X-id_Usuario');
             if (empty($usuario)) {
                 // fallback: usuário local de teste
-                $usuario = '1';
+                $usuario = '8';
             }
 
             $sessionKey = "list_Permissoes_session.{$usuario}";
@@ -28,6 +29,8 @@ class RhPermissionMiddleware
                 // buscar do DB e armazenar
                 $usuarioModel = new usuario();
                 $respostaStatus = $usuarioModel->ObterPermissoesUsuario(['Usuario_id' => $usuario]);
+                //obter dados do usuário
+                $dadosUsuario = $usuarioModel->ObterDadosUsuario(['Usuario_id' => $usuario])['data'];
 
                 if (isset($respostaStatus['status']) && $respostaStatus['status'] === true && is_array($respostaStatus['data'])) {
                     // normalizar para lista simples de códigos
@@ -44,8 +47,13 @@ class RhPermissionMiddleware
                     Session::put($sessionKey, $permissao);
                     // também guardar a is_usuario na session para uso pelos Gates
                     Session::put('id_Usuario_session', $usuario);
+                    // autenticar Auth::user() do laravel
+                    $userAuth = $usuarioModel->criarInstanciaAutenticavel($dadosUsuario);
+                    Auth::login($userAuth, true);
                 } else {
                     Session::put($sessionKey, []);
+                    // deslogar usuário
+                    Auth::logout();
                 }
             }
 
