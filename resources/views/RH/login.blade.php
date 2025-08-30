@@ -23,29 +23,21 @@
         @csrf
 
         <div>
-            <label for="tx_email">Email</label>
-            <input id="tx_email" name="tx_email" type="email" value="{{ old('tx_email') }}" required autofocus />
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus />
         </div>
 
         <div>
-            <label for="tx_senha">Senha</label>
-            <input id="tx_senha" name="tx_senha" type="password" required />
+            <label for="senha">Senha</label>
+            <input id="senha" name="senha" type="password" required />
         </div>
 
-        <div>
-            <label>
-                <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }} /> Lembrar de mim
-            </label>
-        </div>
+
 
         <div>
             <button type="submit">Entrar no Sistema</button>
         </div>
     </form>
 
-    <p>
-        <a href="{{ route('password.request') }}">Esqueceu a senha?</a>
-        |
-        <a href="{{ route('register') }}">Solicitar cadastro</a>
-    </p>
+
 @endsection
