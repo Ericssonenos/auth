@@ -107,16 +107,4 @@ BEGIN
     EXEC sp_executesql @sql;
 END
 
--- 5) Tentar dropar schema RH (só funciona se não houver objetos, inclusive RH.Tbl_Usuarios)
-PRINT '5) Tentando dropar schema RH (só será removido se estiver vazio)...';
-IF NOT EXISTS (SELECT 1 FROM sys.objects o JOIN sys.schemas s ON o.schema_id = s.schema_id WHERE s.name = 'RH')
-BEGIN
-    PRINT 'Schema RH está vazio. Drop schema.';
-    EXEC('DROP SCHEMA [RH]');
-END
-ELSE
-BEGIN
-    PRINT 'Schema RH não está vazio. Alguns objetos (ex.: RH.Tbl_Usuarios) permanecerão. Schema não foi removido.';
-END
 
-PRINT 'Limpeza do schema RH finalizada.';

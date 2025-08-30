@@ -17,10 +17,25 @@ IF OBJECT_ID('RH.Tbl_Usuarios', 'U') IS NULL
 BEGIN
     CREATE TABLE RH.Tbl_Usuarios
     (
-        id_Usuario int NOT NULL UNIQUE,
+        id_Usuario INT IDENTITY(1,1) PRIMARY KEY,
         nome_Completo NVARCHAR(200) NULL,
-        email NVARCHAR(200) NULL
+        email NVARCHAR(200) NULL,
+    -- senha: recomendamos armazenar hash em produção.
+    -- [ ] ativar apos testes: alterar para armazenar hash (bcrypt/argon2) em vez de texto claro
+    senha NVARCHAR(200) NULL,
+        criado_Usuario_id INT NOT NULL,
+        dat_criado_em DATETIME2(3) NOT NULL DEFAULT GETDATE(),
+        atualizado_Usuario_id INT,
+        dat_atualizado_em DATETIME2(3) NULL,
+        cancelamento_Usuario_id INT,
+        dat_cancelamento_em DATETIME2(3) NULL
     );
+
+
+    -- email tem que ser unique para dat_cancelamento_em igual a null
+    CREATE UNIQUE INDEX UQ_Tbl_Usuarios_Email_Ativo
+    ON RH.Tbl_Usuarios(email)
+    WHERE dat_cancelamento_em IS NULL;
 END
 
 -- Tabelas mestres
@@ -31,7 +46,7 @@ BEGIN
         id_categoria INT IDENTITY(1,1) PRIMARY KEY,
         nome_Categoria NVARCHAR(200) NOT NULL,
         descricao_Categoria NVARCHAR(1000) NULL,
-        criado_Usuario_id int NOT NULL,
+        criado_Usuario_id INT NOT NULL,
         dat_criado_em DATETIME2(3) NOT NULL DEFAULT GETDATE(),
         atualizado_Usuario_id INT,
         dat_atualizado_em DATETIME2(3) NULL,
@@ -163,4 +178,6 @@ BEGIN
         WHERE dat_cancelamento_em IS NULL;
     END
 END
+
+
 
