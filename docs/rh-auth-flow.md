@@ -5,24 +5,9 @@ Este documento descreve, de forma concisa, o fluxo de autenticação/autorizaç�
 ## Objetivo
 Centralizar a lógica de autorização para que as views e controllers apenas perguntem "o usuário tem a permissão X?" usando `@can('PERM_X')` (Blade) ou `Gate::allows('PERM_X')` (PHP), enquanto o middleware popula e mantém em cache as permissões por is_usuario na `session`.
 
-## Componentes principais
-- Models: `usuario`, `grupo`, `permissao` — métodos para CRUD e para buscar permissões ativas de uma is_usuario.
-- Middleware: `App\Http\Middleware\RhPermissionMiddleware` — carrega permissões para a is_usuario atual e grava na session.
-- Gate: `Gate::before(...)` registrado em `App\Providers\AppServiceProvider` — delega a decisão de autorização lendo a session.
-- Views: usam `@can('PERM_COD')` para autorizar a renderização de blocos.
-- Controllers: ao alterar estruturas de permissão chamam `Session::forget('list_Permissoes_session.{usuario}')` para invalidar cache.
 
-## Sequência de uma requisição (resumida)
-1. Cliente faz requisição HTTP com header `X-id_Usuario: <USUARIO>` (ou outro mecanismo que popule `session('id_Usuario_session')`).
-2. Middleware `RhPermissionMiddleware` é executado (aplicado nas rotas com alias `rh.auth`):
-   - Obtém a is_usuario (header ou outra fonte);
-   - Chama model `usuario->ObterPermissoesUsuario(['Usuario_id' => $mat])` que retorna lista de códigos (`cod_permissao`);
-   - Grava em session: `session(['list_Permissoes_session.'.$mat => $arrayDePermissoes])` e `session(['id_Usuario_session' => $mat])`;
-   - Segue o request pipeline.
-3. Quando o framework avalia uma autorização (por exemplo `@can('PERM_X')`):
-   - O Laravel chama o Gate; o `Gate::before` registrado recebe ($user, $ability).
-   - Nosso `Gate::before` lê `session('id_Usuario_session')` e `session('list_Permissoes_session.{mat}')` e retorna `true` se a permissão existir, `null` caso contrário (permite que outras políticas decidam).
-4. Se autorizado, a view/renderização segue; se negado, o bloco `@can` não é exibido e `abort(403)` pode ser usado em controllers.
+
+
 
 ## Formato / contrato dos dados
 - session key: `list_Permissoes_session.{usuario}` → array de strings, ex: `['PERM_GERENCIAR_PERMISSOES', 'PERM_LER_RELATORIOS']`.

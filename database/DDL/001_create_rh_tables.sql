@@ -20,9 +20,10 @@ BEGIN
         id_Usuario INT IDENTITY(1,1) PRIMARY KEY,
         nome_Completo NVARCHAR(200) NULL,
         email NVARCHAR(200) NULL,
-    -- senha: recomendamos armazenar hash em produção.
-    -- [ ] ativar apos testes: alterar para armazenar hash (bcrypt/argon2) em vez de texto claro
-    senha NVARCHAR(200) NULL,
+        -- senha: recomendamos armazenar hash em produção.
+        -- [ ] ativar apos testes: alterar para armazenar hash (bcrypt/argon2) em vez de texto claro
+        senha NVARCHAR(200) NULL,
+        locatario_id INT NOT NULL,
         criado_Usuario_id INT NOT NULL,
         dat_criado_em DATETIME2(3) NOT NULL DEFAULT GETDATE(),
         atualizado_Usuario_id INT,
@@ -105,7 +106,9 @@ BEGIN
         CONSTRAINT FK_Rel_Grupos_Grupos_Filho FOREIGN KEY (grupo_filho_id) REFERENCES RH.Tbl_Grupos(id_Grupo),
         CONSTRAINT CK_Rel_Grupos_Pai_Filho_DIF CHECK (grupo_pai_id <> grupo_filho_id)
     );
-    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'UQ_Rel_Grupos_Grupos_Ativo' AND object_id = OBJECT_ID('RH.Tbl_Rel_Grupos_Grupos'))
+    IF NOT EXISTS (SELECT 1
+    FROM sys.indexes
+    WHERE name = 'UQ_Rel_Grupos_Grupos_Ativo' AND object_id = OBJECT_ID('RH.Tbl_Rel_Grupos_Grupos'))
     BEGIN
         CREATE UNIQUE INDEX UQ_Rel_Grupos_Grupos_Ativo
         ON RH.Tbl_Rel_Grupos_Grupos(grupo_pai_id, grupo_filho_id)
@@ -127,7 +130,9 @@ BEGIN
         CONSTRAINT FK_Rel_Usuario_Grupos_Grupo FOREIGN KEY (grupo_id) REFERENCES RH.Tbl_Grupos(id_Grupo),
         CONSTRAINT FK_Rel_Usuario_Grupos_Usuario FOREIGN KEY (Usuario_id) REFERENCES RH.Tbl_Usuarios(id_Usuario)
     );
-    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'UQ_Rel_Usuarios_Grupos_Usuario_Grupo_Active' AND object_id = OBJECT_ID('RH.Tbl_Rel_Usuarios_Grupos'))
+    IF NOT EXISTS (SELECT 1
+    FROM sys.indexes
+    WHERE name = 'UQ_Rel_Usuarios_Grupos_Usuario_Grupo_Active' AND object_id = OBJECT_ID('RH.Tbl_Rel_Usuarios_Grupos'))
     BEGIN
         CREATE UNIQUE INDEX UQ_Rel_Usuarios_Grupos_Usuario_Grupo_Active
         ON RH.Tbl_Rel_Usuarios_Grupos(Usuario_id, grupo_id)
@@ -149,7 +154,9 @@ BEGIN
         CONSTRAINT FK_Rel_Usuario_Permissao_Permissao FOREIGN KEY (permissao_id) REFERENCES RH.Tbl_Permissoes(id_permissao),
         CONSTRAINT FK_Rel_Usuario_Permissao_Usuario FOREIGN KEY (Usuario_id) REFERENCES RH.Tbl_Usuarios(id_Usuario)
     );
-    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'UQ_Rel_Usuarios_Permissoes_Usuario_Permissao_Active' AND object_id = OBJECT_ID('RH.Tbl_Rel_Usuarios_Permissoes'))
+    IF NOT EXISTS (SELECT 1
+    FROM sys.indexes
+    WHERE name = 'UQ_Rel_Usuarios_Permissoes_Usuario_Permissao_Active' AND object_id = OBJECT_ID('RH.Tbl_Rel_Usuarios_Permissoes'))
     BEGIN
         CREATE UNIQUE INDEX UQ_Rel_Usuarios_Permissoes_Usuario_Permissao_Active
         ON RH.Tbl_Rel_Usuarios_Permissoes(Usuario_id, permissao_id)
@@ -171,7 +178,9 @@ BEGIN
         CONSTRAINT FK_Rel_Grupo_Permissao_Grupo FOREIGN KEY (grupo_id) REFERENCES RH.Tbl_Grupos(id_Grupo),
         CONSTRAINT FK_Rel_Grupo_Permissao_Permissao FOREIGN KEY (permissao_id) REFERENCES RH.Tbl_Permissoes(id_permissao)
     );
-    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'UQ_Rel_Grupos_Permissoes_Grupo_Permissao_Active' AND object_id = OBJECT_ID('RH.Tbl_Rel_Grupos_Permissoes'))
+    IF NOT EXISTS (SELECT 1
+    FROM sys.indexes
+    WHERE name = 'UQ_Rel_Grupos_Permissoes_Grupo_Permissao_Active' AND object_id = OBJECT_ID('RH.Tbl_Rel_Grupos_Permissoes'))
     BEGIN
         CREATE UNIQUE INDEX UQ_Rel_Grupos_Permissoes_Grupo_Permissao_Active
         ON RH.Tbl_Rel_Grupos_Permissoes(grupo_id, permissao_id)

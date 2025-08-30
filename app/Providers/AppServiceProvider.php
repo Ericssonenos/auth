@@ -5,7 +5,6 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Routing\Router;
-use App\Http\Middleware\RhPermissionMiddleware;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 
@@ -27,10 +26,7 @@ class AppServiceProvider extends ServiceProvider
         // Registrar alias de middleware para RH
 
         $router = $this->app->make(Router::class);
-        $router->aliasMiddleware('rh.auth', RhPermissionMiddleware::class);
-        // Aplica o middleware RhPermissionMiddleware por padrão a todas as rotas do grupo 'web'
-        // (rotas em routes/web.php normalmente usam o grupo 'web')
-        $router->pushMiddlewareToGroup('web', RhPermissionMiddleware::class);
+
 
         // Gate global: verifica permissões armazenadas na session (ex.: use @can('PERM_X') nas views)
         Gate::before(function ($_user, $ability) {

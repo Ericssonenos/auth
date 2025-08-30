@@ -17,20 +17,7 @@ class UsuarioController extends Controller
         $this->usuarioModel = new usuario();
     }
 
-    // corresponde a usuario->ListaUsuarios()
-    public function ListaUsuarios()
-    {
-        // [ ] validar uso
-        return response()->json($this->usuarioModel->ListaUsuarios());
-    }
 
-    // corresponde a usuario->ObterDadosUsuario(['Usuario_id' => $usuario])
-    public function ObterDadosUsuario($usuario)
-    {
-        // [ ] validar uso
-        $respostaDadosUsuario = $this->usuarioModel->ObterDadosUsuario(['Usuario_id' => $usuario]);
-        return response()->json($respostaDadosUsuario);
-    }
 
     // corresponde a usuario->ObterPermissoesUsuario(['Usuario_id' => $usuario])
     public function ObterPermissoesUsuario($usuario)

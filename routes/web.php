@@ -6,6 +6,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+// Painel protegido exemplo
+Route::get('painel', function () {
+    return view('welcome');
+})->middleware('RH')->name('painel');
+
 // Rotas do módulo RH
 Route::prefix('rh')->group(function () {
     // Usuários

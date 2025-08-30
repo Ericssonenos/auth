@@ -2,6 +2,7 @@
 
 namespace App\Models\RH;
 
+use App\Services\Operacao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -14,51 +15,51 @@ class usuario extends Model
         $this->conexao = DB::connection()->getPdo();
     }
 
-    public function ObterDadosUsuario($params)
+    public function ObterDadosUsuarios($params)
     {
-        try {
-            $usuario = $params['Usuario_id'];
 
-            $consultaSql = "SELECT id_Usuario, Nome_Completo FROM RH.Tbl_Usuarios WHERE id_Usuario = :usuario";
-            $comando = $this->conexao->prepare($consultaSql);
-            $comando->execute([':usuario' => $usuario]);
-            $data = $comando->fetch(\PDO::FETCH_ASSOC);
 
+        $parametrizacao = Operacao::Parametrizar($params);
+        // Verifica se houve erro na parametrização
+        if ($parametrizacao['statusParams'] !== 200) {
             return [
-                'status' => true,
-                'message' => 'Dados do usuário recuperados.',
-                'data' => $data
-            ];
-        } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'message' => $e->getMessage(),
-                'data' => null
+                'pdo_status' => $parametrizacao['statusParams'],
+                'message' => $parametrizacao['message'],
+                'data' => []
             ];
         }
-    }
 
-    public function ListaUsuarios()
-    {
+        $whereParams = $parametrizacao['whereParams'];
+        $optsParams  = $parametrizacao['optsParams'];
+        $execParams  = $parametrizacao['execParams'];
+
+        //montar a consulta SQL
+        $consultaSql = "SELECT *
+                    FROM RH.Tbl_Usuarios
+                    WHERE dat_cancelamento_em IS NULL"
+            . implode(' ', $whereParams)
+            . ($optsParams['order_by']   ?? '')
+            . ($optsParams['limit']      ?? '')
+            . ($optsParams['offset']     ?? '');
+
+        $comando = $this->conexao->prepare($consultaSql);
+
         try {
-            $consultaSql = "SELECT id_Usuario, Nome_Completo FROM RH.Tbl_Usuarios WHERE id_Usuario IS NOT NULL AND Nome_Completo IS NOT NULL";
-
-            $comando = $this->conexao->prepare($consultaSql);
-            $comando->execute();
+            $comando->execute($execParams);
             $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
-
-            return [
-                'status' => true,
-                'message' => 'Lista recuperada com sucesso.',
-                'data' => $data
-            ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'message' => 'Erro ao executar consulta: ' . $e->getMessage(),
                 'data' => null
             ];
         }
+
+        return [
+            'status' => true,
+            'message' => 'Dados do usuário recuperados.',
+            'data' => $data
+        ];
     }
 
     public function ObterPermissoesUsuario($params)
@@ -66,7 +67,7 @@ class usuario extends Model
         try {
             $usuario = $params['Usuario_id'];
 
-                        $consultaSql = "SELECT DISTINCT cod_permissao FROM (
+            $consultaSql = "SELECT DISTINCT cod_permissao FROM (
                                 -- Permissões diretas do usuário
                                 SELECT p.cod_permissao
                                 FROM RH.Tbl_Permissoes p
@@ -256,10 +257,49 @@ class usuario extends Model
             ];
         }
     }
+    public function CriarUsuario($params)
+    {
+        try {
+            $nome = $params['nome_Completo'];
+            $email = $params['email'];
+            $senha = $params['senha'];
+            $criadoId = $params['criado_Usuario_id'] ?? 1;
+
+            $consultaSql = "INSERT INTO RH.Tbl_Usuarios (nome_Completo, email, senha, criado_Usuario_id, dat_criado_em) VALUES (:nome, :email, :senha, :criadoId, GETDATE())";
+            $comando = $this->conexao->prepare($consultaSql);
+            $comando->execute([
+                ':nome' => $nome,
+                ':email' => $email,
+                ':senha' => $senha,
+                ':criadoId' => $criadoId
+            ]);
+
+            $rows = $comando->rowCount();
+
+            // Tentar obter id inserido quando possível
+            $lastId = null;
+            try {
+                $lastId = $this->conexao->lastInsertId();
+            } catch (\Exception $e) {
+                $lastId = null;
+            }
+
+            return [
+                'status' => $rows > 0,
+                'message' => $rows > 0 ? 'Usuário criado.' : 'Nenhuma linha inserida.',
+                'data' => ['affected' => $rows, 'id' => $lastId]
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => false,
+                'message' => $e->getMessage(),
+                'data' => null
+            ];
+        }
+    }
 
     public function __destruct()
     {
         $this->conexao = null;
     }
-
 }

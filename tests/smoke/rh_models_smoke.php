@@ -22,9 +22,6 @@ try {
     $permModel = new \App\Models\RH\permissao();
     $catModel = new \App\Models\RH\categoria();
 
-    // Lista basica (read-only)
-    $resTbl_Usuarios = $userModel->ListaUsuarios();
-    dumpResult('ListaUsuarios', $resTbl_Usuarios);
 
     $resGroups = $groupModel->ListaGrupos();
     dumpResult('ListaGrupos', $resGroups);

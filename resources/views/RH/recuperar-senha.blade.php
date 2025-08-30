@@ -22,3 +22,4 @@
         </div>
     </form>
 @endsection
+//[ ] implementar a lógica de recuperação de senha
