@@ -9,6 +9,8 @@ use App\Http\Middleware\RhPermissionMiddleware;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Session;
+use App\Services\RH\usuarioServices;
+use Illuminate\Support\Facades\Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,29 +27,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Registrar alias de middleware para RH
-        $router = $this->app->make(Router::class);
+        // Registra singleton que encapsula dados do usuário
+        $this->app->singleton(usuarioServices::class, function ($app) {
+            return new usuarioServices(
+                session("list_Permissoes_session", []),
+                session("dados_Usuario", [])
+            );
+        });
 
         // View Composer para compartilhar dados da sessão com todas as views
         View::composer('*', function ($view) {
-            $rawPerms = session("list_Permissoes_session", []);
+            $view->with('usuarioServices', $this->app->make(usuarioServices::class));
+        });
 
-            $permissoes = [];
-            // Caso o modelo tenha guardado linhas (array de assoc) com chave 'cod_permissao', extrair valores
-            if (is_array($rawPerms)) {
-                foreach ($rawPerms as $p) {
-                    if (is_array($p) && array_key_exists('cod_permissao', $p)) {
-                        $permissoes[] = $p['cod_permissao'];
-                    } elseif (is_string($p)) {
-                        $permissoes[] = $p;
-                    }
-                }
-            }
-
-            $view->with([
-                'permissoes' => $permissoes,
-                'dados_Usuario' => session('dados_Usuario')
-            ]);
+        Blade::if('temPermissao', function ($permissao) {
+            return app(usuarioServices::class)->temPermissao($permissao);
         });
     }
 }

@@ -25,10 +25,48 @@
 
     <!-- Dados globais para JavaScript -->
     <script>
-        window.AppData = {
-            dados_Usuario: @json($dados_Usuario ?? []),
-            permissoes: @json($permissoes ?? [])
-        };
+        window.AppData = (function () {
+            // dados vindos do servidor
+            const dadosUsuario = @json($usuarioServices->usuario() ?? (object)[]);
+            const permissoes = @json($usuarioServices->permissoes() ?? []);
+
+            // objeto que espelha a classe usuarioServices com métodos utilitários em JS
+            const usuarioServices = {
+                // dados brutos
+                dadosUsuario: dadosUsuario,
+                permissoes: permissoes,
+
+                // retorna lista de permissões
+                listarPermissoes() {
+                    return Array.isArray(this.permissoes) ? this.permissoes : [];
+                },
+
+                // retorna dados do usuário
+                usuario() {
+                    return this.dadosUsuario || {};
+                },
+
+                // verifica existência de permissão
+                temPermissao(codigoPermissao) {
+                    if (!codigoPermissao) return false;
+                    return this.listarPermissoes().indexOf(codigoPermissao) !== -1;
+                },
+
+                // representação serializável
+                toArray() {
+                    return {
+                        permissoes: this.listarPermissoes(),
+                        usuario: this.usuario()
+                    };
+                }
+            };
+
+            return {
+                dados_Usuario: dadosUsuario,
+                permissoes: permissoes,
+                usuarioServices: usuarioServices
+            };
+        })();
     </script>
 
 
