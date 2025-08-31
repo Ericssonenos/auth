@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RH\LoginController;
 use App\Http\Controllers\RH\UsuarioController;
-
+use App\Http\Middleware\UsuarioMiddleware;
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,4 +27,4 @@ Route::prefix('rh')->group(function () {
     Route::post('usuarios', [UsuarioController::class, 'store'])->name('rh.usuarios.store');
     Route::put('usuarios/{id}', [UsuarioController::class, 'update'])->name('rh.usuarios.update');
     // endpoints adicionais serão adicionados conforme necessidade
-});
+})->middleware(UsuarioMiddleware::class); // Aplica middleware de controle de acesso

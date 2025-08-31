@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Registra middleware personalizado para controle de acesso de usuários
+        $middleware->alias([
+            'usuarioMiddleware' => \App\Http\Middleware\UsuarioMiddleware::class, //[ ] excluir
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
