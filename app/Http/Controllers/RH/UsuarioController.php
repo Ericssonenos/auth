@@ -13,11 +13,26 @@ class UsuarioController extends Controller
 
     public function __construct()
     {
-        // [ ] validar uso
+        // [x] validar uso
         $this->usuarioModel = new usuario();
     }
+    /**
+     * Página de listagem de usuários (exibe DataTable)
+     */
+    public function index()
+    {
+        // so acessa quem tiver a permissão GESTAO_USUARIOS
+        //[ ] Criar uma regra global igual o @can
+        return view('RH.usuario');
+    }
 
+    // corresponde a usuario->ObterDadosUsuario(['Usuario_id' => $usuario])
+    public function ObterDadosUsuarios(Request $request)
+    {
 
+        $respostaDadosUsuario = $this->usuarioModel->ObterDadosUsuarios($request->all());
+        return response()->json($respostaDadosUsuario);
+    }
 
     // corresponde a usuario->ObterPermissoesUsuario(['Usuario_id' => $usuario])
     public function ObterPermissoesUsuario($usuario)
@@ -26,6 +41,8 @@ class UsuarioController extends Controller
         $respostaPermissoesUsuario = $this->usuarioModel->ObterPermissoesUsuario(['Usuario_id' => $usuario]);
         return response()->json($respostaPermissoesUsuario);
     }
+
+
 
     // atribui permissão direta ao usuário
     public function AtribuirPermissoes(Request $request)

@@ -36,7 +36,7 @@ class usuario extends Model
         //montar a consulta SQL
         $consultaSql = "SELECT
                         id_Usuario,
-                        Nome_Completo,
+                        nome_Completo,
                         email
                     FROM RH.Tbl_Usuarios
                     WHERE dat_cancelamento_em IS NULL"

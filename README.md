@@ -21,7 +21,4 @@ Onde estão os scripts
 
 
 
-
-
-
-
+[ ] Add nivel do usuário 0 a 20 onde o de nivel maior podera ver dos niveis inferiores.

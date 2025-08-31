@@ -489,7 +489,7 @@ class Operacao
         $errors = [];
 
         foreach ($Params as $key => $val) {
-            if ($val === null || $val === '') continue;
+            if ($val === null || $val === '' || $key === '_') continue;
 
             // plural -> IN (...) quando valor for array
             if (str_ends_with($key, 's') && is_array($val)) {

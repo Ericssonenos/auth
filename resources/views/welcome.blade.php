@@ -27,6 +27,11 @@
             <p>Você não tem acesso a funcionalidades administrativas.</p>
         </div>
     @endif
+    {{-- Botão de teste para logout --}}
+    <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+        @csrf
+        <button type="submit" class="btn btn-danger">Logout</button>
+    </form>
 @endsection
 
 
