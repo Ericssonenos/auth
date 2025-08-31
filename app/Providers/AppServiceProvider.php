@@ -3,12 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Routing\Router;
-use App\Http\Middleware\RhPermissionMiddleware;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Session;
 use App\Services\RH\usuarioServices;
 use Illuminate\Support\Facades\Blade;
 

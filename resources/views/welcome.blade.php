@@ -15,8 +15,7 @@
         @endforeach
     </ul>
     {{-- Exemplo: mostrar bloco somente se usuário tiver PERM_ATRIBUIR_GRUPO --}}
-    @temPermissao
-        ('PERM_ATRIBUIR_GRUPO')
+    @temPermissao('PERM_ATRIBUIR_GRUPO')
         <div style="padding:1rem;border:1px solid #2a9d8f;background:#e9f7f2">
             <h2>Área restrita</h2>
 

@@ -3,8 +3,8 @@
 @section('title', 'Usuários')
 
 @push('styles')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 @endpush
+
 
 @section('content')
     <div class="container py-4">
@@ -68,123 +68,4 @@
     </div>
 
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-    <script>
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-            }
-        });
-    </script>
-    <script>
-        $(function() {
-            const table = $('#dataTable_Usuarios').DataTable({
-                ajax: {
-                    method: 'POST',
-                    url: '{{ route('usuariosAPI') }}',
-                    dataSrc: 'data',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                },
-                columns: [
-
-                    {
-                        data: 'nome_Completo',
-                        title: 'Nome'
-                    },
-                    {
-                        data: 'email',
-                        title: 'Email'
-                    },
-                    {
-                        data: null,
-                        orderable: false,
-                        render: function(row) {
-                            return `
-                                <button class="btn btn-sm btn-primary btn-edit" data-id="${row.id_Usuario}">Editar</button>
-                                <button class="btn btn-sm btn-secondary btn-grupo" data-id="${row.id_Usuario}">Atribuir grupo</button>
-                            `;
-                        }
-                    }
-                ]
-            });
-
-            $('#btnNovo').on('click', function() {
-                $('#modalUserTitle').text('Novo usuário');
-                $('#userId').val('');
-                $('#formUser')[0].reset();
-                new bootstrap.Modal(document.getElementById('modalUser')).show();
-            });
-
-            $('#dataTable_Usuarios').on('click', '.btn-edit', function() {
-                const id_Usuario = $(this).data('id');
-                $('#modalUserTitle').text('Editar usuário');
-                // carregar dados do usuário (simples) usando a API de listagem atual (ou criar endpoint show)
-                $.post(
-                    '{{ route('usuariosAPI') }}', {
-                        id_Usuario: id_Usuario
-                    },
-                    function(resp) {
-                        const user = resp.data[0];
-                        console.log(user);
-                        if (user) {
-                            $('#userId').val(user.id_Usuario);
-                            $('#nome_Completo').val(user.nome_Completo);
-                            $('#email').val(user.email);
-                            new bootstrap.Modal(document.getElementById('modalUser')).show();
-                        }
-                    });
-            });
-
-            $('#dataTable_Usuarios').on('click', '.btn-grupo', function() {
-                const id = $(this).data('id');
-                // abrir modal de grupos (placeholder)
-                $('#gruposList').text('Carregando grupos do usuário ' + id + '...');
-                new bootstrap.Modal(document.getElementById('modalGrupos')).show();
-            });
-
-            $('#formUser').on('submit', function(e) {
-                e.preventDefault();
-                const id = $('#userId').val();
-                const payload = {
-                    nome_Completo: $('#nome_Completo').val(),
-                    email: $('#email').val(),
-                    senha: $('#senha').val()
-                };
-
-                if (!id) {
-                    // criar
-                    $.post('{{ route('rh.usuarios.store') }}', payload, function(resp) {
-                        if (resp.status) {
-                            $('#modalUser').modal('hide');
-                            table.ajax.reload();
-                        } else {
-                            alert('Erro: ' + (resp.message || 'não foi possível criar'));
-                        }
-                    });
-                } else {
-                    // atualizar (ainda não implementado no controller)
-                    $.ajax({
-                        url: '/rh/usuarios/' + id,
-                        method: 'PUT',
-                        data: payload,
-                        success: function(resp) {
-                            if (resp.status) {
-                                $('#modalUser').modal('hide');
-                                table.ajax.reload();
-                            } else {
-                                alert('Erro: ' + (resp.message ||
-                                    'não foi possível atualizar'));
-                            }
-                        },
-                        error: function(xhr) {
-                            alert('Erro: ' + xhr.responseText || xhr.statusText);
-                        }
-                    });
-                }
-            });
-        });
-    </script>
