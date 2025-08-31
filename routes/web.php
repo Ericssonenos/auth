@@ -12,7 +12,7 @@ Route::get('/', function () {
 // Painel protegido exemplo
 Route::get('painel', function () {
     return view('welcome');
-});//->middleware('RH')->name('painel');
+})->name('painel');//->middleware('RH')->name('painel');
 
 // rotas para login
 Route::get('login', [LoginController::class, 'exibirFormularioLogin'])->name('login');

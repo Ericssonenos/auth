@@ -46,7 +46,7 @@ class LoginController extends Controller
             )->withInput();
         }
 
-        $registroUsuario = $resultadoStatus_Usuario[0]['data'];
+        $registroUsuario = $resultadoStatus_Usuario['data'][0];
         Session::put('dados_Usuario', $registroUsuario);
 
         $respostaPermissoes = $modeloUsuario->ObterPermissoesUsuario(['Usuario_id' => $registroUsuario['id_Usuario']]);

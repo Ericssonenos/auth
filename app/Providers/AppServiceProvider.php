@@ -5,8 +5,10 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Routing\Router;
+use App\Http\Middleware\RhPermissionMiddleware;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Session;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,25 +26,28 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Registrar alias de middleware para RH
-
         $router = $this->app->make(Router::class);
 
+        // View Composer para compartilhar dados da sessão com todas as views
+        View::composer('*', function ($view) {
+            $rawPerms = session("list_Permissoes_session", []);
 
-        // Gate global: verifica permissões armazenadas na session (ex.: use @can('PERM_X') nas views)
-        Gate::before(function ($_user, $ability) {
-
-            $usuario = session('id_Usuario_session') ?: request()->attributes->get('id_Usuario_session');
-            if (empty($usuario)) {
-                return null; // não decidimos, deixa o fluxo padrão decidir
+            $permissoes = [];
+            // Caso o modelo tenha guardado linhas (array de assoc) com chave 'cod_permissao', extrair valores
+            if (is_array($rawPerms)) {
+                foreach ($rawPerms as $p) {
+                    if (is_array($p) && array_key_exists('cod_permissao', $p)) {
+                        $permissoes[] = $p['cod_permissao'];
+                    } elseif (is_string($p)) {
+                        $permissoes[] = $p;
+                    }
+                }
             }
 
-            $permissao = session("list_Permissoes_session.{$usuario}", []);
-            return in_array($ability, $permissao) ? true : null;
+            $view->with([
+                'permissoes' => $permissoes,
+                'dados_Usuario' => session('dados_Usuario')
+            ]);
         });
-
-
-        $id_Usuario = session('id_Usuario_session') ?: request()->header('X-id_Usuario');
-        // Compatibilidade: algumas views esperam $usuario em vez de $id_Usuario_session
-        View::share('usuario', $id_Usuario);
     }
 }

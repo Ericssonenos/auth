@@ -34,7 +34,10 @@ class usuario extends Model
         $execParams  = $parametrizacao['execParams'];
 
         //montar a consulta SQL
-        $consultaSql = "SELECT *
+        $consultaSql = "SELECT
+                        id_Usuario,
+                        Nome_Completo,
+                        email
                     FROM RH.Tbl_Usuarios
                     WHERE dat_cancelamento_em IS NULL"
             . implode(' ', $whereParams)
@@ -47,6 +50,15 @@ class usuario extends Model
         try {
             $comando->execute($execParams);
             $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
+
+            if( empty($data) ){
+                return [
+                    'status' => false,
+                    'message' => 'Nenhum usuário encontrado com os critérios fornecidos.',
+                    'data' => []
+                ];
+            }
+
         } catch (\Exception $e) {
             return [
                 'status' => false,
