@@ -9,6 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @stack('styles')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 </head>
 
 <body>
@@ -65,10 +66,15 @@
             return {
                 dados_Usuario: dadosUsuario,
                 permissoes: permissoes,
-                usuarioServices: usuarioServices
+                usuarioServices: usuarioServices,
+                // mensagens de sessão para toasts
+                session_erro_de_acesso: @json(session('erro_de_acesso')),
+                session_permissoes_necessarias: @json(session('permissoes_necessarias', [])),
+                session_usuario_nao_autorizado: @json(session('usuario_nao_autorizado', false))
             };
         })();
     </script>
+    <!-- Toasts são processados no bundle JS (app.js) para garantir ordem de carregamento -->
 
 
 </body>
