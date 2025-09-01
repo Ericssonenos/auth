@@ -19,7 +19,8 @@ class UsuarioMiddleware
     {
         // Verifica se o usuário está devidamente autenticado no sistema
         if (empty($this->servicoDoUsuario->usuario())) {
-            return $this->retornarAcessoNegado('Usuário não está autenticado no sistema');
+            // redirecionar para o login
+            return redirect()->route('login')->with('mensagem', 'Por favor, faça login para acessar este recurso.');
         }
 
         // Se não foram especificadas permissões, tenta detectar automaticamente baseado na rota
@@ -30,7 +31,7 @@ class UsuarioMiddleware
         // Verifica se o usuário possui pelo menos uma das permissões necessárias
         $usuarioPossuiPermissaoNecessaria = false;
         $listaDePermissoesVerificadas = [];
-        
+
         foreach ($permissoesNecessarias as $permissaoNecessaria) {
             $listaDePermissoesVerificadas[] = $permissaoNecessaria;
             if ($this->servicoDoUsuario->temPermissao($permissaoNecessaria)) {
@@ -41,7 +42,7 @@ class UsuarioMiddleware
 
         if (!$usuarioPossuiPermissaoNecessaria) {
             return $this->retornarAcessoNegado(
-                'Usuário não possui permissão necessária para acessar este recurso', 
+                'Usuário não possui permissão necessária para acessar este recurso',
                 $listaDePermissoesVerificadas
             );
         }
@@ -106,13 +107,13 @@ class UsuarioMiddleware
     {
         // Remove barras extras e formata a URI
         $uriLimpa = trim($caminhoUri, '/');
-        
+
         // Substitui números por placeholder genérico (ex: users/123 -> users/{id})
         $uriLimpa = preg_replace('/\/\d+/', '/{id}', $uriLimpa);
-        
+
         // Substitui UUIDs por placeholder específico
         $uriLimpa = preg_replace('/\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/', '/{uuid}', $uriLimpa);
-        
+
         return $uriLimpa;
     }
 

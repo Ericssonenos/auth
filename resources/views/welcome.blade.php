@@ -35,12 +35,4 @@
 @endsection
 
 
-<script>
-    // Scripts específicos da página welcome
-    console.log('Página welcome carregada');
-    //[ ] Retirar isso antes de mandar para produção
-    // Exemplo de uso dos dados globais
-    console.log('Dados do Usuário:', window.AppData.dados_Usuario);
-    console.log('Permissões do Usuário:', window.AppData.permissoes);
-    console.log('Serviços do Usuário:', window.AppData.usuarioServices);
-</script>
+

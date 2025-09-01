@@ -56,7 +56,7 @@ class LoginController extends Controller
             Session::put('list_Permissoes_session', []);
         }
 
-        return redirect()->route('painel');
+        return redirect()->route('home.view');
     }
 
     /**

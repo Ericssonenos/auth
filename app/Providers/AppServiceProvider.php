@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Services\RH\usuarioServices;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Routing\Router;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,6 +23,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Garantir que o alias do middleware esteja registrado no router
+        // Isso evita problemas de timing caso as rotas sejam carregadas
+        // antes do registro feito em bootstrap/app.php
+        // if ($this->app->bound(Router::class)) {
+        //     $this->app->make(Router::class)->aliasMiddleware('usuario', \App\Http\Middleware\UsuarioMiddleware::class);
+        // }
+
         // Registra singleton que encapsula dados do usuário logado na sessão
         $this->app->singleton(usuarioServices::class, function ($app) {
             return new usuarioServices(

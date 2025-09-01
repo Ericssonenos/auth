@@ -17,10 +17,10 @@ BEGIN
         )
     VALUES
         (
-            CONCAT(N'Usuário ', @i),                    -- nome_Completo
-            CONCAT(N'usuario', @i, N'@exemplo.com'),    -- email
-            'Senha',                                    -- senha (ajuste se usar hash)
-                                                        --[ ] ativar apos testes: substituir 'Senha' pelo hash gerado com bcrypt/argon2
+            CONCAT(N'Usuário ', @i), -- nome_Completo
+            CONCAT(N'usuario', @i, N'@exemplo.com'), -- email
+            'Senha', -- senha (ajuste se usar hash)
+            --[ ] ativar apos testes: substituir 'Senha' pelo hash gerado com bcrypt/argon2
             0, -- criado_Usuario_id
             GETDATE(), -- dat_criado_em
             1                                         -- locatario_id
@@ -32,6 +32,8 @@ END;
 INSERT INTO RH.Tbl_Permissoes
     (cod_permissao, descricao_permissao, criado_Usuario_id)
 VALUES
+    ('home.view', 'Permite visualizar a página inicial.', '1'),
+    ('usuarios.get', 'Permite obter dados de usuários.', '1'),
     ('PERM_ACESSAR_DASHBOARD', 'Permite acessar o painel principal do sistema.', '1'),
     ('PERM_CRIAR_USUARIO', 'Permite criar novos usuários no sistema.', '1'),
     ('PERM_ATUALIZAR_USUARIO', 'Permite editar informações de usuários existentes.', '1'),
@@ -41,7 +43,8 @@ VALUES
     ('PERM_VISUALIZAR_RELATORIOS', 'Permite visualizar relatórios e dashboards específicos.', '1'),
     ('PERM_EXPORTAR_DADOS', 'Permite exportar dados em CSV/XLS (uso sensível; auditar).', '1'),
     ('PERM_GERENCIAR_PERMISSOES', 'Permite criar/editar/permissões e atribuições globais.', '1'),
-    ('PERM_GERENCIAR_GRUPOS', 'Permite criar/editar grupos e gerenciar hierarquia de grupos.', '1');
+    ('PERM_GERENCIAR_GRUPOS', 'Permite criar/editar grupos e gerenciar hierarquia de grupos.', '1')
+
 
 
 -- Atribuir várias permissões (evita duplicatas ativas) — insira os códigos abaixo
@@ -54,6 +57,7 @@ INSERT INTO @Permissoes
 VALUES
     ('PERM_ACESSAR_DASHBOARD'),
     ('PERM_ATRIBUIR_GRUPO'),
+    ('home.view'),
     ('PERM_VISUALIZAR_RELATORIOS');
 
 
