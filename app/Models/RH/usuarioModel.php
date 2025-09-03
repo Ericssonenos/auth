@@ -6,7 +6,7 @@ use App\Services\Operacao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class usuario extends Model
+class usuarioModel extends Model
 {
     private $conexao;
 
@@ -17,7 +17,6 @@ class usuario extends Model
 
     public function ObterDadosUsuarios($params)
     {
-
 
         $parametrizacao = Operacao::Parametrizar($params);
         // Verifica se houve erro na parametrização

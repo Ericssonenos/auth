@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\RH;
 
 use Illuminate\Http\Request;
-use App\Models\RH\usuario;
+use App\Models\RH\usuarioModel;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Controller;
 
@@ -25,7 +25,7 @@ class LoginController extends Controller
     public function processarLogin(Request $request)
     {
 
-        $modeloUsuario = new usuario();
+        $modeloUsuario = new usuarioModel();
 
         $resultadoStatus_Usuario = $modeloUsuario->ObterDadosUsuarios(
             [
@@ -35,27 +35,41 @@ class LoginController extends Controller
             ]
         );
 
-        if (!$resultadoStatus_Usuario['status'] || empty($resultadoStatus_Usuario['data'])) {
-            Session::forget('dados_Usuario');
-            Session::forget('list_Permissoes_session');
+        // Se o status do usuário for inválido ou os dados estiverem vazios
+        if (    $resultadoStatus_Usuario['status'] == false
+            ||  empty($resultadoStatus_Usuario['data'])
+            ) {
+            // Apagar dados da sessão
+            Session::forget('dadosUsuarioSession');
+
+            // Redirecionar com mensagem de erro
             return redirect()->back()->withErrors(
                 [
                     'email' => 'Credenciais inválidas.',
                     'senha' => 'Credenciais inválidas.'
                 ]
             )->withInput();
+
+
         }
 
-        $registroUsuario = $resultadoStatus_Usuario['data'][0];
-        Session::put('dados_Usuario', $registroUsuario);
+        // Se o login for bem-sucedido
+        $dadosUsuario = $resultadoStatus_Usuario['data'][0];
 
-        $respostaPermissoes = $modeloUsuario->ObterPermissoesUsuario(['Usuario_id' => $registroUsuario['id_Usuario']]);
-        if (isset($respostaPermissoes['status']) && $respostaPermissoes['status'] === true) {
-            Session::put('list_Permissoes_session', $respostaPermissoes['data']);
-        }else{
-            Session::put('list_Permissoes_session', []);
+        // Obter permissões do usuário
+        $permissoesUsuario = $modeloUsuario->ObterPermissoesUsuario(['Usuario_id' => $dadosUsuario['id_Usuario']]);
+
+        // Verificar se a resposta contém permissões
+        if (isset($permissoesUsuario['status']) && $permissoesUsuario['status'] === true) {
+           $dadosUsuario['permissoesUsuario'] = $permissoesUsuario['data'];
+        } else {
+            $dadosUsuario['permissoesUsuario'] = [];
         }
 
+        // Armazenar os dados do usuário na sessão
+        Session::put('dadosUsuarioSession', $dadosUsuario);
+
+        // Redireciondo para home
         return redirect()->route('home.view');
     }
 
@@ -64,8 +78,7 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
-        Session::forget('dados_Usuario');
-        Session::forget('list_Permissoes_session');
+        Session::forget('dadosUsuarioSession');
         return redirect()->route('login');
     }
 }

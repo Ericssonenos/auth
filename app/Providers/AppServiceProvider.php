@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\View;
 use App\Services\RH\usuarioServices;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Routing\Router;
+use PhpParser\Node\Expr\Cast\Object_;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,21 +34,14 @@ class AppServiceProvider extends ServiceProvider
         // Registra singleton que encapsula dados do usuário logado na sessão
         $this->app->singleton(usuarioServices::class, function ($app) {
             return new usuarioServices(
-                session("list_Permissoes_session", []),
-                session("dados_Usuario", [])
+                session("dadosUsuarioSession", []),
             );
         });
 
         // View Composer para compartilhar dados do usuário com todas as views do sistema
         View::composer('*', function ($view) {
-            $servicoDoUsuario = $this->app->make(usuarioServices::class);
-            $view->with('usuarioServices', $servicoDoUsuario);
-
-            // Para ambiente de desenvolvimento - facilita debugging das permissões
-            if (config('app.debug')) {
-                $view->with('debug_permissoes_usuario', $servicoDoUsuario->permissoes());
-                $view->with('debug_dados_usuario', $servicoDoUsuario->usuario());
-            }
+            $dadosUsuario = $this->app->make(usuarioServices::class);
+            $view->with('dadosUsuario', $dadosUsuario);
         });
 
         // Blade directive para verificar se usuário possui permissão específica
@@ -66,9 +60,5 @@ class AppServiceProvider extends ServiceProvider
             return false;
         });
 
-        // Blade directive para verificar se usuário está autenticado no sistema
-        Blade::if('usuarioEstaAutenticado', function () {
-            return !empty(app(usuarioServices::class)->usuario());
-        });
     }
 }

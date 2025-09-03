@@ -12,7 +12,7 @@ window.$ = window.jQuery = $;
 import 'datatables.net';
 import 'datatables.net-dt/css/jquery.dataTables.min.css';
 
-// Plugin custom de toast (expondo $.toast)
+// Plugin custom de toast (API local: window.alerta)
 import './components/mensagens_alerta';
 
 // Configurar CSRF para ajax do jQuery usando a meta tag (inserida no layout)
@@ -32,17 +32,17 @@ import './pages/usuarios';
 // Consumidor de sessões para alertas (usa window.alerta)
 function consumirAppDataSessao() {
 	try {
-		const erro = window.AppData && window.AppData.session_erro_de_acesso ? window.AppData.session_erro_de_acesso : null;
+		const erro =  window.AppData.session_status_autenticacao ? window.AppData.session_status_autenticacao : null;
 		const permissoes = window.AppData && window.AppData.session_permissoes_necessarias ? window.AppData.session_permissoes_necessarias : [];
-		const naoAutorizado = window.AppData && window.AppData.session_usuario_nao_autorizado ? window.AppData.session_usuario_nao_autorizado : false;
+		const naoAutorizado = window.AppData && window.AppData.session_usuario_autorizado ? window.AppData.session_usuario_autorizado : false;
 
 		if (erro) {
-			let body = erro;
+			let body = "";
 			if (Array.isArray(permissoes) && permissoes.length) {
 				body += '<br><small><strong>Permissões necessárias:</strong> ' + permissoes.join(', ') + '</small>';
 			}
 			if (window.alerta && typeof window.alerta.erro === 'function') {
-				window.alerta.erro(body, 'Acesso negado', 8000);
+				window.alerta.erro(body, 'Acesso negado', 30000);
 			} else {
 				console.warn('Alerta indisponível: ', body);
 			}

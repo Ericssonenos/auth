@@ -4,43 +4,32 @@ namespace App\Services\RH;
 
 class usuarioServices
 {
-    private array $permissoes = [];
-    private array $dadosDoUsuario = [];
+    public array $cod_permissoes = [];
+    public int $id_Usuario;
+    public string $nome_Completo;
+    public string $email;
+    public string $mensagem;
+    public array $permissoesNecessarias = [];
 
-    public function __construct(array $permissoesBrutas = [], ?array $dadosDoUsuario = null)
+    public function __construct($dadosDoUsuario = null)
     {
-        foreach ($permissoesBrutas as $permissao) {
-            if (is_array($permissao) && array_key_exists('cod_permissao', $permissao)) {
-                $this->permissoes[] = $permissao['cod_permissao'];
-            } elseif (is_string($permissao)) {
-                $this->permissoes[] = $permissao;
+        foreach ($dadosDoUsuario['permissoesUsuario'] as $cod_permissao) {
+            if (is_array($cod_permissao) && array_key_exists('cod_permissao', $cod_permissao)) {
+                $this->cod_permissoes[] = $cod_permissao['cod_permissao'];
+            } elseif (is_string($cod_permissao)) {
+                $this->cod_permissoes[] = $cod_permissao;
             }
         }
-
-        $this->permissoes = array_values(array_unique($this->permissoes));
-        $this->dadosDoUsuario = $dadosDoUsuario ?? [];
+        $this->cod_permissoes = array_values(array_unique($this->cod_permissoes));
+        $this->id_Usuario = $dadosDoUsuario['id_Usuario'] ?? 0;
+        $this->nome_Completo = $dadosDoUsuario['nome_Completo'] ?? '';
+        $this->email = $dadosDoUsuario['email'] ?? '';
     }
 
-    public function permissoes(): array
-    {
-        return $this->permissoes;
-    }
-
-    public function usuario(): array
-    {
-        return $this->dadosDoUsuario;
-    }
 
     public function temPermissao(string $permissao): bool
     {
-        return in_array($permissao, $this->permissoes, true);
+        return in_array($permissao, $this->cod_permissoes, true);
     }
 
-    public function toArray(): array
-    {
-        return [
-            'permissoes' => $this->permissoes,
-            'usuario' => $this->dadosDoUsuario,
-        ];
-    }
 }

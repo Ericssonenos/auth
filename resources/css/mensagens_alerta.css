@@ -1,0 +1,197 @@
+/* Estilos para mensagens_alerta (manutenção via arquivo CSS)
+   Visual mais polido: ícone maior, borda mais forte, botão fechar em bola */
+:root {
+    --alert-bg: #e9edeedc;
+    --alert-color: #0f172a;
+    --muted: #64748b;
+    --shadow: 0 8px 24px rgba(5, 7, 14, 0.329);
+    --radius: 12px;
+    --max-width: 520px;
+
+    /* novos */
+    --icone-size: 48px;
+    --fechar-size: 40px;
+    --fechar-offset: 12px;
+    --border-left-width: 8px;
+}
+
+/* container */
+#mensagens_alerta_container {
+    position: fixed;
+    bottom: 4rem;
+    right: 5rem;
+    z-index: 99999; /* elevado para garantir visibilidade acima de overlays */
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: var(--max-width);
+    pointer-events: none;
+}
+
+/* alerta */
+.mensagem-alerta {
+    pointer-events: auto;
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    background: var(--alert-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px 28px 20px 18px; /* manter espaço para conteúdo e botão fora */
+    opacity: 0;
+    transform: translateY(10px) scale(.995);
+    transition: opacity .28s cubic-bezier(.2, .9, .3, 1), transform .28s cubic-bezier(.2, .9, .3, 1);
+    position: relative;
+    border-left: var(--border-left-width) solid transparent;
+    overflow: visible; /* permitir que o botão fique metade fora */
+    z-index: 100000; /* garantir que cada alerta esteja acima de elementos locais */
+    outline: 1px dashed rgba(0,0,0,0.04); /* contorno sutil para depuração visual */
+}
+
+.mensagem-alerta.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* área do ícone à esquerda - maior e mais forte */
+.mensagem-alerta__icone {
+    min-width: var(--icone-size);
+    height: var(--icone-size);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.12);
+}
+
+/* gradientes mais fortes */
+.mensagem-alerta.success .mensagem-alerta__icone {
+    background: linear-gradient(135deg, #10b981, #047857); /* acentua */
+}
+
+.mensagem-alerta.error .mensagem-alerta__icone {
+    background: linear-gradient(135deg, #f10105, #b91c1c); /* mais forte */
+}
+
+.mensagem-alerta.info .mensagem-alerta__icone {
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+}
+
+/* conteúdo */
+.mensagem-alerta__conteudo {
+    flex: 1;
+    min-width: 0;
+}
+
+.mensagem-alerta .titulo {
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    color: var(--alert-color);
+    font-size: 1rem;
+}
+
+.mensagem-alerta .texto {
+    margin: 0;
+    color: #334155;
+    font-size: 0.95rem;
+    line-height: 1.25;
+}
+
+/* botão fechar como bola, metade para fora no canto superior direito */
+.mensagem-alerta .fechar {
+    position: absolute;
+    top: calc(-1 * var(--fechar-offset));
+    right: calc(-1 * var(--fechar-offset));
+    width: var(--fechar-size);
+    height: var(--fechar-size);
+    background: #ef4444; /* padrão vermelho */
+    color: #ffffff;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18);
+    transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+    z-index: 2;
+}
+
+/* cor do botão pode seguir o tipo do alerta */
+.mensagem-alerta.success .fechar {
+    background: #059669;
+}
+
+.mensagem-alerta.info .fechar {
+    background: #2563eb;
+}
+
+.mensagem-alerta .fechar:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 10px 24px rgba(15,23,42,0.22);
+    opacity: 0.98;
+}
+
+.mensagem-alerta .fechar:focus {
+    outline: 2px solid rgba(59, 130, 246, 0.24);
+}
+
+/* borda colorida sutil no lado esquerdo (agora mais larga) */
+.mensagem-alerta.success {
+    border-left-color: rgba(16, 185, 129, 0.22);
+}
+
+.mensagem-alerta.error {
+    border-left-color: rgba(239, 68, 68, 0.28);
+}
+
+.mensagem-alerta.info {
+    border-left-color: rgba(59, 130, 246, 0.22);
+}
+
+/* responsividade */
+@media (max-width:520px) {
+    #mensagens_alerta_container {
+        right: 1rem;
+        left: 1rem;
+        bottom: 1rem;
+        max-width: calc(100% - 2rem);
+    }
+
+    .mensagem-alerta {
+        padding: 10px 12px 10px 10px;
+    }
+
+    .mensagem-alerta__icone {
+        min-width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    :root {
+        --fechar-size: 34px;
+        --fechar-offset: 10px;
+    }
+
+    .mensagem-alerta .fechar {
+        width: var(--fechar-size);
+        height: var(--fechar-size);
+        font-size: 16px;
+        top: calc(-1 * var(--fechar-offset));
+        right: calc(-1 * var(--fechar-offset));
+    }
+}
+
+#mensagens_alerta_container:hover .mensagem-alerta {
+    /* aumenta todo o contexto interno para 1.5x */
+    transform: translateY(0) scale(1.5);
+    transform-origin: right center; /* ajuste conforme preferir: center / top right / bottom right */
+    transition: transform .28s cubic-bezier(.2, .9, .3, 1);
+    z-index: 1200; /* evita ser coberto ao aumentar */
+    pointer-events: auto; /* mantém interatividade */
+}

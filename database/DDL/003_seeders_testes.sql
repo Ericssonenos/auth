@@ -32,6 +32,7 @@ END;
 INSERT INTO RH.Tbl_Permissoes
     (cod_permissao, descricao_permissao, criado_Usuario_id)
 VALUES
+    ('usuario.view', 'Permite visualizar dados do usuário.', '1'),
     ('home.view', 'Permite visualizar a página inicial.', '1'),
     ('usuarios.get', 'Permite obter dados de usuários.', '1'),
     ('PERM_ACESSAR_DASHBOARD', 'Permite acessar o painel principal do sistema.', '1'),
@@ -58,6 +59,7 @@ VALUES
     ('PERM_ACESSAR_DASHBOARD'),
     ('PERM_ATRIBUIR_GRUPO'),
     ('home.view'),
+    ('usuario.view'),
     ('PERM_VISUALIZAR_RELATORIOS');
 
 

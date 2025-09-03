@@ -15,45 +15,60 @@ class UsuarioMiddleware
         $this->servicoDoUsuario = $servicoDoUsuario;
     }
 
-    public function handle(Request $request, Closure $next, string ...$permissoesNecessarias)
+    public function handle(Request $request, Closure $next, ...$permissoesNecessarias)
     {
+
         // Verifica se o usuário está devidamente autenticado no sistema
-        if (empty($this->servicoDoUsuario->usuario())) {
+        //[ ] testar acesso dia api ajax sem estar logado
+        if (empty($this->servicoDoUsuario->id_Usuario)) {
+
+            // Adiciona mensagem de erro ao array de resposta
+           $this->servicoDoUsuario->mensagem = "Você precisa estar autenticado para acessar esta página.";
+
             // redirecionar para o login
-            return redirect()->route('login')->with('mensagem', 'Por favor, faça login para acessar este recurso.');
+            return redirect()->route('login')
+                ->with('dadosUsuario', $this->servicoDoUsuario);
         }
 
-        // Se não foram especificadas permissões, tenta detectar automaticamente baseado na rota
-        if (empty($permissoesNecessarias)) {
+        // Se nenhuma permissão foi passada, tenta detectar automaticamente
+        if(!$permissoesNecessarias) {
+            // Obter as permissões necessárias
             $permissoesNecessarias = $this->detectarPermissoesNecessariasPelaRota($request);
         }
 
-        // Verifica se o usuário possui pelo menos uma das permissões necessárias
-        $usuarioPossuiPermissaoNecessaria = false;
-        $listaDePermissoesVerificadas = [];
 
+        // Verifica permissões necessárias
+        // permissaoNecessaria ira ser ou o nome da rota: R_USUARIO.LISTA ou o metodo E http: R_RH/USUARIO
         foreach ($permissoesNecessarias as $permissaoNecessaria) {
-            $listaDePermissoesVerificadas[] = $permissaoNecessaria;
             if ($this->servicoDoUsuario->temPermissao($permissaoNecessaria)) {
-                $usuarioPossuiPermissaoNecessaria = true;
-                break;
+                // Adiciona informações do usuário logado à requisição para uso posterior
+                $request
+                    ->merge(['dadosUsuario' => $this->servicoDoUsuario]);
+
+                return $next($request);
             }
         }
 
-        if (!$usuarioPossuiPermissaoNecessaria) {
-            return $this->retornarAcessoNegado(
-                'Usuário não possui permissão necessária para acessar este recurso',
-                $listaDePermissoesVerificadas
-            );
+        // Retorna resposta de acesso negado
+
+        // Adiciona permissões necessárias
+        $this->servicoDoUsuario->permissoesNecessarias = $permissoesNecessarias;
+
+        // Se a requisição espera JSON (API), retorna resposta JSON
+        if (request()->expectsJson()) {
+
+            // Adiciona mensagem de erro
+            $this->servicoDoUsuario->mensagem = "Você não possui permissão para acessar estes dados da API: {$request->path()}";
+
+            return response()
+                ->json($this->servicoDoUsuario, 403);
         }
 
-        // Adiciona informações do usuário logado à requisição para uso posterior
-        $request->merge([
-            'dados_do_usuario_logado' => $this->servicoDoUsuario->usuario(),
-            'permissoes_do_usuario_logado' => $this->servicoDoUsuario->permissoes()
-        ]);
+        // Para requisições web, redireciona com mensagens na sessão
+        $this->servicoDoUsuario->mensagem = "Você não possui permissão para acessar esta página.";
 
-        return $next($request);
+        return redirect()->back()
+            ->with('dadosUsuario', $this->servicoDoUsuario);
     }
 
     /**
@@ -66,81 +81,52 @@ class UsuarioMiddleware
 
         // 1. Prioridade máxima: Nome da rota (mais semântico e declarativo)
         if ($rotaAtual->getName()) {
-            $permissoesPossiveis[] = $rotaAtual->getName();
-        }
-
-        // 2. Controller e Action (padrão REST bem definido)
-        if ($rotaAtual->getController()) {
-            $nomeDoController = class_basename($rotaAtual->getController());
-            $nomeDoAction = $rotaAtual->getActionMethod();
-            $nomeDoControllerFormatado = $this->formatarNomeDoController($nomeDoController);
-            $permissoesPossiveis[] = "{$nomeDoControllerFormatado}.{$nomeDoAction}";
+            $permissoesPossiveis[] = strtoupper("N_{$rotaAtual->getName()}");
         }
 
         // 3. Método HTTP combinado com URI (fallback para casos específicos)
-        $metodoHttp = strtolower($request->method());
+        $metodoHttp = $request->method();
         $uriFormatada = $this->formatarUriDaRequisicao($request->path());
-        $permissoesPossiveis[] = "{$metodoHttp}.{$uriFormatada}";
-
-        // 4. Apenas a URI formatada (para casos mais simples)
-        if ($uriFormatada !== $request->path()) {
-            $permissoesPossiveis[] = $uriFormatada;
-        }
+        // deixar upcase
+        $permissoesPossiveis[] = strtoupper("R_{$metodoHttp}_{$uriFormatada}");
 
         return array_unique(array_filter($permissoesPossiveis));
     }
 
-    /**
-     * Formatar nome do controller removendo sufixo e convertendo para snake_case
-     */
-    private function formatarNomeDoController(string $nomeDoController): string
-    {
-        // Remove o sufixo 'Controller' e converte PascalCase para snake_case
-        $nomeLimpo = str_replace('Controller', '', $nomeDoController);
-        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $nomeLimpo));
-    }
 
     /**
      * Formatar URI da requisição substituindo parâmetros dinâmicos por placeholders
      */
     private function formatarUriDaRequisicao(string $caminhoUri): string
     {
-        // Remove barras extras e formata a URI
+        // normaliza e remove barras extremas
         $uriLimpa = trim($caminhoUri, '/');
 
-        // Substitui números por placeholder genérico (ex: users/123 -> users/{id})
-        $uriLimpa = preg_replace('/\/\d+/', '/{id}', $uriLimpa);
-
-        // Substitui UUIDs por placeholder específico
-        $uriLimpa = preg_replace('/\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/', '/{uuid}', $uriLimpa);
-
-        return $uriLimpa;
-    }
-
-    /**
-     * Retorna resposta apropriada quando o acesso é negado
-     */
-    private function retornarAcessoNegado(string $mensagemDeErro, array $permissoesNecessarias = [])
-    {
-        $dadosDaResposta = [
-            'mensagem' => $mensagemDeErro,
-            'permissoes_do_usuario_atual' => $this->servicoDoUsuario->permissoes(),
-            'status_autenticacao' => !empty($this->servicoDoUsuario->usuario()) ? 'autenticado' : 'nao_autenticado',
-        ];
-
-        if (!empty($permissoesNecessarias)) {
-            $dadosDaResposta['permissoes_necessarias_para_acesso'] = $permissoesNecessarias;
+        if ($uriLimpa === '') {
+            return '';
         }
 
-        // Se a requisição espera JSON (API), retorna resposta JSON
-        if (request()->expectsJson()) {
-            return response()->json($dadosDaResposta, 403);
-        }
+        $partes = preg_split('#/#', $uriLimpa);
 
-        // Para requisições web, redireciona com mensagens na sessão
-        return redirect()->back()
-            ->with('erro_de_acesso', $mensagemDeErro)
-            ->with('permissoes_necessarias', $permissoesNecessarias)
-            ->with('usuario_nao_autorizado', true);
+        $partesFormatadas = array_map(function (string $segmento) {
+            // segmento numérico -> VALOR
+            if (preg_match('/^\d+$/', $segmento)) {
+                return 'VALOR';
+            }
+
+            // UUID -> VALOR (aceita letras maiúsculas/minúsculas)
+            if (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $segmento)) {
+                return 'VALOR';
+            }
+
+            // normaliza: remove caracteres não alfanuméricos e converte para underscore
+            $limpo = preg_replace('/[^a-z0-9]+/i', '_', $segmento);
+            $limpo = trim($limpo, '_');
+
+            return strtoupper($limpo);
+        }, $partes);
+
+        // junta com underscore para ficar no formato desejado: USER_CADASTRO_VALOR
+        return implode('_', array_filter($partesFormatadas, fn($v) => $v !== ''));
     }
 }

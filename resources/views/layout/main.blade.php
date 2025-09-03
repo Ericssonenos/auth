@@ -25,58 +25,9 @@
         @yield('footer')
     </footer>
 
-    <!-- Dados globais para JavaScript -->
     <script>
-        window.AppData = (function () {
-            // dados vindos do servidor
-            const dadosUsuario = @json($usuarioServices->usuario() ?? (object)[]);
-            const permissoes = @json($usuarioServices->permissoes() ?? []);
-
-            // objeto que espelha a classe usuarioServices com métodos utilitários em JS
-            const usuarioServices = {
-                // dados brutos
-                dadosUsuario: dadosUsuario,
-                permissoes: permissoes,
-
-                // retorna lista de permissões
-                listarPermissoes() {
-                    return Array.isArray(this.permissoes) ? this.permissoes : [];
-                },
-
-                // retorna dados do usuário
-                usuario() {
-                    return this.dadosUsuario || {};
-                },
-
-                // verifica existência de permissão
-                temPermissao(codigoPermissao) {
-                    if (!codigoPermissao) return false;
-                    return this.listarPermissoes().indexOf(codigoPermissao) !== -1;
-                },
-
-                // representação serializável
-                toArray() {
-                    return {
-                        permissoes: this.listarPermissoes(),
-                        usuario: this.usuario()
-                    };
-                }
-            };
-
-            return {
-                dados_Usuario: dadosUsuario,
-                permissoes: permissoes,
-                usuarioServices: usuarioServices,
-                // mensagens de sessão para toasts
-                session_erro_de_acesso: @json(session('erro_de_acesso')),
-                session_permissoes_necessarias: @json(session('permissoes_necessarias', [])),
-                session_usuario_nao_autorizado: @json(session('usuario_nao_autorizado', false))
-            };
-        })();
+        window.AppUsuario = @json($dadosUsuario ?? (object) []);
     </script>
-    <!-- Toasts são processados no bundle JS (app.js) para garantir ordem de carregamento -->
-
-
 </body>
 
 </html>
