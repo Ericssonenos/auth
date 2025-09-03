@@ -2,12 +2,8 @@
 1. O usuário faz login na aplicação.
     app\Http\Controllers\RH\LoginController.php
     -- Session::put('dadosUsuarioSession', $dadosUsuario);
-    $dadosUsuario ={
-        id_Usuario,
-        nome_Completo,
-        email,
-        permissoesUsuario
-    }
+    $dadosUsuario =class usuarioServices
+
 2. Adciononar a Session no Singleton usuarioServices
     app\Providers\AppServiceProvider.php
 
@@ -19,12 +15,7 @@
 
 3. Receber e preparar classe usuarioService
            
-            dadosUsuario{
-                id_Usuario,
-                nome_Completo,
-                email,
-                permissoesUsuario
-            }
+         $dadosUsuario =class usuarioServices
 
 
 4.  Volto para AppServiceProvider e Add  Singleton usuarioServices em todas as Views
@@ -38,13 +29,13 @@
 5. O middleware captura o ID do usuário e suas permissões.
     app\Http\Middleware\RH\VerificarPermissoes.php
 
-    retorna dadosUsuario{
-        mensagem,
-        dados_do_usuario_logado,
-        permissoes_do_usuario_logado
-    }
+   $dadosUsuario =class usuarioServices
 
 
-3. As permissões são armazenadas na sessão.
-4. Em cada requisição, o sistema verifica as permissões do usuário.
-5. O usuário é autorizado ou negado com base em suas permissões.
+6. chamar a cada carregemando de pagina o appjs
+    resources\js\app.js
+    chama  window.alerta.erro
+
+7. mensagem de erro é exibida quando o usuário não tem permissão para acessar um recurso.
+    resources\js\components\mensagens_alerta.js
+

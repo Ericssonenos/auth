@@ -6,7 +6,7 @@ use App\Http\Controllers\RH\UsuarioController;
 
 Route::get('/', function () {
     return view('welcome');
-})->middleware('usuarioMiddleware')->name('home.view');
+})->name('home.view');
 
 
 

@@ -26,7 +26,7 @@
     </footer>
 
     <script>
-        window.AppUsuario = @json($dadosUsuario ?? (object) []);
+        window.AppErro= @json($erro ?? (object) []);
     </script>
 </body>
 

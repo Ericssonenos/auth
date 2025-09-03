@@ -13,6 +13,10 @@ class usuarioServices
 
     public function __construct($dadosDoUsuario = null)
     {
+        if (empty($dadosDoUsuario)) {
+            return;
+        }
+
         foreach ($dadosDoUsuario['permissoesUsuario'] as $cod_permissao) {
             if (is_array($cod_permissao) && array_key_exists('cod_permissao', $cod_permissao)) {
                 $this->cod_permissoes[] = $cod_permissao['cod_permissao'];
@@ -20,6 +24,7 @@ class usuarioServices
                 $this->cod_permissoes[] = $cod_permissao;
             }
         }
+
         $this->cod_permissoes = array_values(array_unique($this->cod_permissoes));
         $this->id_Usuario = $dadosDoUsuario['id_Usuario'] ?? 0;
         $this->nome_Completo = $dadosDoUsuario['nome_Completo'] ?? '';

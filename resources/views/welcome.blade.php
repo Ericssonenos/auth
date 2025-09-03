@@ -4,16 +4,18 @@
 
 @section('content')
     <h1>RH Access Demo</h1>
-    <p>Matrícula: {{ $usuarioServices->usuario()['nome_Completo'] ?? 'N/A' }}</p>
+    <p>Matrícula: {{ $dadosUsuario->nome_Completo ?? 'N/A' }}</p>
 
     <hr />
+
     {{-- mostrar as permissões --}}
     <h2>Permissões do Usuário</h2>
     <ul>
-        @foreach ($usuarioServices->permissoes() as $permissao)
+        @foreach ($dadosUsuario->cod_permissoes as $permissao)
             <li>{{ $permissao }}</li>
         @endforeach
     </ul>
+
     {{-- Exemplo: mostrar bloco somente se usuário tiver PERM_ATRIBUIR_GRUPO --}}
     @temPermissao('PERM_ATRIBUIR_GRUPO')
         <div style="padding:1rem;border:1px solid #2a9d8f;background:#e9f7f2">
@@ -27,12 +29,10 @@
             <p>Você não tem acesso a funcionalidades administrativas.</p>
         </div>
     @endtemPermissao
+
     {{-- Botão de teste para logout --}}
     <form action="{{ route('logout') }}" method="POST" style="display:inline;">
         @csrf
         <button type="submit" class="btn btn-danger">Logout</button>
     </form>
 @endsection
-
-
-

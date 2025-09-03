@@ -27,7 +27,10 @@ class UsuarioMiddleware
 
             // redirecionar para o login
             return redirect()->route('login')
-                ->with('dadosUsuario', $this->servicoDoUsuario);
+                ->with('erro', [
+                    'mensagem' => $this->servicoDoUsuario->mensagem,
+                    'cod_permissoes' => $this->servicoDoUsuario->cod_permissoes
+                ]);
         }
 
         // Se nenhuma permissão foi passada, tenta detectar automaticamente
@@ -43,7 +46,7 @@ class UsuarioMiddleware
             if ($this->servicoDoUsuario->temPermissao($permissaoNecessaria)) {
                 // Adiciona informações do usuário logado à requisição para uso posterior
                 $request
-                    ->merge(['dadosUsuario' => $this->servicoDoUsuario]);
+                    ->merge(['servicoDoUsuario' => $this->servicoDoUsuario]);
 
                 return $next($request);
             }
@@ -68,7 +71,10 @@ class UsuarioMiddleware
         $this->servicoDoUsuario->mensagem = "Você não possui permissão para acessar esta página.";
 
         return redirect()->back()
-            ->with('dadosUsuario', $this->servicoDoUsuario);
+            ->with('erro', [
+                    'mensagem' => $this->servicoDoUsuario->mensagem,
+                    'cod_permissoes' => $this->servicoDoUsuario->cod_permissoes
+                ]);
     }
 
     /**
