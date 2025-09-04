@@ -9,7 +9,7 @@ class usuarioServices
     public string $nome_Completo;
     public string $email;
     public string $mensagem;
-    public array $permissoesNecessarias = [];
+    public array $cod_permissoesNecessarias = [];
 
     public function __construct($dadosDoUsuario = null)
     {

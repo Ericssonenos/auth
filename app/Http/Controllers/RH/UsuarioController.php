@@ -5,16 +5,16 @@ namespace App\Http\Controllers\RH;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use App\Models\RH\usuario;
+use App\Models\RH\usuarioModel;
 
 class UsuarioController extends Controller
 {
-    private usuario $usuarioModel;
+    private usuarioModel $usuarioModel;
 
     public function __construct()
     {
         // [x] validar uso
-        $this->usuarioModel = new usuario();
+        $this->usuarioModel = new usuarioModel();
     }
     /**
      * Página de listagem de usuários (exibe DataTable)

@@ -8,34 +8,13 @@ $(function () {
 
     function mostrarErroAjax(xhr, status, error) {
         // xhr pode ser um XHR real ou um objeto simples com dados do servidor
-        let mensagem = null;
-        let statusCode = null;
-        try {
-            if (Array.isArray(xhr.responseJSON.permissoes_necessarias_para_acesso) && xhr.responseJSON.permissoes_necessarias_para_acesso.length) {
-				mensagem = '<br><small><strong>Permissões necessárias:</strong> ' + xhr.responseJSON.permissoes_necessarias_para_acesso.join(', ') + '</small>';
-                statusCode = xhr.status || null;
-			} else if (xhr && xhr.responseJSON) {
-                mensagem = xhr.responseJSON.message || xhr.responseJSON.mensagem || JSON.stringify(xhr.responseJSON);
-                statusCode = xhr.status || null;
-            } else if (xhr && xhr.responseText) {
-                mensagem = xhr.responseText;
-                statusCode = xhr.status || null;
-            }
-        } catch (e) {
-            mensagem = null;
-        }
 
-        if (!mensagem) {
-            mensagem = (xhr && xhr.status) ? ('Erro ' + xhr.status + ': ' + (xhr.statusText || error || 'Erro na requisição')) : ('Erro: ' + (error || status));
+        let body = xhr.responseJSON.mensagem || "";
+        if (Array.isArray(xhr.responseJSON.cod_permissoesNecessarias) && xhr.responseJSON.cod_permissoesNecessarias.length) {
+            body += '<br><small><strong>Permissões necessárias:</strong> ' + xhr.responseJSON.cod_permissoesNecessarias.join(', ') + '</small>';
         }
+        window.alerta.erro(body, 'Acesso negado', 30000);
 
-        const titulo = (statusCode === 403 || (xhr && xhr.status_autenticacao === 'nao_autenticado')) ? 'Acesso negado' : 'Erro';
-
-        if (window.alerta && typeof window.alerta.erro === 'function') {
-            window.alerta.erro(mensagem, titulo, 10000);
-        } else {
-            alert(mensagem);
-        }
     }
 
     const table = $('#dataTable_Usuarios').DataTable({

@@ -8,79 +8,61 @@ use App\Services\RH\usuarioServices;
 
 class UsuarioMiddleware
 {
-    private usuarioServices $servicoDoUsuario;
 
-    public function __construct(usuarioServices $servicoDoUsuario)
+    public function handle(Request $request, Closure $next, ...$cod_permissoesNecessarias)
     {
-        $this->servicoDoUsuario = $servicoDoUsuario;
-    }
-
-    public function handle(Request $request, Closure $next, ...$permissoesNecessarias)
-    {
-
+        $dados = session('dadosUsuarioSession', null);
         // Verifica se o usuário está devidamente autenticado no sistema
         //[ ] testar acesso dia api ajax sem estar logado
-        if (empty($this->servicoDoUsuario->id_Usuario)) {
-
-            // Adiciona mensagem de erro ao array de resposta
-           $this->servicoDoUsuario->mensagem = "Você precisa estar autenticado para acessar esta página.";
+        if (empty($dados['id_Usuario'])) {
 
             // redirecionar para o login
             return redirect()->route('login')
                 ->with('erro', [
-                    'mensagem' => $this->servicoDoUsuario->mensagem,
-                    'cod_permissoes' => $this->servicoDoUsuario->cod_permissoes
+                    'mensagem' => "Você precisa estar autenticado para acessar esta página."
                 ]);
         }
 
         // Se nenhuma permissão foi passada, tenta detectar automaticamente
-        if(!$permissoesNecessarias) {
+        if(!$cod_permissoesNecessarias) {
             // Obter as permissões necessárias
-            $permissoesNecessarias = $this->detectarPermissoesNecessariasPelaRota($request);
+            $cod_permissoesNecessarias = $this->detectarcod_permissoesNecessariasPelaRota($request);
         }
 
+        $permissoesUsuario = $dados['permissoesUsuario'] ?? [];
 
-        // Verifica permissões necessárias
-        // permissaoNecessaria ira ser ou o nome da rota: R_USUARIO.LISTA ou o metodo E http: R_RH/USUARIO
-        foreach ($permissoesNecessarias as $permissaoNecessaria) {
-            if ($this->servicoDoUsuario->temPermissao($permissaoNecessaria)) {
-                // Adiciona informações do usuário logado à requisição para uso posterior
-                $request
-                    ->merge(['servicoDoUsuario' => $this->servicoDoUsuario]);
-
+        // verrificar se o array servicoDoUsuario comtem alguma permssiao de permissaoNecessaria
+        foreach ($permissoesUsuario as $permissao) {
+            if (in_array($permissao['cod_permissao'], $cod_permissoesNecessarias)) {
                 return $next($request);
             }
         }
 
-        // Retorna resposta de acesso negado
 
-        // Adiciona permissões necessárias
-        $this->servicoDoUsuario->permissoesNecessarias = $permissoesNecessarias;
+        // Retorna resposta de acesso negado
 
         // Se a requisição espera JSON (API), retorna resposta JSON
         if (request()->expectsJson()) {
 
-            // Adiciona mensagem de erro
-            $this->servicoDoUsuario->mensagem = "Você não possui permissão para acessar estes dados da API: {$request->path()}";
-
             return response()
-                ->json($this->servicoDoUsuario, 403);
+                ->json(
+                    ['mensagem' => "Você não possui permissão para acessar API: {$request->path()}",
+                    'cod_permissoesNecessarias' => $cod_permissoesNecessarias
+                ], 403);
         }
 
         // Para requisições web, redireciona com mensagens na sessão
-        $this->servicoDoUsuario->mensagem = "Você não possui permissão para acessar esta página.";
-
         return redirect()->back()
             ->with('erro', [
-                    'mensagem' => $this->servicoDoUsuario->mensagem,
-                    'cod_permissoes' => $this->servicoDoUsuario->cod_permissoes
+                    'mensagem' => "Você não possui permissão para acessar esta página.",
+                    'cod_permissoesNecessarias' => $cod_permissoesNecessarias
                 ]);
     }
 
     /**
      * Detecta automaticamente as permissões necessárias baseado na rota atual
      */
-    private function detectarPermissoesNecessariasPelaRota(Request $request): array
+    private function detectarcod_permissoesNecessariasPelaRota(Request $request): array
     {
         $rotaAtual = $request->route();
         $permissoesPossiveis = [];

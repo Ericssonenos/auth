@@ -33,19 +33,13 @@ import './pages/usuarios';
 function consumirAppErro() {
     try {
         const mensagem = window.AppErro.mensagem ? window.AppErro.mensagem : null;
-        const cod_permissoes = window.AppErro.cod_permissoes ? window.AppErro.cod_permissoes : [];
-        console.log(mensagem, cod_permissoes);
-        console.log("teeste")
+        const cod_permissoesNecessarias = window.AppErro.cod_permissoesNecessarias ? window.AppErro.cod_permissoesNecessarias : [];
         if (mensagem) {
-
             let body = mensagem + '<br>';
-
-            if (Array.isArray(cod_permissoes) && cod_permissoes.length) {
-                body += '<br><small><strong>Permissões necessárias:</strong> ' + cod_permissoes.join(', ') + '</small>';
+            if (Array.isArray(cod_permissoesNecessarias) && cod_permissoesNecessarias.length) {
+                body += '<br><small><strong>Permissões necessárias:</strong> ' + cod_permissoesNecessarias.join(', ') + '</small>';
             }
-
             window.alerta.erro(body, 'Acesso negado', 30000);
-
         }
 
     } catch (e) {

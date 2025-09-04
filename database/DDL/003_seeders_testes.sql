@@ -32,9 +32,9 @@ END;
 INSERT INTO RH.Tbl_Permissoes
     (cod_permissao, descricao_permissao, criado_Usuario_id)
 VALUES
-    ('usuario.view', 'Permite visualizar dados do usuário.', '1'),
-    ('home.view', 'Permite visualizar a página inicial.', '1'),
-    ('usuarios.get', 'Permite obter dados de usuários.', '1'),
+    ('R_GET_RH_USUARIOS', 'Permite visualizar dados do usuário.', '1'),
+    ('R_GET_HOME', 'Permite visualizar a página inicial.', '1'),
+    ('R_GET_USUARIOS', 'Permite obter dados de usuários.', '1'),
     ('PERM_ACESSAR_DASHBOARD', 'Permite acessar o painel principal do sistema.', '1'),
     ('PERM_CRIAR_USUARIO', 'Permite criar novos usuários no sistema.', '1'),
     ('PERM_ATUALIZAR_USUARIO', 'Permite editar informações de usuários existentes.', '1'),
@@ -56,11 +56,10 @@ DECLARE @Permissoes TABLE (cod_permissao NVARCHAR(200));
 INSERT INTO @Permissoes
     (cod_permissao)
 VALUES
-    ('PERM_ACESSAR_DASHBOARD'),
-    ('PERM_ATRIBUIR_GRUPO'),
-    ('home.view'),
-    ('usuario.view'),
-    ('PERM_VISUALIZAR_RELATORIOS');
+    ('R_GET_RH_USUARIOS'),
+    ('R_GET_HOME'),
+    ('R_GET_USUARIOS'),
+
 
 
 

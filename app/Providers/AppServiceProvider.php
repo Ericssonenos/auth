@@ -6,8 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Services\RH\usuarioServices;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Routing\Router;
-use PhpParser\Node\Expr\Cast\Object_;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -50,9 +49,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Blade directive para verificar se usuário possui qualquer uma das permissões listadas
-        Blade::if('possuiQualquerUmaDasPermissoes', function (...$permissoesNecessarias) {
+        Blade::if('possuiQualquerUmaDasPermissoes', function (...$cod_permissoesNecessarias) {
             $servicoDoUsuario = app(usuarioServices::class);
-            foreach ($permissoesNecessarias as $permissaoNecessaria) {
+            foreach ($cod_permissoesNecessarias as $permissaoNecessaria) {
                 if ($servicoDoUsuario->temPermissao($permissaoNecessaria)) {
                     return true;
                 }

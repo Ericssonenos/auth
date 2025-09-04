@@ -7,6 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield('title', 'Sistema RH')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script>
+        window.AppErro = @json(session('erro', (object)[]));
+    </script>
     @stack('styles')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -25,9 +28,6 @@
         @yield('footer')
     </footer>
 
-    <script>
-        window.AppErro= @json($erro ?? (object) []);
-    </script>
 </body>
 
 </html>
