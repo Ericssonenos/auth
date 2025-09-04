@@ -29,28 +29,11 @@ try {
 // Importar scripts específicos por página
 import './pages/usuarios';
 
-// Consumidor de sessões para alertas (usa window.alerta)
-function consumirAppErro() {
-    try {
-        const mensagem = window.AppErro.mensagem ? window.AppErro.mensagem : null;
-        const cod_permissoesNecessarias = window.AppErro.cod_permissoesNecessarias ? window.AppErro.cod_permissoesNecessarias : [];
-        if (mensagem) {
-            let body = mensagem + '<br>';
-            if (Array.isArray(cod_permissoesNecessarias) && cod_permissoesNecessarias.length) {
-                body += '<br><small><strong>Permissões necessárias:</strong> ' + cod_permissoesNecessarias.join(', ') + '</small>';
-            }
-            window.alerta.erro(body, 'Acesso negado', 30000);
-        }
 
-    } catch (e) {
-        // safe fallback
-        console.warn('Erro ao processar alertas de sessão:', e);
-    }
-}
 
 // chamar ao carregar a página
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', consumirAppErro);
+    document.addEventListener('DOMContentLoaded', window.alerta.erroPermissoes);
 } else {
-    consumirAppErro();
+    window.alerta.erroPermissoes();
 }

@@ -6,16 +6,6 @@ $(function () {
     // se a tabela não existir nesta página, aborta
     if (!document.querySelector('#dataTable_Usuarios')) return;
 
-    function mostrarErroAjax(xhr, status, error) {
-        // xhr pode ser um XHR real ou um objeto simples com dados do servidor
-
-        let body = xhr.responseJSON.mensagem || "";
-        if (Array.isArray(xhr.responseJSON.cod_permissoesNecessarias) && xhr.responseJSON.cod_permissoesNecessarias.length) {
-            body += '<br><small><strong>Permissões necessárias:</strong> ' + xhr.responseJSON.cod_permissoesNecessarias.join(', ') + '</small>';
-        }
-        window.alerta.erro(body, 'Acesso negado', 30000);
-
-    }
 
     const table = $('#dataTable_Usuarios').DataTable({
         ajax: {
@@ -26,35 +16,22 @@ $(function () {
                 try {
                     if (!json) {
                         // resposta vazia
-                        mostrarErroAjax({ responseText: 'Resposta vazia do servidor' });
+                        window.alerta.erroPermissoes(mensagem = 'Acesso negado');
                         return [];
                     }
-
-                    // caso o servidor retorne erro no corpo (ex: { status:false, message: '...' })
-                    if (json.status === false || json.error) {
-                        // resposta com formato de erro (campo message/mensagem)
-                        mostrarErroAjax({ responseJSON: json });
-                        return [];
-                    }
-
                     // se a propriedade data estiver presente e for um array, devolve-a
                     if (Array.isArray(json.data)) return json.data;
 
                     // se a própria resposta já for um array (endpoint simples), devolve-a
                     if (Array.isArray(json)) return json;
 
-
-
-                    // fallback: evitar TypeError retornando array vazio
-                    return [];
                 } catch (e) {
-                    mostrarErroAjax({ responseText: String(e) });
+                     window.alerta.erroPermissoes({ mensagem: String(e) });
                     return [];
                 }
             },
             error: function (xhr, status, error) {
-                // DataTables delega para aqui em caso de falha
-                mostrarErroAjax(xhr, status, error);
+                 window.alerta.erroPermissoes(xhr.responseJSON.mensagem, xhr.responseJSON.cod_permissoesNecessarias);
             }
         },
         columns: [

@@ -35,16 +35,9 @@ VALUES
     ('R_GET_RH_USUARIOS', 'Permite visualizar dados do usuário.', '1'),
     ('R_GET_HOME', 'Permite visualizar a página inicial.', '1'),
     ('R_GET_USUARIOS', 'Permite obter dados de usuários.', '1'),
-    ('PERM_ACESSAR_DASHBOARD', 'Permite acessar o painel principal do sistema.', '1'),
-    ('PERM_CRIAR_USUARIO', 'Permite criar novos usuários no sistema.', '1'),
-    ('PERM_ATUALIZAR_USUARIO', 'Permite editar informações de usuários existentes.', '1'),
-    ('PERM_EXCLUIR_USUARIO', 'Permite marcar usuários como excluídos ou remover acesso (uso controlado).', '1'),
-    ('PERM_ATRIBUIR_GRUPO', 'Permite vincular usuários a grupos/roles.', '1'),
-    ('PERM_REMOVER_GRUPO', 'Permite revogar vínculo de usuário com um grupo (marca cancelamento).', '1'),
-    ('PERM_VISUALIZAR_RELATORIOS', 'Permite visualizar relatórios e dashboards específicos.', '1'),
-    ('PERM_EXPORTAR_DADOS', 'Permite exportar dados em CSV/XLS (uso sensível; auditar).', '1'),
-    ('PERM_GERENCIAR_PERMISSOES', 'Permite criar/editar/permissões e atribuições globais.', '1'),
-    ('PERM_GERENCIAR_GRUPOS', 'Permite criar/editar grupos e gerenciar hierarquia de grupos.', '1')
+    ('R_POST_RH_API_USUARIOS', 'Permite acessar o painel principal do sistema.', '1'),
+
+
 
 
 
@@ -57,6 +50,7 @@ INSERT INTO @Permissoes
     (cod_permissao)
 VALUES
     ('R_GET_RH_USUARIOS'),
+    ('R_POST_RH_API_USUARIOS'),
     ('R_GET_HOME'),
     ('R_GET_USUARIOS'),
 

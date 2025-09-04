@@ -71,8 +71,32 @@ import '../../css/mensagens_alerta.css';
         return elementoAlerta;
     }
 
+    // Consumidor de sessões para alertas (usa window.alerta)
+    function erroPermissoes(mensagem = null, cod_permissoesNecessarias = null) {
+        try {
+            if(!mensagem){
+                mensagem = window.AppErro.mensagem ? window.AppErro.mensagem : null;
+            }
+            if(!cod_permissoesNecessarias){
+                cod_permissoesNecessarias = window.AppErro.cod_permissoesNecessarias ? window.AppErro.cod_permissoesNecessarias : null;
+            }
+
+            if (mensagem) {
+                let body = mensagem + '<br>';
+                if (Array.isArray(cod_permissoesNecessarias) && cod_permissoesNecessarias.length) {
+                    body += '<br><small><strong>Permissões necessárias:</strong> ' + cod_permissoesNecessarias.join(', ') + '</small>';
+                }
+                window.alerta.erro(body, 'Acesso negado', 30000);
+            }
+
+        } catch (e) {
+            // safe fallback
+            console.warn('Erro ao processar alertas de sessão:', e);
+        }
+    }
     // Expõe API em português sem usar $ ou jQuery
     window.alerta = {
+        erroPermissoes(mensagem = null, cod_permissoesNecessarias = null) { return erroPermissoes(mensagem, cod_permissoesNecessarias); },
         mostrar(opts) { return mostrar(opts); },
         sucesso(text, heading = 'Sucesso', hideAfter = 5000) { return mostrar({ heading, text, icon: 'success', hideAfter }); },
         erro(text, heading = 'Erro', hideAfter = 7000) { return mostrar({ heading, text, icon: 'error', hideAfter }); }
