@@ -13,4 +13,6 @@
 
 /* Minimal project overrides */
 body{font-family:var(--font-sans);}
+ 
+/* page-specific styles should be loaded per-view via @vite in Blade to avoid bundling them globally */
 

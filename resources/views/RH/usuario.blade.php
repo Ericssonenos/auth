@@ -2,8 +2,6 @@
 
 @section('title', 'Usuários')
 
-@push('styles')
-@endpush
 
 
 @section('content')
@@ -68,4 +66,4 @@
     </div>
 
 
-
+@endsection

@@ -2,52 +2,30 @@
 
 @section('title', 'Login')
 
+
+@section('header')
+    <header class="login-top">
+        <div class="d-flex align-items-center justify-content-center gap-3 mx-auto">
+            <img src="{{ asset('favicon.png') }}" alt="Logo" class="logo-img" onerror="this.style.display='none'" />
+        </div>
+    </header>
+@endsection
+
 @push('styles')
-    <style>
-        /* regras específicas desta página (mantêm Bootstrap para componentes) */
-        :root {
-            --bg1: #0f172a;
-            --accent: #0ea5e9;
-            --card: #ffffff;
-            --muted: #64748b
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--bg1) 0%, #0b1220 35%, var(--accent) 100%);
-            min-height: 100vh
-        }
-
-        /* levemente personaliza o card para destacar sobre o fundo */
-        .card {
-            background: var(--card);
-            border-radius: 12px
-        }
-
-        .card.shadow-sm {
-            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.45)
-        }
-
-        .logo-img {
-            height: 44px;
-            object-fit: contain
-        }
-
-        .text-muted {
-            color: var(--muted) !important
-        }
-    </style>
+    @vite(['resources/css/login.css'])
 @endpush
 
+<!-- estilos movidos para resources/css/login.css e importados em app.css -->
+
 @section('content')
-    <div class="min-vh-100 d-flex align-items-center justify-content-center  py-5">
+    <div class="min-vh-100 d-flex align-items-center justify-content-center py-5 bg-login">
         <div class="card shadow-sm w-100" style="max-width:420px;">
             <div class="card-body">
                 <div class="d-flex align-items-center mb-3">
                     <img src="{{ asset('images/apresentacao/logo.png') }}" alt="Logo" class="logo-img me-3"
                         onerror="this.style.display='none'" />
                     <div>
-                        <h5 id="login-title" class="card-title mb-0">Suplay Teck</h5>
-                        <small class="text-muted">Acesse o sistema com suas credenciais</small>
+                        <h5 id="login-title" class="text-center card-title mb-0">Suplay Teck</h5>
                     </div>
                 </div>
 
@@ -76,18 +54,10 @@
                     </div>
 
                     <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <label for="senha" class="form-label mb-0">Senha</label>
-                            <a href="/recuperar-senha" class="small">Esqueceu a senha?</a>
-                        </div>
                         <input id="senha" name="senha" type="password" required class="form-control"
                             placeholder="Sua senha" />
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-
-                        <a href="/cadastro" class="small">Solicitar cadastro</a>
-                    </div>
 
                     <button type="submit" class="btn btn-primary w-100" aria-label="Entrar no sistema">Entrar no
                         Sistema</button>

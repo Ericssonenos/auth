@@ -1,0 +1,26 @@
+/* Minimal login styles - rely on Bootstrap for most styling */
+/* background utility specific to login page */
+.bg-login {
+    background: linear-gradient(135deg, #0f172a 0%, #0b1220 35%, #0ea5e9 100%);
+}
+
+/* small spacing helpers not provided by Bootstrap utilities */
+.login-top {
+    position: absolute;
+    top: 1rem; /* ajuste vertical conforme necessário */
+    left: 50%;
+    transform: translateX(-50%);
+    padding-top: 1rem;
+    padding-bottom: 0.25rem;
+    display: flex;
+    justify-content: center;
+    z-index: 1000;
+}
+
+
+.logo-img {
+    height: 220px;
+    object-fit: contain;
+
+}
+
