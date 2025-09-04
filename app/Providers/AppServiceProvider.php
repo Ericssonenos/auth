@@ -59,5 +59,9 @@ class AppServiceProvider extends ServiceProvider
             return false;
         });
 
+        Blade::if('usuarioLogado', function () {
+            return app(usuarioServices::class)->estaLogado();
+        });
+
     }
 }

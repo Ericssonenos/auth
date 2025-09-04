@@ -36,5 +36,9 @@ class usuarioServices
     {
         return in_array($permissao, $this->cod_permissoes, true);
     }
+    public function estaLogado(): bool
+    {
+        return !empty($this->id_Usuario);
+    }
 
 }

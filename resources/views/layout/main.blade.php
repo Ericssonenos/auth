@@ -22,29 +22,21 @@
     @else
         <header class="site-header">
             <nav class="navbar">
-                <div class="brand">
-                    <img src="{{ asset('favicon.png') }}" alt="Logo" class="logo-img" width="40" hidden="40" />
+                <div class="brand d-flex align-items-center">
+                    <img src="{{ asset('favicon.png') }}" alt="Logo" class="logo-img" width="60" height="0" />
                     <a href="{{ route('home.view') }}">Suplay Teck</a>
                 </div>
 
-                <div class="nav-actions">
-                    <div class="dropdown" id="userDropdown">
-                        <button class="dropdown-toggle" aria-haspopup="true" aria-expanded="false"
-                            aria-controls="dropdown-menu">
-                            <span class="username">Usuário</span>
-                            <span class="caret"></span>
-                        </button>
-
-                        <ul class="dropdown-menu" id="dropdown-menu" role="menu" aria-hidden="true">
-                            <li><a href="{{ route('login') }}">Entrar</a></li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="link-button">Sair</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
+                <div class="nav-actions d-flex align-items-center gap-3">
+                    @usuarioLogado
+                        <span class="user-name">{{ $dadosUsuario->nome_Completo }}</span>
+                        <form method="POST" action="{{ route('logout') }}" class="m-0">
+                            @csrf
+                            <button type="submit" class="logout-btn">Sair</button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="login-btn">Entrar</a>
+                    @endusuarioLogado
                 </div>
             </nav>
         </header>
@@ -69,8 +61,8 @@
             /* brilho metálico */
         }
 
-        /* Marca com efeito "bronze/ferrugem brilhante" */
-        .site-header .brand a {
+    /* Marca com efeito "bronze/ferrugem brilhante" */
+    .site-header .brand a {
             font-size: 1.5rem;
             font-weight: bold;
             background: linear-gradient(90deg, #d97706, #fbbf24, #e2e8f0);
@@ -79,6 +71,15 @@
             letter-spacing: 1px;
             text-shadow: 0 0 10px rgba(255, 190, 120, 0.5);
             transition: text-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Logo ao lado da marca */
+        .site-header .brand .logo-img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            margin-right: 0.5rem;
+            display: inline-block;
         }
 
         .site-header .brand a:hover {
@@ -93,60 +94,72 @@
             align-items: center;
         }
 
-        /* Ações do usuário */
-        .nav-actions .dropdown-toggle {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 190, 120, 0.3);
-            border-radius: 8px;
-            padding: 0.4rem 0.8rem;
+        /* Nav actions layout */
+        .nav-actions {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: #e2e8f0;
+            gap: 1.2rem;
         }
 
-        .nav-actions .dropdown-toggle:hover {
-            background: rgba(255, 190, 120, 0.1);
-            box-shadow: 0 0 10px rgba(255, 190, 120, 0.3);
+        /* Nome do usuário com estilo "bronze/ferrugem brilhante" */
+        .nav-actions .user-name {
+            font-weight: 600;
+            font-size: 1rem;
+            max-width: 220px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            background: linear-gradient(90deg, #f58402, #f3e4be, #ee7503);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+
+            text-shadow: 0 0 8px rgba(255, 190, 120, 0.5);
+            transition: text-shadow 0.3s ease, transform 0.3s ease;
         }
 
-        /* Ícone do usuário */
-        .nav-actions .icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            box-shadow: 0 0 5px rgba(255, 200, 150, 0.5);
+        .nav-actions .user-name:hover {
+            text-shadow: 0 0 12px rgba(255, 200, 150, 0.9);
+            transform: scale(1.05);
         }
 
-        /* Menu suspenso */
-        .dropdown-menu {
-            background: linear-gradient(180deg, #1e293b, #0f172a);
-            border: 1px solid rgba(255, 190, 120, 0.25);
-            border-radius: 10px;
-            padding: 0.5rem;
-            margin-top: 0.5rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
-        }
-
-        .dropdown-menu li a,
-        .dropdown-menu .link-button {
-            display: block;
-            padding: 0.5rem 1rem;
+        /* Botão sair */
+        .logout-btn {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 190, 120, 0.4);
+            border-radius: 8px;
+            padding: 0.4rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
             color: #f8fafc;
-            text-decoration: none;
-            border-radius: 6px;
-            transition: background 0.3s ease, color 0.3s ease;
+            cursor: pointer;
+
+            transition: all 0.3s ease;
         }
 
-        .dropdown-menu li a:hover,
-        .dropdown-menu .link-button:hover {
+        .logout-btn:hover {
             background: rgba(255, 190, 120, 0.15);
             color: #fbbf24;
+            box-shadow: 0 0 10px rgba(255, 190, 120, 0.4);
         }
 
+        /* Link entrar */
+        .login-btn {
+            background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #0f172a;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
 
+        .login-btn:hover {
+            background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(14, 165, 233, 0.6);
+        }
     </style>
 
     <!-- Script mínimo para abrir/fechar o dropdown -->
