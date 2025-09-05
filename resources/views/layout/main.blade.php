@@ -20,50 +20,45 @@
     @hasSection('header')
         @yield('header')
     @else
-        <header class="site-header">
-            <nav class="navbar">
-                <div class="brand d-flex align-items-center">
-                    <img src="{{ asset('favicon.png') }}" alt="Logo" class="logo-img" width="40"
-                        height="40" />
-                    <a href="{{ route('home.view') }}">Suplay Teck</a>
-                </div>
+        <header class="header">
+          <div class="brand">
+            <img src="{{ asset('favicon.png') }}" alt="Logo" class="brand-logo" />
+            <span class="brand-name">SUPPLYTEK</span>
+          </div>
 
-                <div class="nav-actions d-flex align-items-center gap-3">
-                    {{-- Menu do módulo RH (o menu flutuante será renderizado após o header, para ficar separado dos dados do usuário) --}}
+          <div class="nav-actions">
 
-                    @usuarioLogado
-                        <span class="user-name">{{ $dadosUsuario->nome_Completo }}</span>
-                        <form method="POST" action="{{ route('logout') }}" class="m-0">
-                            @csrf
-                            <button type="submit" class="logout-btn">Sair</button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}" class="login-btn">Entrar</a>
-                    @endusuarioLogado
-                </div>
-            </nav>
+
+            @usuarioLogado
+              <span class="user-name">{{ $dadosUsuario->nome_Completo ?? 'Usuário' }}</span>
+              <form method="POST" action="{{ route('logout') }}" class="m-0">
+                @csrf
+                <button type="submit" class="btn btn-ghost">Sair</button>
+              </form>
+            @else
+              <a href="{{ route('login') }}" class="btn btn-primary">Entrar</a>
+            @endusuarioLogado
+          </div>
         </header>
 
-        {{-- Secondary navigation acoplada ao header: menus principais com dropdowns --}}
-        <nav class="subnav" aria-label="Secondary navigation">
-            <ul class="subnav-list">
-                {{-- Módulo RH --}}
-                    <li class="subnav-item has-dropdown">
-                        <button class="subnav-link" aria-expanded="false">RH <span class="chev">▾</span></button>
-                        <ul class="subnav-dropdown" role="menu">
-                            @possuiQualquerUmaDasPermissoes('R_GET_RH_USUARIOS')
-                                <li role="none"><a role="menuitem" href="{{ route('usuario.view') }}" class="subnav-dropdown-item">Gestão de Usuários</a></li>
-                            @endpossuiQualquerUmaDasPermissoes
-                            @possuiQualquerUmaDasPermissoes('R_GET_RH_USUARIOS')
-                                <li role="none"><a role="menuitem" href="{{ route('usuario.view') }}" class="subnav-dropdown-item">Gestão de Usuários</a></li>
-                            @endpossuiQualquerUmaDasPermissoes
-                            @possuiQualquerUmaDasPermissoes('R_GET_RH_USUARIOS')
-                                <li role="none"><a role="menuitem" href="{{ route('usuario.view') }}" class="subnav-dropdown-item">Gestão de Usuários</a></li>
-                            @endpossuiQualquerUmaDasPermissoes
-                        </ul>
-                    </li>
-                {{-- outros módulos aqui --}}
-            </ul>
+        <nav class="navbar st-metal" aria-label="Primary navigation">
+          <div class="nav">
+            <a class="active" href="{{ route('home.view') }}">Início</a>
+
+            <div class="dropdown">
+              <a href="#" aria-haspopup="true" aria-expanded="false">Relatórios ▾</a>
+              <div class="dropdown-menu" role="menu" aria-label="Relatórios">
+                <a href="#" role="menuitem">Vendas</a>
+                <a href="#" role="menuitem">Logística</a>
+                <a href="#" role="menuitem">Financeiro</a>
+              </div>
+            </div>
+
+            <a href="#">Cadastros</a>
+          </div>
+
+          <!-- Filtros à direita da navbar -->
+          <button class="filters-toggle" id="filtersToggle">🔎 Filtros</button>
         </nav>
     @endif
 
@@ -76,9 +71,21 @@
         @yield('footer')
     </footer>
 
-    <!-- estilos movidos para resources/css/main.css e carregados via Vite -->
-
-    <!-- script removido, comportamento antigo do dropdown não é mais necessário -->
+    {{-- Pequeno script para painel de filtros (toggle) --}}
+    <script>
+      (function(){
+        const btn = document.getElementById('filtersToggle');
+        if(!btn) return;
+        btn.addEventListener('click', () => {
+          document.documentElement.classList.toggle('filters-open');
+          btn.classList.toggle('has-active');
+        });
+        // fecha com Esc
+        document.addEventListener('keydown', (e) => {
+          if(e.key === 'Escape') document.documentElement.classList.remove('filters-open');
+        });
+      })();
+    </script>
 
 </body>
 
