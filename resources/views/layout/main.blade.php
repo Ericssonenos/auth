@@ -43,10 +43,10 @@
 
         <nav class="navbar st-metal" aria-label="Primary navigation">
           <div class="nav">
-            <a class="active" href="{{ route('home.view') }}">Início</a>
+            <a class="active" href="{{ route('home.view') }}"><i class="bi bi-house-door-fill" aria-hidden="true"></i> Início</a>
 
             <div class="dropdown">
-              <a href="#" aria-haspopup="true" aria-expanded="false">Relatórios ▾</a>
+              <a href="#" aria-haspopup="true" aria-expanded="false"><i class="bi bi-bar-chart" aria-hidden="true"></i> Relatórios ▾</a>
               <div class="dropdown-menu" role="menu" aria-label="Relatórios">
                 <a href="#" role="menuitem">Vendas</a>
                 <a href="#" role="menuitem">Logística</a>
@@ -54,11 +54,11 @@
               </div>
             </div>
 
-            <a href="#">Cadastros</a>
+            <a href="#"><i class="bi bi-people" aria-hidden="true"></i> Cadastros</a>
           </div>
 
           <!-- Filtros à direita da navbar -->
-          <button class="filters-toggle" id="filtersToggle">🔎 Filtros</button>
+          <button class="filters-toggle" id="filtersToggle"><i class="bi bi-funnel" aria-hidden="true"></i> Filtros</button>
         </nav>
     @endif
 

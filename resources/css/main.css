@@ -1,38 +1,52 @@
 /* ===========================
    TOKENS (cores e efeitos)
    =========================== */
-:root{
-  /* Paleta oficial Supplytek */
-  --st-blue-1:#26b0e5;     /* azul claro (destaque) */
-  --st-blue-2:#3e4398;     /* azul profundo (base do gradiente) */
-  --st-gray:#77797b;       /* cinza metálico base */
-  --st-gray-hi:#8f9295;    /* variação clara do metal */
-  --st-gray-lo:#5f6467;    /* variação escura do metal */
+:root {
+    /* Paleta oficial Supplytek */
+    --st-blue-1: #26b0e5;
+    /* azul claro (destaque) */
+    --st-blue-2: #3e4398;
+    /* azul profundo (base do gradiente) */
+    --st-gray: #77797b;
+    /* cinza metálico base */
+    --st-gray-hi: #8f9295;
+    /* variação clara do metal */
+    --st-gray-lo: #5f6467;
+    /* variação escura do metal */
 
-  /* Neutros */
-  --st-bg:#0f1318;
-  --st-surface:#12161d;
-  --st-text:#e6eaf0;
-  --st-text-dim:#c6cbd4;
+    /* Neutros */
+    --st-bg: #0f1318;
+    --st-surface: #12161d;
+    --st-text: #e6eaf0;
+    --st-text-dim: #c6cbd4;
 
-  /* Raio, sombra, transição */
-  --st-r:12px;
-  --st-shadow-1:0 2px 6px rgba(0,0,0,.20);
-  --st-shadow-2:0 8px 24px rgba(0,0,0,.28);
-  --st-t:.24s cubic-bezier(.22,.61,.36,1);
+    /* Raio, sombra, transição */
+    --st-r: 12px;
+    --st-shadow-1: 0 2px 6px rgba(0, 0, 0, .20);
+    --st-shadow-2: 0 8px 24px rgba(0, 0, 0, .28);
+    --st-t: .24s cubic-bezier(.22, .61, .36, 1);
 
-  /* Ajuste fino do brilho */
-  --gloss-intensity:.14;
-  --metal-highlight:.06;
-  --metal-shadow:.35;
+    /* Ajuste fino do brilho */
+    --gloss-intensity: .14;
+    --metal-highlight: .06;
+    --metal-shadow: .35;
 }
 
 /* Reset mínimo */
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0; background:var(--st-bg); color:var(--st-text);
-  font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+* {
+    box-sizing: border-box
+}
+
+html,
+body {
+    height: 100%
+}
+
+body {
+    margin: 0;
+    background: var(--st-bg);
+    color: var(--st-text);
+    font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial;
 }
 
 /* ===========================
@@ -40,240 +54,493 @@ body{
    =========================== */
 
 /* Azul glossy (brilho discreto, aspecto “verniz”) */
-.st-glossy-blue{
-  background:
-    linear-gradient(180deg, rgba(255,255,255,var(--gloss-intensity)), rgba(255,255,255,0)) top/100% 40% no-repeat,
-    linear-gradient(180deg, var(--st-blue-1), var(--st-blue-2));
-  color:#fff;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.10), var(--st-shadow-1);
+.st-glossy-blue {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, var(--gloss-intensity)), rgba(255, 255, 255, 0)) top/100% 40% no-repeat,
+        linear-gradient(180deg, var(--st-blue-1), var(--st-blue-2));
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10), var(--st-shadow-1);
 }
 
 /* Metal escovado com leve relevo (engrenagem “3D” discreto) - atualizado */
-.st-metal{
-  position:relative;
-  color:#fff;
-  padding:8px 16px;
-  /* base metálica + micro-striations para efeito "escovado" */
-  background-image:
-    linear-gradient(180deg, var(--st-gray-hi), var(--st-gray) 45%, var(--st-gray-lo) 55%, var(--st-gray-hi) 100%),
-    repeating-linear-gradient(90deg,
-      rgba(255,255,255,0.03) 0 1px,
-      rgba(0,0,0,0.03) 1px 2px);
-  background-blend-mode: overlay;
-  background-size: auto, 6px 100%; /* controla espaçamento da escovação */
+.st-metal {
+    position: relative;
+    color: #fff;
+    padding: 8px 16px;
+    /* base metálica + micro-striations para efeito "escovado" */
+    background-image:
+        linear-gradient(180deg, var(--st-gray-hi), var(--st-gray) 45%, var(--st-gray-lo) 55%, var(--st-gray-hi) 100%),
+        repeating-linear-gradient(90deg,
+            rgba(255, 255, 255, 0.03) 0 1px,
+            rgba(0, 0, 0, 0.03) 1px 2px);
+    background-blend-mode: overlay;
+    background-size: auto, 6px 100%;
+    /* controla espaçamento da escovação */
 
-  /* sombras internas para relevo discreto + sombra externa para profundidade */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,var(--metal-highlight)), /* brilho fino superior */
-    inset 0 -4px 12px rgba(0,0,0,calc(var(--metal-shadow) - 0.05)), /* sombra interna inferior para relevo */
-    0 6px 18px rgba(0,0,0,0.22);
-  overflow:hidden;
+    /* sombras internas para relevo discreto + sombra externa para profundidade */
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, var(--metal-highlight)),
+        /* brilho fino superior */
+        inset 0 -4px 12px rgba(0, 0, 0, calc(var(--metal-shadow) - 0.05)),
+        /* sombra interna inferior para relevo */
+        0 6px 18px rgba(0, 0, 0, 0.22);
+    overflow: hidden;
 }
 
 /* brilho fino e faísca longitudinal (ajusta percepção 3D) */
-.st-metal::before{
-  content:""; position:absolute; inset:0; pointer-events:none;
-  background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0) 30%);
-  mix-blend-mode: screen; opacity:0.6;
+.st-metal::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 30%);
+    mix-blend-mode: screen;
+    opacity: 0.6;
 }
 
 /* beiradinha inferior simulando borda elevada */
-.st-metal::after{
-  content:""; position:absolute; left:0; right:0; bottom:0; height:6px; pointer-events:none;
-  background: linear-gradient(180deg, rgba(255,255,255,0), rgba(0,0,0,0.18));
-  transform: translateY(2px);
+.st-metal::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 6px;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.18));
+    transform: translateY(2px);
 }
 
 /* ===========================
    CABEÇALHO + NAVBAR (atualizado para metal escovado)
    =========================== */
 
-.header{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:1px 16px; gap:16px;
-  /* Gradiente azul oficial da paleta Supplytek */
-  background: linear-gradient(135deg,
-    #3e4398 0%,     /* azul profundo */
-    #26b0e5 100%);  /* azul claro */
-  box-shadow:var(--st-shadow-2);
-  position:sticky; top:0; z-index:50;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1px 16px;
+    gap: 16px;
+    /* Gradiente azul oficial da paleta Supplytek */
+    background: linear-gradient(135deg,
+            #3e4398 0%,
+            /* azul profundo */
+            #26b0e5 100%);
+    /* azul claro */
+    box-shadow: var(--st-shadow-2);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-.brand{ display:flex; align-items:center; gap:10px; }
-.brand img, .brand .brand-logo{ height:40px; width:auto; display:block; } /* favicon menor */
-.brand-name{ font-weight:700; letter-spacing:.3px; color:#e9eef6; font-family: "Glacial Indifference", system-ui, sans-serif; }
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand img,
+.brand .brand-logo {
+    height: 40px;
+    width: auto;
+    display: block;
+}
+
+/* favicon menor */
+.brand-name {
+    font-weight: 700;
+    letter-spacing: .3px;
+    color: #e9eef6;
+    font-family: "Glacial Indifference", system-ui, sans-serif;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    margin-left: 30px;
+    gap: 22px;
+    font-size: 0.95rem;
+    height: 40px;
+    background: transparent;
+    overflow: hidden;
+}
 
 /* Navbar principal (metal escovado elegante) */
-.navbar{
-  display:flex; align-items:center; justify-content:space-between; /* posiciona filtros à direita */
-  padding:8px 12px; height:48px;
-  border-radius: 0; /* removido arredondamento */
-  position:relative;
-  overflow:hidden;
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* posiciona filtros à direita */
+    padding: 8px 12px;
+    height: 48px;
+    border-radius: 0;
+    /* removido arredondamento */
+    position: relative;
+    overflow: hidden;
 
-  /* Base metálica com gradiente suave das cores oficiais */
-  background: linear-gradient(145deg,
-    #8f9295 0%,     /* var(--st-gray-hi) mais claro */
-    #77797b 30%,    /* var(--st-gray) */
-    #5f6467 70%,    /* var(--st-gray-lo) mais escuro */
-    #77797b 100%);  /* volta ao cinza base */
+    /* Base metálica com gradiente suave das cores oficiais */
+    background: linear-gradient(145deg,
+            #8f9295 0%,
+            /* var(--st-gray-hi) mais claro */
+            #77797b 30%,
+            /* var(--st-gray) */
+            #5f6467 70%,
+            /* var(--st-gray-lo) mais escuro */
+            #77797b 100%);
+    /* volta ao cinza base */
 
-  /* Sombras elegantes para relevo discreto */
-  box-shadow:
-    inset 0 1px 2px rgba(255,255,255,0.15),  /* brilho superior suave */
-    inset 0 -1px 2px rgba(0,0,0,0.20),       /* sombra inferior suave */
-    0 3px 8px rgba(0,0,0,0.12);              /* sombra externa leve */
+    /* Sombras elegantes para relevo discreto */
+    box-shadow:
+        inset 0 1px 2px rgba(255, 255, 255, 0.15),
+        /* brilho superior suave */
+        inset 0 -1px 2px rgba(0, 0, 0, 0.20),
+        /* sombra inferior suave */
+        0 3px 8px rgba(0, 0, 0, 0.12);
+    /* sombra externa leve */
 
-  border-top: 1px solid rgba(255,255,255,0.08);
-  border-bottom: 1px solid rgba(0,0,0,0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 /* Brilho metálico refinado no topo */
-.navbar::before{
-  content:"";
-  position:absolute;
-  top:0; left:0; right:0; height:40%;
-  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0));
-  pointer-events:none;
+.navbar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0));
+    pointer-events: none;
 }
 
 /* Textura escovada horizontal muito sutil */
-.navbar::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image: repeating-linear-gradient(0deg,
-    transparent 0px,
-    rgba(255,255,255,0.015) 1px,
-    transparent 2px);
-  pointer-events:none;
+.navbar::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(0deg,
+            transparent 0px,
+            rgba(255, 255, 255, 0.015) 1px,
+            transparent 2px);
+    pointer-events: none;
 }
 
 /* faixa de brilho diagonal sutil para simular aço escovado reflexivo */
-.navbar::before{
-  content:""; position:absolute; inset:0; pointer-events:none;
-  background: linear-gradient(120deg, rgba(255,255,255,0.03), rgba(255,255,255,0) 20%);
-  mix-blend-mode: screen; opacity:0.8;
+.navbar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0) 20%);
+    mix-blend-mode: screen;
+    opacity: 0.8;
 }
 
 /* linha inferior levemente elevada (efeito flange) */
-.navbar::after{
-  content:""; position:absolute; left:0; right:0; bottom:0; height:2px; pointer-events:none;
-  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.18));
+.navbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.18));
 }
 
 /* ajuste fino nos itens para legibilidade sobre metal */
-.nav a{
-  color: #f4f7fb; text-shadow: 0 1px 0 rgba(0,0,0,0.25);
+.nav a {
+    color: #f4f7fb;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+    text-decoration: none;;
+}
+
+/* ícones do menu (bootstrap-icons) */
+.nav a i,
+.filters-toggle i {
+    font-size: 18px;
+    line-height: 1;
+    vertical-align: middle;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+/* ajuste visual do botão de filtros com ícone */
+.filters-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 /* Dropdown */
-.dropdown{ position:relative; }
-.dropdown-menu{
-  position:absolute; top:calc(100% + 8px); left:0; min-width:220px;
-  background:#141922; padding:8px;
-  box-shadow:var(--st-shadow-2); border:1px solid rgba(255,255,255,.06);
-  display:none;
+.dropdown {
+    position: relative;
 }
-.dropdown:hover .dropdown-menu{ display:block; }
-.dropdown-menu a{
-  display:flex; align-items:center; gap:8px;
-  padding:10px 12px; color:#e7ebf3; text-decoration:none;
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 220px;
+    background: #141922;
+    padding: 8px;
+    box-shadow: var(--st-shadow-2);
+    border: 1px solid rgba(255, 255, 255, .06);
+    display: none;
 }
-.dropdown-menu a:hover{ background:rgba(255,255,255,.07); }
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    color: #e7ebf3;
+    text-decoration: none;
+}
+
+.dropdown-menu a:hover {
+    background: rgba(255, 255, 255, .07);
+}
 
 /* Ações do usuário */
-.nav-actions{ display:flex; align-items:center; gap:10px; }
-.user-name{
-  font-weight:600; color:#f8fafc; white-space:nowrap; max-width:220px; overflow:hidden; text-overflow:ellipsis;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Glacial Indifference", sans-serif;
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
-.btn{ border:0; border-radius:0; padding:9px 14px; font-weight:700; cursor:pointer;
-      transition:transform var(--st-t), box-shadow var(--st-t), filter var(--st-t); background:transparent; color:var(--st-text); }
-.btn:active{ transform:translateY(1px); filter:saturate(1.05); }
+
+.user-name {
+    font-weight: 600;
+    color: #f8fafc;
+    white-space: nowrap;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Glacial Indifference", sans-serif;
+}
+
+.btn {
+    border: 0;
+    border-radius: 0;
+    padding: 9px 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform var(--st-t), box-shadow var(--st-t), filter var(--st-t);
+    background: transparent;
+    color: var(--st-text);
+}
+
+.btn:active {
+    transform: translateY(1px);
+    filter: saturate(1.05);
+}
+
 /* btn-primary usa o gradiente glossy definido */
-.btn-primary{ background:linear-gradient(180deg, var(--st-blue-1), var(--st-blue-2)); color:#fff; box-shadow:0 6px 18px rgba(38,176,229,.12); padding:8px 12px; border-radius:0; }
+.btn-primary {
+    background: linear-gradient(180deg, var(--st-blue-1), var(--st-blue-2));
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(38, 176, 229, .12);
+    padding: 8px 12px;
+    border-radius: 0;
+}
+
 /* ghost secundário */
-.btn-ghost{ background:transparent; color:#e8ecf4; border:1px solid rgba(255,255,255,.12); padding:8px 12px; border-radius:0; }
-.btn-ghost:hover{ background:rgba(255,255,255,.04); }
+.btn-ghost {
+    background: transparent;
+    color: #e8ecf4;
+    border: 1px solid rgba(255, 255, 255, .12);
+    padding: 8px 12px;
+    border-radius: 0;
+}
+
+.btn-ghost:hover {
+    background: rgba(255, 255, 255, .04);
+}
 
 /* Toggle de filtros (lateral) */
-.filters-toggle{
-  display:flex; align-items:center; gap:8px;
-  height:32px; padding:0 12px; border-radius:0;
-  background:linear-gradient(180deg,#1a2130,#141a26); color:#dfe6f1;
-  border:1px solid rgba(255,255,255,.10); box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
-  cursor:pointer;
+.filters-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 0;
+    background: linear-gradient(180deg, #1a2130, #141a26);
+    color: #dfe6f1;
+    border: 1px solid rgba(255, 255, 255, .10);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+    cursor: pointer;
 }
-.filters-toggle.has-active::after{
-  content:""; width:8px; height:8px; border-radius:50%;
-  background:var(--st-blue-1); box-shadow:0 0 10px rgba(38,176,229,.8); margin-left:8px;
+
+.filters-toggle.has-active::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--st-blue-1);
+    box-shadow: 0 0 10px rgba(38, 176, 229, .8);
+    margin-left: 8px;
 }
 
 /* Containers e cartões */
-.container{ padding:18px; }
-.card{
-  background:linear-gradient(180deg,#131923,#0f141c);
-  border:1px solid rgba(255,255,255,.06);
-  border-radius:0; box-shadow:var(--st-shadow-1);
-  padding:16px;
+.container {
+    padding: 18px;
+}
+
+.card {
+    background: linear-gradient(180deg, #131923, #0f141c);
+    border: 1px solid rgba(255, 255, 255, .06);
+    border-radius: 0;
+    box-shadow: var(--st-shadow-1);
+    padding: 16px;
 }
 
 /* Tabelas (compatível com DataTables) */
-.table{
-  width:100%; border-collapse:separate; border-spacing:0;
-  background:#0f141c; border:1px solid rgba(255,255,255,.06);
-  border-radius:0; overflow:hidden;
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #0f141c;
+    border: 1px solid rgba(255, 255, 255, .06);
+    border-radius: 0;
+    overflow: hidden;
 }
-.table .badge{
-  display:inline-block; padding:4px 8px; border-radius:0; font-weight:700; font-size:12px;
-  background:linear-gradient(180deg, var(--st-blue-1), var(--st-blue-2)); color:#fff;
+
+.table .badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 0;
+    font-weight: 700;
+    font-size: 12px;
+    background: linear-gradient(180deg, var(--st-blue-1), var(--st-blue-2));
+    color: #fff;
 }
 
 /* Panel de filtros (estrutura) */
-.filters-overlay{
-  position:fixed; inset:0; background:rgba(0,0,0,.4);
-  opacity:0; pointer-events:none; transition:opacity var(--st-t); z-index:60;
+.filters-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--st-t);
+    z-index: 60;
 }
-.filters-panel{
-  position:fixed; top:0; right:-420px; width:360px; height:100%;
-  background:linear-gradient(180deg,#121722,#0e141c);
-  border-left:1px solid rgba(255,255,255,.08);
-  box-shadow:var(--st-shadow-2); padding:16px; z-index:61;
-  transition:transform var(--st-t), right var(--st-t);
-  transform:translateX(0);
+
+.filters-panel {
+    position: fixed;
+    top: 0;
+    right: -420px;
+    width: 360px;
+    height: 100%;
+    background: linear-gradient(180deg, #121722, #0e141c);
+    border-left: 1px solid rgba(255, 255, 255, .08);
+    box-shadow: var(--st-shadow-2);
+    padding: 16px;
+    z-index: 61;
+    transition: transform var(--st-t), right var(--st-t);
+    transform: translateX(0);
 }
-.filters-open .filters-overlay{ opacity=1; pointer-events:auto; }
-.filters-open .filters-panel{ right=0; }
+
+.filters-open .filters-overlay {
+    opacity=1;
+    pointer-events: auto;
+}
+
+.filters-open .filters-panel {
+    right=0;
+}
 
 /* Itens de filtro */
-.filter-group{ margin-bottom:14px; }
-.filter-label{ font-weight:700; color:#e9eef6; margin-bottom:6px; }
-.filter-input, .filter-select{
-  width:100%; padding:10px 12px; border-radius:0; border:1px solid rgba(255,255,255,.10);
-  background:#0f141c; color:#e7ecf5; outline:0; transition:border-color var(--st-t), box-shadow var(--st-t);
+.filter-group {
+    margin-bottom: 14px;
 }
-.filter-input:focus, .filter-select:focus{
-  border-color: rgba(38,176,229,.6);
-  box-shadow: 0 0 0 4px rgba(38,176,229,.15);
+
+.filter-label {
+    font-weight: 700;
+    color: #e9eef6;
+    margin-bottom: 6px;
+}
+
+.filter-input,
+.filter-select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 0;
+    border: 1px solid rgba(255, 255, 255, .10);
+    background: #0f141c;
+    color: #e7ecf5;
+    outline: 0;
+    transition: border-color var(--st-t), box-shadow var(--st-t);
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    border-color: rgba(38, 176, 229, .6);
+    box-shadow: 0 0 0 4px rgba(38, 176, 229, .15);
 }
 
 /* Acessibilidade e tema claro opcional */
-@media (prefers-reduced-motion: reduce){
-  *{ transition:none !important; animation:none !important; }
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
 }
-@media (prefers-color-scheme: light){
-  :root{ --st-bg:#f6f8fb; --st-surface:#ffffff; --st-text:#13161a; --st-text-dim:#4b525b; }
-  .header{ background:linear-gradient(180deg,#ffffff,#f2f5f9); color:#1b2128; }
-  .nav a{ color:#1a2230; }
-  .dropdown-menu{ background:#fff; color:#101418; border-color:rgba(0,0,0,.06); }
-  .table{ background:#fff; border-color:rgba(0,0,0,.08); }
-  .table thead th{ background:linear-gradient(180deg,#f3f6fb,#e9eef6); color:#0e141b; }
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --st-bg: #f6f8fb;
+        --st-surface: #ffffff;
+        --st-text: #13161a;
+        --st-text-dim: #4b525b;
+    }
+
+    .header {
+        background: linear-gradient(180deg, #ffffff, #f2f5f9);
+        color: #1b2128;
+    }
+
+    .nav a {
+        color: #1a2230;
+    }
+
+    .dropdown-menu {
+        background: #fff;
+        color: #101418;
+        border-color: rgba(0, 0, 0, .06);
+    }
+
+    .table {
+        background: #fff;
+        border-color: rgba(0, 0, 0, .08);
+    }
+
+    .table thead th {
+        background: linear-gradient(180deg, #f3f6fb, #e9eef6);
+        color: #0e141b;
+    }
 }
 
 /* Responsividade */
 @media (max-width: 640px) {
-  .nav a{ padding:0 10px; height:34px; }
-  .filters-panel{ width:100%; right:-100%; }
-  .brand-name{ font-size:0.95rem; }
+    .nav a {
+        padding: 0 10px;
+        height: 34px;
+    }
+
+    .filters-panel {
+        width: 100%;
+        right: -100%;
+    }
+
+    .brand-name {
+        font-size: 0.95rem;
+    }
 }
