@@ -23,11 +23,14 @@
         <header class="site-header">
             <nav class="navbar">
                 <div class="brand d-flex align-items-center">
-                    <img src="{{ asset('favicon.png') }}" alt="Logo" class="logo-img" width="40" height="40" />
+                    <img src="{{ asset('favicon.png') }}" alt="Logo" class="logo-img" width="40"
+                        height="40" />
                     <a href="{{ route('home.view') }}">Suplay Teck</a>
                 </div>
 
                 <div class="nav-actions d-flex align-items-center gap-3">
+                    {{-- Menu do módulo RH (o menu flutuante será renderizado após o header, para ficar separado dos dados do usuário) --}}
+
                     @usuarioLogado
                         <span class="user-name">{{ $dadosUsuario->nome_Completo }}</span>
                         <form method="POST" action="{{ route('logout') }}" class="m-0">
@@ -40,6 +43,22 @@
                 </div>
             </nav>
         </header>
+
+        {{-- Secondary navigation acoplada ao header: menus principais com dropdowns --}}
+        <nav class="subnav" aria-label="Secondary navigation">
+            <ul class="subnav-list">
+                {{-- Módulo RH --}}
+                    <li class="subnav-item has-dropdown">
+                        <button class="subnav-link" aria-expanded="false">RH <span class="chev">▾</span></button>
+                        <ul class="subnav-dropdown" role="menu">
+                            @possuiQualquerUmaDasPermissoes('R_GET_RH_USUARIOS')
+                                <li role="none"><a role="menuitem" href="{{ route('usuario.view') }}" class="subnav-dropdown-item-2">Gestão de Usuários</a></li>
+                            @endpossuiQualquerUmaDasPermissoes
+                        </ul>
+                    </li>
+                {{-- outros módulos aqui --}}
+            </ul>
+        </nav>
     @endif
 
 

@@ -106,3 +106,194 @@
     color: #fff;
     box-shadow: 0 0 12px rgba(14, 165, 233, 0.6);
 }
+
+/* Nav dropdown (module categories) */
+.nav-dropdown {
+    position: relative;
+    list-style: none;
+}
+
+.nav-dropdown summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.35rem 0.6rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #f8fafc;
+    background: rgba(15, 23, 42, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    transition: background 0.2s ease, transform 0.12s ease;
+}
+
+.nav-dropdown summary:hover {
+    background: rgba(255, 255, 255, 0.03);
+    transform: translateY(-1px);
+}
+
+.nav-dropdown .chev {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.nav-dropdown[open]>summary {
+    background: linear-gradient(90deg, rgba(217, 119, 6, 0.12), rgba(251, 191, 36, 0.06));
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.nav-dropdown .dropdown-menu {
+    margin: 0.5rem 0 0 0;
+    padding: 0.4rem;
+    position: absolute;
+    background: linear-gradient(180deg, rgba(12, 17, 27, 0.95), rgba(3, 7, 16, 0.98));
+    border: 1px solid rgba(255, 190, 120, 0.06);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(2, 6, 23, 0.6);
+    min-width: 200px;
+    right: 0;
+    list-style: none;
+    z-index: 60;
+}
+
+.nav-dropdown .dropdown-item {
+    display: block;
+    padding: 0.5rem 0.8rem;
+    color: #e6eef8;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.12s ease, color 0.12s ease;
+}
+
+.nav-dropdown .dropdown-item:hover {
+    background: rgba(255, 190, 120, 0.06);
+    color: #ffd69b;
+}
+
+/* Small screens: collapse nav-actions into a row-wrapping layout */
+@media (max-width: 640px) {
+    .nav-actions {
+        gap: 0.6rem;
+    }
+
+    .nav-dropdown .dropdown-menu {
+        position: static;
+        min-width: 150px;
+    }
+}
+
+/* On larger screens, detach submenu and fix to the right at 80% from top (outside header) */
+@media (min-width: 641px) {
+    .nav-dropdown .dropdown-menu {
+        position: fixed;
+        top: 80%;
+        right: 1.5rem;
+        /* distance from right edge */
+        transform: translateY(-50%);
+        /* subtle vertical centering relative to top:80% */
+        min-width: 260px;
+        box-shadow: 0 18px 40px rgba(2, 6, 23, 0.7);
+    }
+}
+
+/* floating-menu wrapper (separates menu from header layout) */
+.floating-menu {
+    position: fixed;
+    right: 1.5rem;
+    top: 80%;
+    transform: translateY(-50%);
+    z-index: 58;
+}
+
+/* ensure the inner dropdown inherits our visual style when detached */
+.floating-menu .dropdown-menu {
+    min-width: 240px;
+}
+
+/* Secondary navigation (acoplada ao header) */
+.subnav {
+    /* azul mais claro, visual integrado ao tema */
+    background: linear-gradient(135deg, #0f172ae0 0%, #0b1220e7 35%, #0ea4e9da 100%);
+    /* risca laranja entre header e nav */
+    border-top: 2px solid #fb923c;
+    /* laranja suave */
+
+    padding: 0 2rem;
+}
+
+.subnav-list {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0.4rem 0;
+}
+
+.subnav-item {
+    position: relative;
+}
+
+.subnav-link {
+    background: transparent;
+    border: 0;
+    color: #dbeafe;
+    /* tom claro puxado pro azul */
+    padding: 0.45rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.subnav-link:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.subnav-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    /* fundo em azul escuro para contraste com o header */
+
+
+    padding: 0.45rem;
+    border-radius: 8px;
+    min-width: 220px;
+    z-index: 60;
+
+}
+
+.subnav-dropdown-item-2 {
+    display: block;
+    padding: 0.6rem 0.9rem;
+    color: #cee7f5de;
+    /* claro puxado pro azul */
+    text-decoration: none;
+    background: linear-gradient(135deg, #0f172ae0 0%, #0b1220e7 35%, #0ea4e9da 100%);
+}
+
+.subnav-dropdown-item-2:hover {
+    background: linear-gradient(135deg, #0ea4e9da 0%, #0b1220e7 35%, #0f172ae0 100%);
+    color: #fff;
+}
+
+/* CSS-only hover to open dropdown (works for desktops). On touch devices, user taps the button and can see submenu via JS enhancement later if needed. */
+.has-dropdown:hover>.subnav-dropdown,
+.has-dropdown:focus-within>.subnav-dropdown {
+    display: block;
+}
+
+@media (max-width: 640px) {
+    .subnav-list {
+        overflow-x: auto;
+        gap: 0.6rem;
+        padding: 0.25rem 0;
+    }
+
+    .subnav-dropdown {
+        position: static;
+        box-shadow: none;
+        padding-left: 0;
+    }
+}
