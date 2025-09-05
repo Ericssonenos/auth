@@ -52,7 +52,13 @@
                         <button class="subnav-link" aria-expanded="false">RH <span class="chev">▾</span></button>
                         <ul class="subnav-dropdown" role="menu">
                             @possuiQualquerUmaDasPermissoes('R_GET_RH_USUARIOS')
-                                <li role="none"><a role="menuitem" href="{{ route('usuario.view') }}" class="subnav-dropdown-item-2">Gestão de Usuários</a></li>
+                                <li role="none"><a role="menuitem" href="{{ route('usuario.view') }}" class="subnav-dropdown-item">Gestão de Usuários</a></li>
+                            @endpossuiQualquerUmaDasPermissoes
+                            @possuiQualquerUmaDasPermissoes('R_GET_RH_USUARIOS')
+                                <li role="none"><a role="menuitem" href="{{ route('usuario.view') }}" class="subnav-dropdown-item">Gestão de Usuários</a></li>
+                            @endpossuiQualquerUmaDasPermissoes
+                            @possuiQualquerUmaDasPermissoes('R_GET_RH_USUARIOS')
+                                <li role="none"><a role="menuitem" href="{{ route('usuario.view') }}" class="subnav-dropdown-item">Gestão de Usuários</a></li>
                             @endpossuiQualquerUmaDasPermissoes
                         </ul>
                     </li>

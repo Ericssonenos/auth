@@ -1,10 +1,14 @@
 /* styles moved from layout/main.blade.php */
 
+/* Site header - Cores premium para transmitir confiança */
 .site-header {
-    background: linear-gradient(135deg, #0f172a 0%, #0b1220 35%, #0ea5e9 100%);
-    padding: 1rem 2rem;
-    box-shadow: 0 0 25px rgba(14, 165, 233, 0.3), inset 0 0 10px rgba(255, 136, 64, 0.15);
-    border-bottom: 1px solid rgba(255, 200, 150, 0.2);
+    /* Gradiente azul profissional - inspira confiança e autoridade */
+    background: linear-gradient(135deg, #0f172a 0%, #1e40af 35%, #2563eb 100%);
+    padding: 0rem 2rem;
+    /* Sombra azul premium com toque laranja */
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(249, 115, 22, 0.1);
+    /* Borda inferior laranja para continuidade visual */
+    border-bottom: 2px solid rgba(249, 115, 22, 0.3);
 }
 
 .site-header .brand a {
@@ -69,42 +73,49 @@
     transform: scale(1.05);
 }
 
-/* Botão sair */
+/* Botões de ação - Aplicação estratégica de cores de conversão */
 .logout-btn {
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 190, 120, 0.4);
+    /* Azul neutro para ação secundária */
+    background: rgba(30, 64, 175, 0.8);
+    border: 1px solid rgba(249, 115, 22, 0.4);
     border-radius: 8px;
-    padding: 0.4rem 1rem;
+    padding: 0.5rem 1.2rem;
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 600;
     color: #f8fafc;
     cursor: pointer;
-
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .logout-btn:hover {
-    background: rgba(255, 190, 120, 0.15);
-    color: #fbbf24;
-    box-shadow: 0 0 10px rgba(255, 190, 120, 0.4);
+    /* Laranja no hover - estimula decisão */
+    background: rgba(249, 115, 22, 0.9);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+    transform: translateY(-1px);
 }
 
-/* Link entrar */
+/* Link entrar - CTA principal em laranja energizante */
 .login-btn {
-    background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+    /* Laranja como CTA principal - estimula ação imediata */
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
     border-radius: 8px;
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #0f172a;
+    padding: 0.6rem 1.4rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
     text-decoration: none;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Sombra laranja para destaque */
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
 }
 
 .login-btn:hover {
-    background: linear-gradient(90deg, #38bdf8, #0ea5e9);
-    color: #fff;
-    box-shadow: 0 0 12px rgba(14, 165, 233, 0.6);
+    /* Intensifica o laranja no hover */
+    background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(249, 115, 22, 0.5);
+    transform: translateY(-2px);
 }
 
 /* Nav dropdown (module categories) */
@@ -116,7 +127,7 @@
 .nav-dropdown summary {
     list-style: none;
     cursor: pointer;
-    padding: 0.35rem 0.6rem;
+    padding: 0rem 0.6rem;
     border-radius: 8px;
     display: inline-flex;
     align-items: center;
@@ -158,7 +169,7 @@
 
 .nav-dropdown .dropdown-item {
     display: block;
-    padding: 0.5rem 0.8rem;
+    padding: 0rem 0.8rem;
     color: #e6eef8;
     text-decoration: none;
     border-radius: 6px;
@@ -210,24 +221,25 @@
     min-width: 240px;
 }
 
-/* Secondary navigation (acoplada ao header) */
+/* Secondary navigation (acoplada ao header) - Psicologia das cores aplicada */
 .subnav {
-    /* azul mais claro, visual integrado ao tema */
-    background: linear-gradient(135deg, #0f172ae0 0%, #0b1220e7 35%, #0ea4e9da 100%);
-    /* risca laranja entre header e nav */
-    border-top: 2px solid #fb923c;
-    /* laranja suave */
+    /* Azul profissional com gradiente sutil - transmite confiança e estabilidade */
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+    /* Linha laranja energizante - estimula ação e decisão */
+    border-top: 3px solid #f97316;
 
     padding: 0 2rem;
+    /* Sombra sutil para profundidade */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .subnav-list {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
     align-items: center;
     list-style: none;
     margin: 0;
-    padding: 0.4rem 0;
+    padding: 0;
 }
 
 .subnav-item {
@@ -237,45 +249,87 @@
 .subnav-link {
     background: transparent;
     border: 0;
-    color: #dbeafe;
-    /* tom claro puxado pro azul */
-    padding: 0.45rem 0.75rem;
-    border-radius: 6px;
+    color: #f8fafc;
+    /* Texto claro para máximo contraste e legibilidade */
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Easing suave */
 }
 
 .subnav-link:hover {
-    background: rgba(255, 255, 255, 0.02);
+    /* Laranja no hover - estimula interação e decisão */
+    background: rgba(249, 115, 22, 0.15);
+    color: #fed7aa;
+    transform: translateY(-1px);
+    /* Micro-interação para feedback visual */
 }
 
 .subnav-dropdown {
     display: none;
     position: absolute;
-    top: calc(100% + 6px);
+    top: calc(100% + 8px);
     left: 0;
-    /* fundo em azul escuro para contraste com o header */
-
-
-    padding: 0.45rem;
-    border-radius: 8px;
-    min-width: 220px;
-    z-index: 60;
-
+    /* Fundo azul premium com transparência controlada */
+    background: linear-gradient(145deg, #1e40af 0%, #1d4ed8 100%);
+    border: 1px solid rgba(249, 115, 22, 0.2);
+    /* Borda laranja sutil */
+    padding: 0.5rem;
+    border-radius: 12px;
+    min-width: 240px;
+    z-index: 70;
+    /* Sombra profissional elevada */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(30, 64, 175, 0.1);
+    /* Backdrop blur para modernidade */
+    backdrop-filter: blur(8px);
 }
 
-.subnav-dropdown-item-2 {
+.subnav-dropdown-item {
     display: block;
-    padding: 0.6rem 0.9rem;
-    color: #cee7f5de;
-    /* claro puxado pro azul */
+    padding: 0.75rem 1rem;
+    color: #f1f5f9;
+    /* Texto premium claro */
     text-decoration: none;
-    background: linear-gradient(135deg, #0f172ae0 0%, #0b1220e7 35%, #0ea4e9da 100%);
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease-out;
+    position: relative;
+    overflow: hidden;
 }
 
-.subnav-dropdown-item-2:hover {
-    background: linear-gradient(135deg, #0ea4e9da 0%, #0b1220e7 35%, #0f172ae0 100%);
-    color: #fff;
+.subnav-dropdown-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 3px;
+    background: #f97316;
+    /* Indicador laranja */
+    transform: scaleY(0);
+    transition: transform 0.2s ease-out;
+    transform-origin: bottom;
+}
+
+.subnav-dropdown-item:hover {
+    /* Hover state com laranja energizante */
+    background: rgba(249, 115, 22, 0.12);
+    color: #ffffff;
+    transform: translateX(4px);
+    /* Deslizamento sutil */
+}
+
+.subnav-dropdown-item:hover::before {
+    transform: scaleY(1);
+    /* Indicador aparece no hover */
+}
+
+/* Remover classe duplicada/obsoleta */
+.subnav-dropdown-item-2 {
+    display: none !important;
 }
 
 /* CSS-only hover to open dropdown (works for desktops). On touch devices, user taps the button and can see submenu via JS enhancement later if needed. */
