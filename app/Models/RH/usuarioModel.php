@@ -39,7 +39,13 @@ class usuarioModel extends Model
                         id_Usuario,
                         nome_Completo,
                         email,
-                        CASE WHEN senha_Alterada = 0 THEN NULL ELSE senha END AS senha,
+                        senha =CASE
+                            WHEN senha_Alterada = 1
+                            AND (senha_Bloqueado_em IS NULL OR senha_Bloqueado_em < GETDATE())
+                        THEN senha ELSE null END,
+                        senha_bloqueada = CASE
+                            WHEN (senha_Bloqueado_em > GETDATE())
+                            THEN 1 ELSE 0 END,
                         dat_criado_em,
                         criado_Usuario_id
                     FROM RH.Tbl_Usuarios
@@ -55,14 +61,13 @@ class usuarioModel extends Model
             $comando->execute($execParams);
             $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
 
-            if( empty($data) ){
+            if (empty($data)) {
                 return [
                     'status' => false,
                     'message' => 'Nenhum usuário encontrado com os critérios fornecidos.',
                     'data' => []
                 ];
             }
-
         } catch (\Exception $e) {
             return [
                 'status' => false,
@@ -309,13 +314,31 @@ class usuarioModel extends Model
 
             return [
                 'status' => $rows > 0,
-                'message' => $rows > 0 ? 'Usuário criado.' : 'Usuário não criado.',
+                'mensagem' => $rows > 0 ? 'Usuário criado.' : 'Usuário não criado.',
                 'data' => ['affected' => $rows]
+            ];
+        } catch (\PDOException $e) {
+            $errorInfo = $e->errorInfo ?? [];
+            $driverCode = $errorInfo[1] ?? null;
+
+            // SQL Server duplicate key codes: 2601, 2627
+            if ($e->getCode() === '23000' || in_array($driverCode, [2601, 2627], true)) {
+                return [
+                    'status' => false,
+                    'mensagem' => 'Registro já existe (chave duplicada).',
+                    'data' => null
+                ];
+            }
+
+            return [
+                'status' => false,
+                'mensagem' => 'Erro ao cadastrar usuário: ' . $e->getMessage(),
+                'data' => null
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => 'Erro inesperado: ' . $e->getMessage(),
                 'data' => null
             ];
         }

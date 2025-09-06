@@ -56,6 +56,7 @@ $(function () {
         $('#formUser')[0].reset();
         $('#btnGerarNovaSenha').addClass('d-none');
         $('#email_Modal').prop('disabled', false);
+         $('#divSenhaModal').addClass('d-none');
         new bootstrap.Modal(document.getElementById('modalUser')).show();
     });
 
@@ -69,6 +70,7 @@ $(function () {
         $('#nome_Completo_Modal').val(rowData.nome_Completo);
         $('#email_Modal').val(rowData.email);
         $('#email_Modal').prop('disabled', true);
+        $('#btnGerarNovaSenha').removeClass('d-none');
 
         if(rowData?.senha){
             $('#senha_Modal').val(rowData.senha);
@@ -82,8 +84,8 @@ $(function () {
             }, 5000);
 
         }else{
+            $('#divSenhaModal').addClass('d-none');
 
-            $('#btnGerarNovaSenha').addClass('d-none');
         }
 
 

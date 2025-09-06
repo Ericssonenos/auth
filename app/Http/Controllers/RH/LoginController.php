@@ -46,11 +46,31 @@ class LoginController extends Controller
             return redirect()->back()->withErrors(
                 [
                     'email' => 'Credenciais inválidas.',
-                    'senha' => 'Credenciais inválidas.'
                 ]
             )->withInput();
 
 
+        }
+
+        // Verificar se a conta do usuário está bloqueada
+        if ($resultadoStatus_Usuario['data'][0]['senha_bloqueada'] == 1) {
+            // Apagar dados da sessão
+            Session::forget('dadosUsuarioSession');
+
+            // Redirecionar com mensagem de erro
+            return redirect()->back()->withErrors(
+                [
+                    'email' => 'Usuário bloqueado. Contate o administrador.',
+                ]
+            )->withInput();
+        }
+
+        // Verificar se o usuário retorna senha, se sim forçar alteração
+        if ($resultadoStatus_Usuario['data'][0]['senha'] === null) {
+            // Apagar dados da sessão
+            Session::forget('dadosUsuarioSession');
+            // Redirecionar para a página de alteração de senha
+            return redirect()->route('alterar.senha.view')->with('info', 'Você precisa alterar sua senha antes de continuar.');
         }
 
         // Se o login for bem-sucedido
