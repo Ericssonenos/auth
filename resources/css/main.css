@@ -163,7 +163,7 @@ body {
     font-size: 0.95rem;
     height: 40px;
     background: transparent;
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* Navbar principal (metal escovado elegante) */
@@ -177,7 +177,7 @@ body {
     border-radius: 0;
     /* removido arredondamento */
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 
     /* Base metálica com gradiente suave das cores oficiais */
     background: linear-gradient(145deg,
@@ -254,7 +254,8 @@ body {
 .nav a {
     color: #f4f7fb;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
-    text-decoration: none;;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 /* ícones do menu (bootstrap-icons) */
@@ -281,7 +282,8 @@ body {
 
 .dropdown-menu {
     position: absolute;
-    top: calc(100% + 8px);
+    /* posiciona o menu colado ao trigger (evita lacuna que fecha o menu ao mover o mouse) */
+    top: calc(100% + 1px);
     left: 0;
     min-width: 220px;
     background: #141922;
@@ -289,9 +291,13 @@ body {
     box-shadow: var(--st-shadow-2);
     border: 1px solid rgba(255, 255, 255, .06);
     display: none;
+    z-index: 400;
 }
 
-.dropdown:hover .dropdown-menu {
+/* manter aberto quando o trigger ou o próprio menu tiverem hover/foco (melhora acessibilidade) */
+.dropdown:hover .dropdown-menu,
+.dropdown:focus-within .dropdown-menu,
+.dropdown .dropdown-menu:hover {
     display: block;
 }
 
@@ -300,12 +306,24 @@ body {
     align-items: center;
     gap: 8px;
     padding: 10px 12px;
-    color: #e7ebf3;
+    color: #3e4398;
     text-decoration: none;
 }
 
 .dropdown-menu a:hover {
-    background: rgba(255, 255, 255, .07);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.18));
+}
+
+
+.navbar a.nao-autorizado:hover {
+    /* sem destaque ao passar o mouse */
+    color: rgba(226, 12, 12, 0.45);
+}
+
+.dropdown-menu a.nao-autorizado:hover {
+    /* sem destaque ao passar o mouse */
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.788), rgba(224, 2, 2, 0.205))!important;
+    color: rgba(226, 12, 12, 0.45);
 }
 
 /* Ações do usuário */
@@ -449,12 +467,12 @@ body {
 }
 
 .filters-open .filters-overlay {
-    opacity=1;
+    opacity: 1;
     pointer-events: auto;
 }
 
 .filters-open .filters-panel {
-    right=0;
+    right: 0;
 }
 
 /* Itens de filtro */

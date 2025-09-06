@@ -18,8 +18,8 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 // Rotas RH - Usuários
 Route::prefix('rh')->group(function () {
     Route::get('usuarios', [UsuarioController::class, 'index'])->name('usuario.view')->middleware('usuarioMiddleware');
-    Route::post('api/usuarios', [UsuarioController::class, 'ObterDadosUsuarios'])->name('usuarios.get')->middleware('usuarioMiddleware'); // para DataTable AJAX
-    Route::post('usuarios', [UsuarioController::class, 'store'])->name('rh.usuarios.store')->middleware('usuarioMiddleware');
-    Route::put('usuarios/{id}', [UsuarioController::class, 'update'])->name('rh.usuarios.update')->middleware('usuarioMiddleware');
+    Route::post('api/usuarios/dados', [UsuarioController::class, 'ObterDadosUsuarios'])->name('usuarios.dados')->middleware('usuarioMiddleware'); // para DataTable AJAX
+    Route::post('api/usuario/cadastrar', [UsuarioController::class, 'CadastrarUsuarios'])->name('usuario.cadastrar')->middleware('usuarioMiddleware');
+    Route::put('api/usuario/atualizar/{id}', [UsuarioController::class, 'AtualizarUsuarios'])->name('usuario.atualizar')->middleware('usuarioMiddleware');
     // endpoints adicionais serão adicionados conforme necessidade
 });

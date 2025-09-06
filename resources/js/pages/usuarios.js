@@ -10,7 +10,7 @@ $(function () {
     const table = $('#dataTable_Usuarios').DataTable({
         ajax: {
             method: 'POST',
-            url: '/rh/api/usuarios', // rota para buscar os dados (deve retornar JSON no formato DataTables)
+            url: '/rh/api/usuarios/dados', // rota para buscar os dados (deve retornar JSON no formato DataTables)
             // dataSrc como função para validar e lidar com respostas inesperadas
             dataSrc: function (json) {
                 try {
@@ -26,12 +26,12 @@ $(function () {
                     if (Array.isArray(json)) return json;
 
                 } catch (e) {
-                     window.alerta.erroPermissoes({ mensagem: String(e) });
+                    window.alerta.erroPermissoes({ mensagem: String(e) });
                     return [];
                 }
             },
             error: function (xhr, status, error) {
-                 window.alerta.erroPermissoes(xhr.responseJSON.mensagem, xhr.responseJSON.cod_permissoesNecessarias);
+                window.alerta.erroPermissoes(xhr.responseJSON.mensagem, xhr.responseJSON.cod_permissoesNecessarias);
             }
         },
         columns: [
@@ -51,21 +51,45 @@ $(function () {
     });
 
     $('#btnNovo').on('click', function () {
-        $('#modalUserTitle').text('Novo usuário');
-        $('#userId').val('');
+        $('#modalUsuarioTitulo').text('Novo usuário');
+        $('#id_Usuario_Modal').val('');
         $('#formUser')[0].reset();
+        $('#btnGerarNovaSenha').addClass('d-none');
+        $('#email_Modal').prop('disabled', false);
         new bootstrap.Modal(document.getElementById('modalUser')).show();
     });
 
     $('#dataTable_Usuarios').on('click', '.btn-edit', function () {
 
-        $('#modalUserTitle').text('Editar usuário');
+        $('#modalUsuarioTitulo').text('Editar usuário');
 
         const $tr = $(this).closest('tr');
         const rowData = table.row($tr).data();
-        $('#userId').val(rowData.id_Usuario);
-        $('#nome_Completo').val(rowData.nome_Completo);
-        $('#email').val(rowData.email);
+        $('#id_Usuario_Modal').val(rowData.id_Usuario);
+        $('#nome_Completo_Modal').val(rowData.nome_Completo);
+        $('#email_Modal').val(rowData.email);
+        $('#email_Modal').prop('disabled', true);
+
+        if(rowData?.senha){
+            $('#senha_Modal').val(rowData.senha);
+            $('#divSenhaModal').removeClass('d-none');
+
+            // retirar typeo password por 5 segundos
+            const $senhaInput = $('#senha_Modal');
+            $senhaInput.attr('type', 'text');
+            setTimeout(() => {
+                $senhaInput.attr('type', 'password');
+            }, 5000);
+
+        }else{
+
+            $('#btnGerarNovaSenha').addClass('d-none');
+        }
+
+
+
+
+
         new bootstrap.Modal(document.getElementById('modalUser')).show();
 
     });
@@ -84,30 +108,57 @@ $(function () {
         // usar os dados para popular modal
         $('#gruposList').text('Carregando grupos do usuário ' + (rowData?.email || '??') + ' (index ' + rowIndex + ')');
 
+
+
         // mostrar modal
         new bootstrap.Modal(document.getElementById('modalGrupos')).show();
     });
 
+    // onlclik para gera nova senha
+    $('#btnGerarNovaSenha').on('click', function () {
+        const id = $('#id_Usuario_Modal').val();
+        if (!id) {
+            alert('Salve o usuário antes de gerar uma nova senha.');
+            return;
+        }
+    });
+
+
     $('#formUser').on('submit', function (e) {
         e.preventDefault();
-        const id = $('#userId').val();
-        const payload = {
-            nome_Completo: $('#nome_Completo').val(),
-            email: $('#email').val(),
-            senha: $('#senha').val()
-        };
+        const id = $('#id_Usuario_Modal').val();
+
 
         if (!id) {
+
+            const payload = {
+                nome_Completo: $('#nome_Completo_Modal').val(),
+                email: $('#email_Modal').val(),
+            };
+
             // criar
-            $.post(window.Routes?.rhUsuariosStore || '/rh/usuarios', payload, function (resp) {
-                if (resp.status) {
-                    $('#modalUser').modal('hide');
-                    table.ajax.reload();
-                } else {
-                    if (window.alerta && typeof window.alerta.erro === 'function') {
-                        window.alerta.erro(resp.message || 'Não foi possível criar', 'Erro', 7000);
+            $.ajax({
+                url: '/rh/api/usuario/cadastrar',
+                method: 'POST',
+                data: payload,
+                dataType: 'json',
+                success: function (resp) {
+                    if (resp.status) {
+                        const senhaGerada = resp.senhaGerada;
+                        $('#senha_Modal').val(senhaGerada);
+                        $('#divSenhaModal').removeClass('d-none');
+                        table.ajax.reload();
                     } else {
-                        alert('Erro: ' + (resp.message || 'não foi possível criar'));
+                        window.alerta.erro(resp.message, 'Erro', 7000);
+                    }
+                },
+                error: function (xhr, status, err) {
+
+                    if(xhr.status === 403){
+                        window.alerta.erroPermissoes(xhr.responseJSON.mensagem, xhr.responseJSON.cod_permissoesNecessarias);
+                        return;
+                    }else{
+                        window.alerta.erro('Erro: ' + (xhr.responseJSON?.mensagem || err), 'Erro', 7000);
                     }
                 }
             });

@@ -69,8 +69,10 @@ class LoginController extends Controller
         // Armazenar os dados do usuário na sessão
         Session::put('dadosUsuarioSession', $dadosUsuario);
 
-        // Redireciondo para home
-        return redirect()->route('home.view');
+        // Redirecionar para a URL que o usuário tentou acessar antes do login, ou para a home se não houver
+        $urlIntentada = session('url_intentada', route('home.view'));
+        session()->forget('url_intentada'); // Limpar a URL intentada da sessão
+        return redirect()->to($urlIntentada);
     }
 
     /**

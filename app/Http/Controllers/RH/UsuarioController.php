@@ -25,13 +25,26 @@ class UsuarioController extends Controller
         //[ ] Criar uma regra global igual o @can
         return view('RH.usuario');
     }
+    // corresponde a usuario->CadastrarUsuarios($dados)
+    public function CadastrarUsuarios(Request $request)
+    {
+        $payload = $request->all();
+        $respostaStatusCadastro = $this->usuarioModel->CadastrarUsuarios($payload); // [x] validar uso
+        if ($respostaStatusCadastro['status']) {
+            $status = 200;
+        }
+        return response()->json($respostaStatusCadastro, $status ?? 400);
+    }
 
     // corresponde a usuario->ObterDadosUsuario(['Usuario_id' => $usuario])
     public function ObterDadosUsuarios(Request $request)
     {
 
         $respostaDadosUsuario = $this->usuarioModel->ObterDadosUsuarios($request->all());
-        return response()->json($respostaDadosUsuario);
+        if ($respostaDadosUsuario['status']) {
+            $status = 200;
+        }
+        return response()->json($respostaDadosUsuario, $status ?? 400);
     }
 
     // corresponde a usuario->ObterPermissoesUsuario(['Usuario_id' => $usuario])
@@ -41,8 +54,6 @@ class UsuarioController extends Controller
         $respostaPermissoesUsuario = $this->usuarioModel->ObterPermissoesUsuario(['Usuario_id' => $usuario]);
         return response()->json($respostaPermissoesUsuario);
     }
-
-
 
     // atribui permissão direta ao usuário
     public function AtribuirPermissoes(Request $request)

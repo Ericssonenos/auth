@@ -16,11 +16,16 @@ class UsuarioMiddleware
         //[ ] testar acesso dia api ajax sem estar logado
         if (empty($dados['id_Usuario'])) {
 
+            // Atribuir a Session a rota que o usuário tentou acessar
+            session(['url_intentada' => $request->fullUrl()]);
+
             // redirecionar para o login
             return redirect()->route('login')
                 ->with('erro', [
                     'mensagem' => "Você precisa estar autenticado para acessar esta página."
                 ]);
+
+
         }
 
         // Se nenhuma permissão foi passada, tenta detectar automaticamente

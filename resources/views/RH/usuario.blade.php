@@ -23,27 +23,28 @@
             <div class="modal-content">
                 <form id="formUser">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalUserTitle">Novo usuário</h5>
+                        <h5 class="modal-title" id="modalUsuarioTitulo">Novo usuário</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" id="userId" />
+                        <input type="hidden" id="id_Usuario_Modal" />
                         <div class="mb-3">
                             <label class="form-label">Nome</label>
-                            <input id="nome_Completo" name="nome_Completo" class="form-control" />
+                            <input id="nome_Completo_Modal" name="nome_Completo" class="form-control" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input id="email" name="email" class="form-control" />
+                            <input id="email_Modal" name="email" class="form-control" disabled/>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Senha</label>
-                            <input id="senha" name="senha" class="form-control" type="password" />
+                        <div class="mb-3 d-none " id="divSenhaModal">
+                            <label class="form-label">Senha Temporária</label>
+                            <input id="senha_Modal" name="senha" class="form-control" type="password" disabled />
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Salvar</button>
+                        <button type="button" id="btnGerarNovaSenha" class="btn btn-warning">Gerar Nova Senha</button>
                     </div>
                 </form>
             </div>

@@ -48,13 +48,15 @@
             <div class="dropdown">
               <a href="#" aria-haspopup="true" aria-expanded="false"><i class="bi bi-bar-chart" aria-hidden="true"></i> Relatórios ▾</a>
               <div class="dropdown-menu" role="menu" aria-label="Relatórios">
-                <a href="#" role="menuitem">Vendas</a>
-                <a href="#" role="menuitem">Logística</a>
-                <a href="#" role="menuitem">Financeiro</a>
+                @href_permissa('relatorios.vendas', 'Vendas', 'bi bi-currency-dollar')
+                @href_permissa('relatorios.logistica', 'Logística', 'bi bi-truck')
+                @href_permissa('relatorios.financeiro', 'Financeiro', 'bi bi-wallet2')
+                @href_permissa('usuario.view', 'Cadastros', 'bi bi-people')
               </div>
             </div>
 
-            <a href="#"><i class="bi bi-people" aria-hidden="true"></i> Cadastros</a>
+
+             @href_permissa('usuario.view', 'Cadastros', 'bi bi-people')
           </div>
 
           <!-- Filtros à direita da navbar -->

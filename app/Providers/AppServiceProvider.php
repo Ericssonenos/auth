@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Services\RH\usuarioServices;
 use Illuminate\Support\Facades\Blade;
+use App\Helpers\BladeHelpers;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -61,6 +62,11 @@ class AppServiceProvider extends ServiceProvider
 
         Blade::if('usuarioLogado', function () {
             return app(usuarioServices::class)->estaLogado();
+        });
+
+        // diretiva simples que passa os 3 parâmetros para o helper
+        Blade::directive('href_permissa', function ($expression) {
+            return "<?php echo \\App\\Helpers\\BladeHelpers::hrefPermissa({$expression}); ?>";
         });
 
     }

@@ -5,6 +5,8 @@ namespace App\Models\RH;
 use App\Services\Operacao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Services\RH\usuarioServices;
+use PhpParser\Node\Expr\FuncCall;
 
 class usuarioModel extends Model
 {
@@ -36,7 +38,10 @@ class usuarioModel extends Model
         $consultaSql = "SELECT
                         id_Usuario,
                         nome_Completo,
-                        email
+                        email,
+                        CASE WHEN senha_Alterada = 0 THEN NULL ELSE senha END AS senha,
+                        dat_criado_em,
+                        criado_Usuario_id
                     FROM RH.Tbl_Usuarios
                     WHERE dat_cancelamento_em IS NULL"
             . implode(' ', $whereParams)
@@ -268,21 +273,28 @@ class usuarioModel extends Model
             ];
         }
     }
-    public function CriarUsuario($params)
+    public function CadastrarUsuarios($params)
     {
         try {
-            $nome = $params['nome_Completo'];
+            $nome_Completo = $params['nome_Completo'];
             $email = $params['email'];
-            $senha = $params['senha'];
-            $criadoId = $params['criado_Usuario_id'] ?? 1;
+            $senhaGerada = bin2hex(random_bytes(4));
+            // ober o id do usuario que está criando o novo usuário
+            $criado_Usuario_id = app(usuarioServices::class)->id_Usuario;
 
-            $consultaSql = "INSERT INTO RH.Tbl_Usuarios (nome_Completo, email, senha, criado_Usuario_id, dat_criado_em) VALUES (:nome, :email, :senha, :criadoId, GETDATE())";
+            $consultaSql = "INSERT INTO RH.Tbl_Usuarios
+                            (nome_Completo,  email,   senha,  criado_Usuario_id,  senha_Alterada,  senha_Bloqueado_em,  locatario_id)
+                            VALUES
+                            (:nome_Completo, :email, :senha, :criado_Usuario_id, :senha_Alterada, :senha_Bloqueado_em, :locatario_id)";
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute([
-                ':nome' => $nome,
+                ':nome_Completo' => $nome_Completo,
                 ':email' => $email,
-                ':senha' => $senha,
-                ':criadoId' => $criadoId
+                ':senha' => $senhaGerada,
+                ':criado_Usuario_id' => $criado_Usuario_id,
+                ':senha_Alterada' => 1,
+                ':senha_Bloqueado_em' => date('Y-m-d H:i:s', strtotime('+10 minutes')),
+                ':locatario_id' => 1 // Supplytek
             ]);
 
             $rows = $comando->rowCount();
@@ -297,8 +309,8 @@ class usuarioModel extends Model
 
             return [
                 'status' => $rows > 0,
-                'message' => $rows > 0 ? 'Usuário criado.' : 'Nenhuma linha inserida.',
-                'data' => ['affected' => $rows, 'id' => $lastId]
+                'message' => $rows > 0 ? 'Usuário criado.' : 'Usuário não criado.',
+                'data' => ['affected' => $rows]
             ];
         } catch (\Exception $e) {
             return [
@@ -308,6 +320,7 @@ class usuarioModel extends Model
             ];
         }
     }
+
 
     public function __destruct()
     {
