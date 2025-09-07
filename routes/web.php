@@ -26,6 +26,7 @@ Route::prefix('rh')->group(function () {
     Route::post('api/usuarios/dados', [UsuarioController::class, 'ObterDadosUsuarios'])->name('usuarios.dados')->middleware('usuarioMiddleware'); // para DataTable AJAX
     Route::post('api/usuario/cadastrar', [UsuarioController::class, 'CadastrarUsuarios'])->name('usuario.cadastrar')->middleware('usuarioMiddleware');
     Route::put('api/usuario/atualizar/{usuario_id}', [UsuarioController::class, 'AtualizarUsuarios'])->name('usuario.atualizar')->middleware('usuarioMiddleware');
+    Route::delete('api/usuario/deletar/{usuario_id}', [UsuarioController::class, 'DeletarUsuarios'])->name('usuario.deletar')->middleware('usuarioMiddleware');
     // permissões: obter lista com flag (possui), e endpoints para adicionar/remover
     Route::post('api/permissoes/dados', [PermissaoController::class, 'ObterDadosPermissoes'])->name('permissoes.dados')->middleware('usuarioMiddleware');
     Route::post('api/usuario/permissao/adicionar', [UsuarioController::class, 'AtribuirPermissoes'])->name('usuario.permissao.adicionar')->middleware('usuarioMiddleware');

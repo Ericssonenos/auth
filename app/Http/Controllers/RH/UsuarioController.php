@@ -118,7 +118,9 @@ class UsuarioController extends Controller
     {
         // privilégio: este endpoint deve ser protegido por middleware/permissão
         $res = $this->usuarioModel->GerarSenhaTemporaria(['usuario_id' => $id]);
+
         if (!empty($res['status']) && $res['status'] === true) {
+            Cache::put("Permissao_versao", time());
             return response()->json($res, 200);
         }
         return response()->json($res, 400);
@@ -136,6 +138,25 @@ class UsuarioController extends Controller
         if (!empty($res['status']) && $res['status'] === true) {
             return response()->json($res, 200);
         }
+        return response()->json($res, 400);
+    }
+
+    /**
+     * Excluir (logicamente) usuário identificado por id.
+     */
+    public function DeletarUsuarios(Request $request, $usuario_id)
+    {
+        $payload = $request->all();
+        $payload['usuario_id'] = $usuario_id;
+
+        $res = $this->usuarioModel->DeletarUsuarios($payload);
+
+        // atualizar versão de permissões se alteração efetiva
+        if (!empty($res['status']) && $res['status'] === true) {
+            Cache::put("Permissao_versao", time());
+            return response()->json($res, 200);
+        }
+
         return response()->json($res, 400);
     }
 }

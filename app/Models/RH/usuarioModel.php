@@ -394,6 +394,46 @@ class usuarioModel extends Model
         }
     }
 
+    /**
+     * Excluir (logicamente) um usuário. Atualiza cancelamento_Usuario_id e dat_cancelamento_em.
+     */
+    public function DeletarUsuarios($params)
+    {
+        try {
+            $usuario_id = $params['usuario_id'];
+            // id do usuário que executa a ação
+            $cancelamento_Usuario_id = app(usuarioServices::class)->id_Usuario;
+
+            $consultaSql = "UPDATE RH.Tbl_Usuarios SET cancelamento_Usuario_id = :cancelamento_Usuario_id, dat_cancelamento_em = GETDATE() WHERE id_Usuario = :id_Usuario AND dat_cancelamento_em IS NULL";
+            $comando = $this->conexao->prepare($consultaSql);
+            $comando->execute([
+                ':cancelamento_Usuario_id' => $cancelamento_Usuario_id,
+                ':id_Usuario' => $usuario_id
+            ]);
+
+            $rows = $comando->rowCount();
+            $comando->closeCursor();
+
+            if ($rows > 0) {
+                return [
+                    'status' => true,
+                    'mensagem' => 'Usuário excluído.',
+                    'data' => ['usuario_id' => $usuario_id]
+                ];
+            }
+
+            return [
+                'status' => false,
+                'mensagem' => 'Usuário não encontrado ou já excluído.'
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => false,
+                'mensagem' => $e->getMessage()
+            ];
+        }
+    }
+
 
     public function __destruct()
     {

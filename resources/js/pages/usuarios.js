@@ -102,6 +102,47 @@ $(function () {
 
     });
 
+    // habilitar botão Excluir no modal e adicionar handler
+    $('#btnExcluirUsuario').on('click', function (e) {
+        e.preventDefault();
+        if (!usuario_Id_Atual) {
+            window.alerta?.erroPermissoes?.({ mensagem: 'Nenhum usuário selecionado para exclusão.' });
+            return;
+        }
+
+        if (!confirm('Deseja realmente excluir este usuário? Esta ação é irreversível (soft-delete).')) return;
+
+        const $btn = $(this);
+        $btn.prop('disabled', true).text('Excluindo...');
+
+        $.ajax({
+            url: '/rh/api/usuario/deletar/' + encodeURIComponent(usuario_Id_Atual),
+            method: 'DELETE',
+            dataType: 'json',
+            success: function (resp) {
+                if (resp && resp.status) {
+                    // fechar modal
+                    const modalEl = document.getElementById('modalUser');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+
+                    // recarregar tabela de usuários
+                    try { table.ajax.reload(null, false); } catch (e) { }
+
+                    window.alerta.sucesso?.(resp.mensagem );
+                } else {
+                    window.alerta.erroPermissoes(xhr.responseJSON.mensagem, xhr.responseJSON.cod_permissoesNecessarias);
+                }
+            },
+            error: function (xhr, status, error) {
+                window.alerta.erroPermissoes(xhr.responseJSON.mensagem, xhr.responseJSON.cod_permissoesNecessarias);
+            },
+            complete: function () {
+                $btn.prop('disabled', false).text('Excluir');
+            }
+        });
+    });
+
     // handler simples e robusto para obter index e dados da linha
     $('#dataTable_Usuarios').on('click', '.btn-grupo', function () {
         // pegar o <tr> mais próximo

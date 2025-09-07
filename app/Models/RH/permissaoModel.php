@@ -47,7 +47,8 @@ class permissaoModel extends Model
         $left_Usuario = " ";
         if (isset($params['id_Usuario'])) {
             $left_Usuario = " LEFT JOIN RH.Tbl_Usuarios u
-                            ON rup.usuario_id = u.id_Usuario";
+                            ON rup.usuario_id = u.id_Usuario
+                            AND u.dat_cancelamento_em IS NULL";
         }
 
 
