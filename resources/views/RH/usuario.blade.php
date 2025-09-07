@@ -28,17 +28,27 @@
                     </div>
                     <div class="modal-body">
                         <input type="hidden" id="id_Usuario_Modal" />
+
                         <div class="mb-3">
-                            <label class="form-label">Nome</label>
-                            <input id="nome_Completo_Modal" name="nome_Completo" class="form-control" />
+
+                            <label class="form-label" for="nome_Completo_Modal">Nome</label>
+                            <!-- ter no minimo 4 caracteres -->
+                            <input id="nome_Completo_Modal" minlength="4" name="nome_Completo" class="form-control" maxlength="255" required aria-describedby="nome_Completo_Modal_feedback nome_Completo_Modal_help" />
+                            <div id="nome_Completo_Modal_help" class="form-text">Mínimo de 4 caracteres.</div>
+                            <div id="nome_Completo_Modal_feedback" class="invalid-feedback">&nbsp;</div>
                         </div>
+
                         <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input id="email_Modal" name="email" class="form-control" disabled/>
+                            <label class="form-label" for="email_Modal">Email</label>
+                            <input id="email_Modal" name="email" class="form-control" type="email" maxlength="255" required aria-describedby="email_Modal_feedback" />
+                            <div id="email_Modal_feedback" class="invalid-feedback">&nbsp;</div>
+                            <div class="form-text text-muted">O email será usado como login e deve ser único.</div>
                         </div>
-                        <div class="mb-3 d-none " id="divSenhaModal">
-                            <label class="form-label">Senha Temporária</label>
-                            <input id="senha_Modal" name="senha" class="form-control" type="password" disabled />
+
+                        <div class="mb-3 d-none" id="divSenhaModal">
+                            <label class="form-label" for="senha_Modal">Senha Temporária</label>
+                            <input id="senha_Modal" name="senha" class="form-control" type="password" disabled aria-describedby="senha_Modal_feedback" />
+                            <div id="senha_Modal_feedback" class="invalid-feedback">&nbsp;</div>
                         </div>
                     </div>
                     <div class="modal-footer">

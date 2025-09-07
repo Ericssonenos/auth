@@ -5,6 +5,8 @@ namespace App\Http\Controllers\RH;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 use App\Models\RH\usuarioModel;
 
 class UsuarioController extends Controller
@@ -28,9 +30,12 @@ class UsuarioController extends Controller
     // corresponde a usuario->CadastrarUsuarios($dados)
     public function CadastrarUsuarios(Request $request)
     {
+
+
+
         $payload = $request->all();
         $respostaStatusCadastro = $this->usuarioModel->CadastrarUsuarios($payload); // [x] validar uso
-        if ($respostaStatusCadastro['status']) {
+        if (!empty($respostaStatusCadastro['status']) && $respostaStatusCadastro['status'] === true) {
             $status = 200;
         }
         return response()->json($respostaStatusCadastro, $status ?? 400);
