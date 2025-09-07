@@ -27,13 +27,13 @@ class grupo extends Model
 
             return [
                 'status' => true,
-                'message' => 'Lista de grupos recuperada.',
+                'mensagem' => 'Lista de grupos recuperada.',
                 'data' => $data
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }
@@ -53,13 +53,13 @@ class grupo extends Model
 
             return [
                 'status' => true,
-                'message' => 'Grupo recuperado.',
+                'mensagem' => 'Grupo recuperado.',
                 'data' => $data
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }
@@ -90,13 +90,13 @@ class grupo extends Model
 
             return [
                 'status' => $rows > 0,
-                'message' => $rows > 0 ? 'Grupo criado.' : 'Nenhuma linha inserida.',
+                'mensagem' => $rows > 0 ? 'Grupo criado.' : 'Nenhuma linha inserida.',
                 'data' => ['affected' => $rows]
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }
@@ -134,13 +134,13 @@ class grupo extends Model
 
             return [
                 'status' => $rows > 0,
-                'message' => $rows > 0 ? 'Grupo atualizado.' : 'Nenhuma linha atualizada.',
+                'mensagem' => $rows > 0 ? 'Grupo atualizado.' : 'Nenhuma linha atualizada.',
                 'data' => ['affected' => $rows]
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }
@@ -169,13 +169,13 @@ class grupo extends Model
 
             return [
                 'status' => $rows > 0,
-                'message' => $rows > 0 ? 'Grupo removido (cancelado).' : 'Nenhuma linha atualizada.',
+                'mensagem' => $rows > 0 ? 'Grupo removido (cancelado).' : 'Nenhuma linha atualizada.',
                 'data' => ['affected' => $rows]
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }

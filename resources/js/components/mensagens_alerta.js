@@ -21,6 +21,8 @@ import '../../css/mensagens_alerta.css';
         const elementoAlerta = document.createElement('div');
         elementoAlerta.className = 'mensagem-alerta ' + (icon === 'success' ? 'success' : (icon === 'error' ? 'error' : ''));
         elementoAlerta.id = id;
+        // deixar o elemento sobreposto a outros
+        elementoAlerta.style.zIndex = 9999;
 
         const btn = document.createElement('button');
         btn.className = 'fechar';

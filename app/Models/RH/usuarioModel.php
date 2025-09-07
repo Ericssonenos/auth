@@ -25,7 +25,7 @@ class usuarioModel extends Model
         if ($parametrizacao['statusParams'] !== 200) {
             return [
                 'pdo_status' => $parametrizacao['statusParams'],
-                'message' => $parametrizacao['message'],
+                'mensagem' => $parametrizacao['mensagem'],
                 'data' => []
             ];
         }
@@ -41,7 +41,7 @@ class usuarioModel extends Model
                         email,
                         senha =CASE
                             WHEN senha_Temporaria = 1
-                            AND (senha_Bloqueado_em IS NULL OR senha_Bloqueado_em < GETDATE())
+                            AND (senha_Bloqueado_em IS NULL OR senha_Bloqueado_em > GETDATE())
                         THEN senha ELSE null END,
                         senha_bloqueada = CASE
                             WHEN (senha_Bloqueado_em < GETDATE())
@@ -64,21 +64,21 @@ class usuarioModel extends Model
             if (empty($data)) {
                 return [
                     'status' => false,
-                    'message' => 'Nenhum usuário encontrado com os critérios fornecidos.',
+                    'mensagem' => 'Nenhum usuário encontrado com os critérios fornecidos.',
                     'data' => []
                 ];
             }
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => 'Erro ao executar consulta: ' . $e->getMessage(),
+                'mensagem' => 'Erro ao executar consulta: ' . $e->getMessage(),
                 'data' => null
             ];
         }
 
         return [
             'status' => true,
-            'message' => 'Dados do usuário recuperados.',
+            'mensagem' => 'Dados do usuário recuperados.',
             'data' => $data
         ];
     }
@@ -119,13 +119,13 @@ class usuarioModel extends Model
 
             return [
                 'status' => true,
-                'message' => 'Permissões recuperadas.',
+                'mensagem' => 'Permissões recuperadas.',
                 'data' => $data
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }
@@ -157,13 +157,13 @@ class usuarioModel extends Model
 
             return [
                 'status' => $rows > 0,
-                'message' => $rows > 0 ? 'Permissão atribuída.' : 'Nenhuma linha inserida.',
+                'mensagem' => $rows > 0 ? 'Permissão atribuída.' : 'Nenhuma linha inserida.',
                 'data' => ['affected' => $rows]
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }
@@ -195,13 +195,13 @@ class usuarioModel extends Model
 
             return [
                 'status' => $rows > 0,
-                'message' => $rows > 0 ? 'Grupo atribuído ao usuário.' : 'Nenhuma linha inserida.',
+                'mensagem' => $rows > 0 ? 'Grupo atribuído ao usuário.' : 'Nenhuma linha inserida.',
                 'data' => ['affected' => $rows]
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }
@@ -231,13 +231,13 @@ class usuarioModel extends Model
 
             return [
                 'status' => $rows > 0,
-                'message' => $rows > 0 ? 'Permissão removida (cancelada).' : 'Nenhuma linha atualizada.',
+                'mensagem' => $rows > 0 ? 'Permissão removida (cancelada).' : 'Nenhuma linha atualizada.',
                 'data' => ['affected' => $rows]
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }
@@ -267,13 +267,13 @@ class usuarioModel extends Model
 
             return [
                 'status' => $rows > 0,
-                'message' => $rows > 0 ? 'Vínculo de grupo cancelado.' : 'Nenhuma linha atualizada.',
+                'mensagem' => $rows > 0 ? 'Vínculo de grupo cancelado.' : 'Nenhuma linha atualizada.',
                 'data' => ['affected' => $rows]
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }
@@ -368,12 +368,52 @@ class usuarioModel extends Model
 
             return [
                 'status' => $rows > 0,
-                'message' => $rows > 0 ? 'Senha atualizada.' : 'Nenhuma alteração realizada.'
+                'mensagem' => $rows > 0 ? 'Senha atualizada.' : 'Nenhuma alteração realizada.'
             ];
         } catch (\PDOException $e) {
-            return ['status' => false, 'message' => $e->getMessage()];
+            return ['status' => false, 'mensagem' => $e->getMessage()];
         } catch (\Exception $e) {
-            return ['status' => false, 'message' => $e->getMessage()];
+            return ['status' => false, 'mensagem' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Gera uma senha temporária para o usuário, salva no banco e retorna a senha no resultado.
+     */
+    public function GerarSenhaTemporaria($params)
+    {
+        try {
+            $Usuario_id = $params['Usuario_id'];
+
+            // gera senha aleatória (8 hex chars)
+            $senhaGerada = bin2hex(random_bytes(4));
+
+            $consultaSql = "UPDATE RH.Tbl_Usuarios
+                            SET senha = :senha,
+                                senha_Temporaria = 1,
+                                senha_Bloqueado_em = DATEADD(minute, 10, GETDATE())
+                            WHERE id_Usuario = :id_Usuario";
+
+            $comando = $this->conexao->prepare($consultaSql);
+            $comando->execute([
+                ':senha' => $senhaGerada,
+                ':id_Usuario' => $Usuario_id
+            ]);
+
+            $rows = $comando->rowCount();
+            $comando->closeCursor();
+
+            return [
+                'status' => $rows > 0,
+                'mensagem' => $rows > 0 ? 'Senha temporária gerada.' : 'Nenhuma linha atualizada.',
+                'data' => $rows > 0 ? ['senha' => $senhaGerada] : null
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => false,
+                'mensagem' => 'Erro ao gerar senha: ' . $e->getMessage(),
+                'data' => null
+            ];
         }
     }
 

@@ -94,4 +94,17 @@ class UsuarioController extends Controller
         // [ ] validar uso
         return response()->json($respostaStatusRemocao);
     }
+
+    /**
+     * Gera uma nova senha temporária para o usuário e retorna a senha gerada (JSON).
+     */
+    public function GerarNovaSenha(Request $request, $id)
+    {
+        // privilégio: este endpoint deve ser protegido por middleware/permissão
+        $res = $this->usuarioModel->GerarSenhaTemporaria(['Usuario_id' => $id]);
+        if (!empty($res['status']) && $res['status'] === true) {
+            return response()->json($res, 200);
+        }
+        return response()->json($res, 400);
+    }
 }

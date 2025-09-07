@@ -244,7 +244,7 @@ class Operacao
 
         return [
             'pdo_status' => $httpStatusCode,
-            'message'     => "errorCode: $errorCode - $userFriendlyMessage",
+            'mensagem'     => "errorCode: $errorCode - $userFriendlyMessage",
             'data'        =>  []
         ];
     }
@@ -451,7 +451,7 @@ class Operacao
             return [
                 'params_status' => 422, // Unprocessable Entity Unidade não processada
                 'error_code'  => 'Erros de parametrização',
-                'message'     => $errors,
+                'mensagem'     => $errors,
                 'data'    => $data,
             ];
         }
@@ -591,7 +591,7 @@ class Operacao
             return [
                 'statusParams' => 422,
                 'error_code' => 'Erros de parametrização',
-                'message' => $errors,
+                'mensagem' => $errors,
                 'whereParams' => [],
                 'execParams' => [],
                 'optsParams' => []

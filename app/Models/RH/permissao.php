@@ -27,13 +27,13 @@ class permissao extends Model
 
             return [
                 'status' => true,
-                'message' => 'Lista de permissoes recuperada.',
+                'mensagem' => 'Lista de permissoes recuperada.',
                 'data' => $data
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }
@@ -53,13 +53,13 @@ class permissao extends Model
 
             return [
                 'status' => true,
-                'message' => 'Permissao recuperada.',
+                'mensagem' => 'Permissao recuperada.',
                 'data' => $data
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }
@@ -88,13 +88,13 @@ class permissao extends Model
 
             return [
                 'status' => $rows > 0,
-                'message' => $rows > 0 ? 'Permissao criada.' : 'Nenhuma linha inserida.',
+                'mensagem' => $rows > 0 ? 'Permissao criada.' : 'Nenhuma linha inserida.',
                 'data' => ['affected' => $rows]
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }
@@ -129,13 +129,13 @@ class permissao extends Model
 
             return [
                 'status' => $rows > 0,
-                'message' => $rows > 0 ? 'Permissao atualizada.' : 'Nenhuma linha atualizada.',
+                'mensagem' => $rows > 0 ? 'Permissao atualizada.' : 'Nenhuma linha atualizada.',
                 'data' => ['affected' => $rows]
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }
@@ -164,13 +164,13 @@ class permissao extends Model
 
             return [
                 'status' => $rows > 0,
-                'message' => $rows > 0 ? 'Permissao removida (cancelada).' : 'Nenhuma linha atualizada.',
+                'mensagem' => $rows > 0 ? 'Permissao removida (cancelada).' : 'Nenhuma linha atualizada.',
                 'data' => ['affected' => $rows]
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'message' => $e->getMessage(),
+                'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }

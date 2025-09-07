@@ -56,7 +56,7 @@ $(function () {
         $('#formUser')[0].reset();
         $('#btnGerarNovaSenha').addClass('d-none');
         $('#email_Modal').prop('disabled', false);
-         $('#divSenhaModal').addClass('d-none');
+        $('#divSenhaModal').addClass('d-none');
         new bootstrap.Modal(document.getElementById('modalUser')).show();
     });
 
@@ -72,7 +72,7 @@ $(function () {
         $('#email_Modal').prop('disabled', true);
         $('#btnGerarNovaSenha').removeClass('d-none');
 
-        if(rowData?.senha){
+        if (rowData?.senha) {
             $('#senha_Modal').val(rowData.senha);
             $('#divSenhaModal').removeClass('d-none');
 
@@ -83,7 +83,7 @@ $(function () {
                 $senhaInput.attr('type', 'password');
             }, 5000);
 
-        }else{
+        } else {
             $('#divSenhaModal').addClass('d-none');
 
         }
@@ -116,13 +116,51 @@ $(function () {
         new bootstrap.Modal(document.getElementById('modalGrupos')).show();
     });
 
-    // onlclik para gera nova senha
+    // onlclik para gera nova senha - chama API e preenche o campo senha_Modal com a senha retornada
     $('#btnGerarNovaSenha').on('click', function () {
         const id = $('#id_Usuario_Modal').val();
-        if (!id) {
-            alert('Salve o usuário antes de gerar uma nova senha.');
-            return;
-        }
+
+        const $btn = $(this);
+        $btn.prop('disabled', true).text('Gerando...');
+
+        $.ajax({
+            url: '/rh/usuario/' + encodeURIComponent(id) + '/gerar-senha',
+            method: 'POST',
+            dataType: 'json',
+            success: function (resp) {
+                if (resp && resp.status && resp.data && resp.data.senha) {
+                    // preencher e mostrar campo de senha
+                    $('#senha_Modal').val(resp.data.senha);
+                    $('#divSenhaModal').removeClass('d-none');
+
+                    // mostrar senha em texto por 8s
+                    const $senhaInput = $('#senha_Modal');
+                    $senhaInput.attr('type', 'text');
+                    setTimeout(() => {
+                        $senhaInput.attr('type', 'password');
+                    }, 8000);
+
+                    // feedback curto ao usuário
+                    window.alerta?.sucesso?.('Senha temporária gerada com sucesso. Senha temporária: 10 minutos');
+
+                    // refresca a tabela sem fechar o modal
+                    table.ajax.reload(null, false); // false para não resetar a paginação
+                } else {
+                    window.alerta?.erro?.(resp.mensagem || 'Resposta inesperada ao gerar senha.');
+                }
+            },
+            error: function (xhr) {
+                const msg = xhr.responseJSON?.mensagem || xhr.responseJSON?.mensagem || 'Erro ao gerar senha.';
+                if (xhr.status === 403) {
+                    window.alerta.erroPermissoes?.(msg, xhr.responseJSON?.cod_permissoesNecessarias);
+                } else {
+                    window.alerta?.erro?.(msg);
+                }
+            },
+            complete: function () {
+                $btn.prop('disabled', false).text('Gerar Nova Senha');
+            }
+        });
     });
 
 
@@ -145,21 +183,14 @@ $(function () {
                 data: payload,
                 dataType: 'json',
                 success: function (resp) {
-                    if (resp.status) {
-                        const senhaGerada = resp.senhaGerada;
-                        $('#senha_Modal').val(senhaGerada);
-                        $('#divSenhaModal').removeClass('d-none');
-                        table.ajax.reload();
-                    } else {
-                        window.alerta.erro(resp.message, 'Erro', 7000);
-                    }
+
                 },
                 error: function (xhr, status, err) {
 
-                    if(xhr.status === 403){
+                    if (xhr.status === 403) {
                         window.alerta.erroPermissoes(xhr.responseJSON.mensagem, xhr.responseJSON.cod_permissoesNecessarias);
                         return;
-                    }else{
+                    } else {
                         window.alerta.erro('Erro: ' + (xhr.responseJSON?.mensagem || err), 'Erro', 7000);
                     }
                 }
@@ -175,7 +206,7 @@ $(function () {
                         $('#modalUser').modal('hide');
                         table.ajax.reload();
                     } else {
-                        alert('Erro: ' + (resp.message || 'não foi possível atualizar'));
+                        alert('Erro: ' + (resp.mensagem || 'não foi possível atualizar'));
                     }
                 },
                 error: function (xhr) {

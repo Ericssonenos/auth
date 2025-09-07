@@ -188,6 +188,6 @@ class LoginController extends Controller
             return redirect()->route('login')->with('status', 'Senha alterada com sucesso. Faça login novamente.');
         }
 
-        return redirect()->back()->withErrors(['senha_atual' => $resultado['message'] ?? 'Não foi possível alterar a senha.'])->withInput();
+        return redirect()->back()->withErrors(['senha_atual' => $resultado['mensagem'] ?? 'Não foi possível alterar a senha.'])->withInput();
     }
 }
