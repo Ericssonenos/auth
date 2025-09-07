@@ -15,8 +15,8 @@ return [
     |
     */
 
-    // Use file cache by default in local/dev to avoid requiring a DB cache table
-    'default' => env('CACHE_STORE', 'file'),
+    // Default cache store: respeita CACHE_STORE se definido; em production usa redis para propagar entre instâncias
+    'default' => env('CACHE_STORE', env('APP_ENV') === 'production' ? 'redis' : 'file'),
 
     /*
     |--------------------------------------------------------------------------

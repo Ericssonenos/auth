@@ -7,6 +7,7 @@ use App\Models\RH\usuarioModel;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Controller;
 use App\Models\RH\permissao;
+use Illuminate\Support\Facades\Cache;
 
 class LoginController extends Controller
 {
@@ -102,6 +103,15 @@ class LoginController extends Controller
         }
 
         // Armazenar os dados do usuário na sessão
+        // Sincroniza versão de permissões: se existir uma versão global, usa-a; caso contrário cria
+        $cacheKey = "perms_version_user_{$dadosUsuario['id_Usuario']}";
+        $globalVersion = Cache::get($cacheKey, null);
+        if ($globalVersion === null) {
+            $globalVersion = time();
+            Cache::put($cacheKey, $globalVersion);
+        }
+        $dadosUsuario['perms_version'] = $globalVersion;
+
         Session::put('dadosUsuarioSession', $dadosUsuario);
 
         // Redirecionar para a URL que o usuário tentou acessar antes do login, ou para a home se não houver

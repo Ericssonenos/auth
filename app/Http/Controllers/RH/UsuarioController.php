@@ -5,6 +5,7 @@ namespace App\Http\Controllers\RH;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\RH\usuarioModel;
+use Illuminate\Support\Facades\Cache;
 
 class UsuarioController extends Controller
 {
@@ -56,6 +57,15 @@ class UsuarioController extends Controller
         $respostaStatusAtribuicao = $this->usuarioModel->AtribuirPermissoes($payload);
 
         // [x] validar uso
+        // Se atribuição foi bem sucedida, atualiza versão de permissões para o usuário afetado
+        if (!empty($respostaStatusAtribuicao['status']) && $respostaStatusAtribuicao['status'] === true) {
+            $usuarioId = $payload['usuario_id'] ?? ($respostaStatusAtribuicao['data']['usuario_id'] ?? null) ?? null;
+            if (!empty($usuarioId)) {
+                $cacheKey = "perms_version_user_{$usuarioId}";
+                Cache::put($cacheKey, time());
+            }
+        }
+
         return response()->json($respostaStatusAtribuicao);
     }
 
@@ -66,6 +76,14 @@ class UsuarioController extends Controller
         $respostaStatusAtribuicao = $this->usuarioModel->AtribuirGrupo($payload);
 
         // [ ] validar uso
+        if (!empty($respostaStatusAtribuicao['status']) && $respostaStatusAtribuicao['status'] === true) {
+            $usuarioId = $payload['usuario_id'] ?? ($respostaStatusAtribuicao['data']['usuario_id'] ?? null) ?? null;
+            if (!empty($usuarioId)) {
+                $cacheKey = "perms_version_user_{$usuarioId}";
+                Cache::put($cacheKey, time());
+            }
+        }
+
         return response()->json($respostaStatusAtribuicao);
     }
 
@@ -77,6 +95,14 @@ class UsuarioController extends Controller
         $respostaStatusRemocao = $this->usuarioModel->RemoverPermissoes($payload);
 
         // [x] validar uso
+        if (!empty($respostaStatusRemocao['status']) && $respostaStatusRemocao['status'] === true) {
+            $usuarioId = $payload['usuario_id'] ?? ($respostaStatusRemocao['data']['usuario_id'] ?? null) ?? null;
+            if (!empty($usuarioId)) {
+                $cacheKey = "perms_version_user_{$usuarioId}";
+                Cache::put($cacheKey, time());
+            }
+        }
+
         return response()->json($respostaStatusRemocao);
     }
 
@@ -87,6 +113,14 @@ class UsuarioController extends Controller
         $respostaStatusRemocao = $this->usuarioModel->RemoverGrupo($payload);
 
         // [ ] validar uso
+        if (!empty($respostaStatusRemocao['status']) && $respostaStatusRemocao['status'] === true) {
+            $usuarioId = $payload['usuario_id'] ?? ($respostaStatusRemocao['data']['usuario_id'] ?? null) ?? null;
+            if (!empty($usuarioId)) {
+                $cacheKey = "perms_version_user_{$usuarioId}";
+                Cache::put($cacheKey, time());
+            }
+        }
+
         return response()->json($respostaStatusRemocao);
     }
 
