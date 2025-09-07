@@ -315,7 +315,7 @@ class usuarioModel extends Model
             return [
                 'status' => $rows > 0,
                 'mensagem' => $rows > 0 ? 'Usuário criado.' : 'Usuário não criado.',
-                'data' => ['affected' => $rows]
+                'data' => ['affected' => $rows,'senha'=>$senhaGerada, 'id_Usuario' => $lastId]
             ];
         } catch (\PDOException $e) {
             $errorInfo = $e->errorInfo ?? [];

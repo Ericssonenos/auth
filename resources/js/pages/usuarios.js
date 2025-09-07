@@ -143,6 +143,7 @@ $(function () {
                     // feedback curto ao usuário
                     window.alerta?.sucesso?.('Senha temporária gerada com sucesso. Senha temporária: 10 minutos');
 
+
                     // refresca a tabela sem fechar o modal
                     table.ajax.reload(null, false); // false para não resetar a paginação
                 } else {
@@ -183,7 +184,36 @@ $(function () {
                 data: payload,
                 dataType: 'json',
                 success: function (resp) {
+                    if (resp && resp.status) {
+                        // se a API retornar senha (resp.data.senha) preenche e mostra como no fluxo gerar-senha
+                        if (resp.data && resp.data.senha) {
+                            $('#senha_Modal').val(resp.data.senha);
+                            $('#divSenhaModal').removeClass('d-none');
 
+                            // mostrar senha em texto por 8s
+                            const $senhaInput = $('#senha_Modal');
+                            $senhaInput.attr('type', 'text');
+                            setTimeout(() => {
+                                $senhaInput.attr('type', 'password');
+                            }, 8000);
+
+                            window.alerta?.sucesso?.('Usuário criado. Senha temporária: 10 minutos');
+                        } else {
+                            window.alerta?.sucesso?.('Usuário criado com sucesso.');
+                        }
+                        // retirar botão de gerar senha para evitar múltiplos cliques rápidos
+
+                        // se a API retornar lastId, preencher o id no modal para permitir gerar nova senha / edição
+                        if (resp.data && resp.data.lastId) {
+                            $('#id_Usuario_Modal').val(resp.data.lastId);
+                            $('#email_Modal').prop('disabled', true);
+                            $('#btnGerarNovaSenha').removeClass('d-none');
+                        }
+
+                        table.ajax.reload();
+                    } else {
+                        window.alerta?.erro?.(resp.mensagem || 'Resposta inesperada do servidor.');
+                    }
                 },
                 error: function (xhr, status, err) {
 
