@@ -107,4 +107,19 @@ class UsuarioController extends Controller
         }
         return response()->json($res, 400);
     }
+
+    /**
+     * Atualiza apenas o nome_Completo do usuário identificado por id.
+     */
+    public function AtualizarUsuarios(Request $request, $id)
+    {
+        $payload = $request->all();
+        $payload['Usuario_id'] = $id;
+
+        $res = $this->usuarioModel->AtualizarUsuarios($payload);
+        if (!empty($res['status']) && $res['status'] === true) {
+            return response()->json($res, 200);
+        }
+        return response()->json($res, 400);
+    }
 }
