@@ -15,6 +15,10 @@ Route::get('login', [LoginController::class, 'exibirFormularioLogin'])->name('lo
 Route::post('login', [LoginController::class, 'processarLogin']);
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
+// alteração de senha obrigatória (exibir formulário e processar)
+Route::get('alterar-senha', [LoginController::class, 'exibirAlterarSenha'])->name('alterar.senha.view');
+Route::post('alterar-senha', [LoginController::class, 'processarAlterarSenha'])->name('alterar.senha');
+
 // Rotas RH - Usuários
 Route::prefix('rh')->group(function () {
     Route::get('usuarios', [UsuarioController::class, 'index'])->name('usuario.view')->middleware('usuarioMiddleware');

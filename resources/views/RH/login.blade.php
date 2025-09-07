@@ -25,7 +25,7 @@
                     <img src="{{ asset('images/apresentacao/logo.png') }}" alt="Logo" class="logo-img me-3"
                         onerror="this.style.display='none'" />
                     <div>
-                        <h5 id="login-title" class="text-center card-title mb-0">Suplay Teck</h5>
+                        <h5 id="login-title" class="text-white text-center card-title mb-0">Suplay Teck</h5>
                     </div>
                 </div>
 
@@ -48,12 +48,13 @@
                     @csrf
 
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
+                        <label for="email" class="text-white form-label">Email</label>
                         <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus
                             class="form-control" placeholder="seu.email@empresa.com" />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3 w-100">
+                        <label for="senha" class="text-white form-label">Senha</label>
                         <input id="senha" name="senha" type="password" required class="form-control"
                             placeholder="Sua senha" />
                     </div>

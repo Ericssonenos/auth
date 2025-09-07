@@ -24,21 +24,34 @@ class LoginController extends Controller
      */
     public function processarLogin(Request $request)
     {
+        $request->validate(
+            [
+                'email' => 'required|email',
+                'senha' => 'required|string',
+            ],
+            [
+                'email.required' => 'O campo email é obrigatório.',
+                'email.email' => 'O campo email deve ser um endereço de email válido.',
+                'senha.required' => 'O campo senha é obrigatório.',
+                'senha.string' => 'O campo senha deve ser uma string.',
+            ]
+        );
 
         $modeloUsuario = new usuarioModel();
 
         $resultadoStatus_Usuario = $modeloUsuario->ObterDadosUsuarios(
             [
                 'email' => $request['email'],
-                'senha' => $request['senha'],//[ ] usar hash apos os teste
+                'senha' => $request['senha'], //[ ] usar hash apos os teste
                 'locatario_id' => 1  // Eliezer
             ]
         );
 
         // Se o status do usuário for inválido ou os dados estiverem vazios
-        if (    $resultadoStatus_Usuario['status'] == false
+        if (
+            $resultadoStatus_Usuario['status'] == false
             ||  empty($resultadoStatus_Usuario['data'])
-            ) {
+        ) {
             // Apagar dados da sessão
             Session::forget('dadosUsuarioSession');
 
@@ -48,8 +61,6 @@ class LoginController extends Controller
                     'email' => 'Credenciais inválidas.',
                 ]
             )->withInput();
-
-
         }
 
         // Verificar se a conta do usuário está bloqueada
@@ -66,7 +77,7 @@ class LoginController extends Controller
         }
 
         // Verificar se o usuário retorna senha, se sim forçar alteração
-        if ($resultadoStatus_Usuario['data'][0]['senha'] === null) {
+        if ($resultadoStatus_Usuario['data'][0]['senha'] != null) {
             // Apagar dados da sessão
             Session::forget('dadosUsuarioSession');
             // Redirecionar para a página de alteração de senha
@@ -81,7 +92,7 @@ class LoginController extends Controller
 
         // Verificar se a resposta contém permissões
         if (isset($permissoesUsuario['status']) && $permissoesUsuario['status'] === true) {
-           $dadosUsuario['permissoesUsuario'] = $permissoesUsuario['data'];
+            $dadosUsuario['permissoesUsuario'] = $permissoesUsuario['data'];
         } else {
             $dadosUsuario['permissoesUsuario'] = [];
         }
@@ -102,5 +113,81 @@ class LoginController extends Controller
     {
         Session::forget('dadosUsuarioSession');
         return redirect()->route('login');
+    }
+
+    /**
+     * Exibir formulário de alteração de senha (quando for obrigatório alterar a senha ao logar)
+     */
+    public function exibirAlterarSenha()
+    {
+        return view('RH.alterar_senha');
+    }
+
+    /**
+     * Processar alteração de senha mínima: valida e atualiza via model
+     */
+    public function processarAlterarSenha(Request $request)
+    {
+        $request->validate(
+            [
+                'senha_atual' => 'required|string',
+                'nova_senha' => 'required|string|min:6|confirmed',
+            ],
+            [
+                'senha_atual.required' => 'A senha atual é obrigatória.',
+                'senha_atual.string' => 'A senha atual deve ser uma string.',
+                'nova_senha.required' => 'A nova senha é obrigatória.',
+                'nova_senha.string' => 'A nova senha deve ser uma string.',
+                'nova_senha.min' => 'A nova senha deve ter pelo menos :min caracteres.',
+                'nova_senha.confirmed' => 'A confirmação da nova senha não corresponde.',
+            ]
+        );
+
+        $modeloUsuario = new usuarioModel();
+        $resultadoStatus_Usuario = $modeloUsuario->ObterDadosUsuarios(
+            [
+                'email' => $request['email'],
+                'senha' => $request['senha_atual'], //[ ] usar hash apos os teste
+                'locatario_id' => 1  // Eliezer
+            ]
+        );
+
+         // Se o status do usuário for inválido ou os dados estiverem vazios
+        if (
+            $resultadoStatus_Usuario['status'] == false
+            ||  empty($resultadoStatus_Usuario['data'])
+        ) {
+            // Apagar dados da sessão
+            Session::forget('dadosUsuarioSession');
+
+            // Redirecionar com mensagem de erro
+            return redirect()->back()->withErrors(
+                [
+                    'email' => 'Credenciais inválidas.',
+                ]
+            )->withInput();
+        }
+
+        // Se o login for bem-sucedido
+        $dadosUsuario = $resultadoStatus_Usuario['data'][0];
+
+
+        $usuarioId = $dadosUsuario['id_Usuario'];
+
+        $modeloUsuario = new usuarioModel();
+        $resultado = $modeloUsuario->AtualizarSenha([
+            'Usuario_id' => $usuarioId,
+            'senha_atual' => $request->input('senha_atual'),
+            'nova_senha' => $request->input('nova_senha'),
+            'criado_Usuario_id' => $usuarioId,
+        ]);
+
+        if (!empty($resultado['status']) && $resultado['status'] === true) {
+            // atualizar sessão com novo flag
+            Session::forget('dadosUsuarioSession');
+            return redirect()->route('login')->with('status', 'Senha alterada com sucesso. Faça login novamente.');
+        }
+
+        return redirect()->back()->withErrors(['senha_atual' => $resultado['message'] ?? 'Não foi possível alterar a senha.'])->withInput();
     }
 }

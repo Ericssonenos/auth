@@ -23,7 +23,7 @@ BEGIN
         -- senha: recomendamos armazenar hash em produção.
         -- [ ] ativar apos testes: alterar para armazenar hash (bcrypt/argon2) em vez de texto claro
         senha NVARCHAR(200) NULL,
-        senha_Alterada BIT NOT NULL DEFAULT 0,
+        senha_Temporaria BIT NOT NULL DEFAULT 0,
         senha_Tentativas INT NOT NULL DEFAULT 0,
         senha_Bloqueado_em DATETIME2(3) NULL,
         locatario_id INT NOT NULL,

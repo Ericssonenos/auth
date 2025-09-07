@@ -40,11 +40,11 @@ class usuarioModel extends Model
                         nome_Completo,
                         email,
                         senha =CASE
-                            WHEN senha_Alterada = 1
+                            WHEN senha_Temporaria = 1
                             AND (senha_Bloqueado_em IS NULL OR senha_Bloqueado_em < GETDATE())
                         THEN senha ELSE null END,
                         senha_bloqueada = CASE
-                            WHEN (senha_Bloqueado_em > GETDATE())
+                            WHEN (senha_Bloqueado_em < GETDATE())
                             THEN 1 ELSE 0 END,
                         dat_criado_em,
                         criado_Usuario_id
@@ -288,16 +288,16 @@ class usuarioModel extends Model
             $criado_Usuario_id = app(usuarioServices::class)->id_Usuario;
 
             $consultaSql = "INSERT INTO RH.Tbl_Usuarios
-                            (nome_Completo,  email,   senha,  criado_Usuario_id,  senha_Alterada,  senha_Bloqueado_em,  locatario_id)
+                            (nome_Completo,  email,   senha,  criado_Usuario_id,  senha_Temporaria,  senha_Bloqueado_em,  locatario_id)
                             VALUES
-                            (:nome_Completo, :email, :senha, :criado_Usuario_id, :senha_Alterada, :senha_Bloqueado_em, :locatario_id)";
+                            (:nome_Completo, :email, :senha, :criado_Usuario_id, :senha_Temporaria, :senha_Bloqueado_em, :locatario_id)";
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute([
                 ':nome_Completo' => $nome_Completo,
                 ':email' => $email,
                 ':senha' => $senhaGerada,
                 ':criado_Usuario_id' => $criado_Usuario_id,
-                ':senha_Alterada' => 1,
+                ':senha_Temporaria' => 1,
                 ':senha_Bloqueado_em' => date('Y-m-d H:i:s', strtotime('+10 minutes')),
                 ':locatario_id' => 1 // Supplytek
             ]);
@@ -341,6 +341,39 @@ class usuarioModel extends Model
                 'mensagem' => 'Erro inesperado: ' . $e->getMessage(),
                 'data' => null
             ];
+        }
+    }
+
+    /**
+     * Atualizar senha do usuário: verifica senha atual (quando aplicável) e atualiza para a nova senha.
+     */
+    public function AtualizarSenha($params)
+    {
+        try {
+            $Usuario_id = $params['Usuario_id'];
+            $nova_senha = $params['nova_senha'];
+
+
+            // Atualizar senha e marcar senha_Temporaria
+            $consultaUpdate = "UPDATE
+                RH.Tbl_Usuarios
+                SET
+                        senha = :nova_senha
+                    ,   senha_Temporaria = 0
+                    ,   senha_Bloqueado_em = NULL
+                WHERE id_Usuario = :id_Usuario";
+            $cmd2 = $this->conexao->prepare($consultaUpdate);
+            $cmd2->execute([':nova_senha' => $nova_senha, ':id_Usuario' => $Usuario_id]);
+            $rows = $cmd2->rowCount();
+
+            return [
+                'status' => $rows > 0,
+                'message' => $rows > 0 ? 'Senha atualizada.' : 'Nenhuma alteração realizada.'
+            ];
+        } catch (\PDOException $e) {
+            return ['status' => false, 'message' => $e->getMessage()];
+        } catch (\Exception $e) {
+            return ['status' => false, 'message' => $e->getMessage()];
         }
     }
 
