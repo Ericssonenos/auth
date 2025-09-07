@@ -85,20 +85,21 @@ class usuarioModel extends Model
     public function AtribuirPermissoes($params)
     {
         try {
-            $Usuario_id = $params['Usuario_id'];
+            $usuario_id = $params['usuario_id'];
             $permissao_id = $params['permissao_id'];
-            $criado_Usuario_id = $params['criado_Usuario_id'];
+            $criado_Usuario_id = app(usuarioServices::class)->id_Usuario;
+
 
             $consultaSql = "INSERT INTO RH.Tbl_Rel_Usuarios_Permissoes (
-                        Usuario_id
+                        usuario_id
                     ,   permissao_id
                     ,   criado_Usuario_id
-                    ) VALUES (:Usuario_id, :permissao_id, :criado_Usuario_id)";
+                    ) VALUES (:usuario_id, :permissao_id, :criado_Usuario_id)";
 
             $comando = $this->conexao->prepare($consultaSql);
 
             $comando->execute([
-                ':Usuario_id' => $Usuario_id,
+                ':usuario_id' => $usuario_id,
                 ':permissao_id' => $permissao_id,
                 ':criado_Usuario_id' => $criado_Usuario_id
             ]);
@@ -123,20 +124,20 @@ class usuarioModel extends Model
     public function AtribuirGrupo($params)
     {
         try {
-            $Usuario_id = $params['Usuario_id'];
+            $usuario_id = $params['usuario_id'];
             $grupo_id = $params['grupo_id'];
             $criado_Usuario_id = $params['criado_Usuario_id'];
 
             $consultaSql = "INSERT INTO RH.Tbl_Rel_Usuarios_Grupos (
-                        Usuario_id
+                        usuario_id
                     ,   grupo_id
                     ,   criado_Usuario_id
-                    ) VALUES (:Usuario_id, :grupo_id, :criado_Usuario_id)";
+                    ) VALUES (:usuario_id, :grupo_id, :criado_Usuario_id)";
 
             $comando = $this->conexao->prepare($consultaSql);
 
             $comando->execute([
-                ':Usuario_id' => $Usuario_id,
+                ':usuario_id' => $usuario_id,
                 ':grupo_id' => $grupo_id,
                 ':criado_Usuario_id' => $criado_Usuario_id
             ]);
@@ -162,13 +163,13 @@ class usuarioModel extends Model
     {
         try {
             $id_rel_usuario_permissao = $params['id_rel_usuario_permissao'];
-            $cancelamento_Usuario_id = $params['cancelamento_Usuario_id'];
+            $cancelamento_Usuario_id = app(usuarioServices::class)->id_Usuario;
 
             $consultaSql = "UPDATE RH.Tbl_Rel_Usuarios_Permissoes
                             SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
-                                data_cancelamento_em = GETDATE()
+                                dat_cancelamento_em = GETDATE()
                             WHERE id_rel_usuario_permissao = :id_rel_usuario_permissao
-                            AND data_cancelamento_em IS NULL";
+                            AND dat_cancelamento_em IS NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
 
@@ -202,9 +203,9 @@ class usuarioModel extends Model
 
             $consultaSql = "UPDATE RH.Tbl_Rel_Usuarios_Grupos
                             SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
-                                data_cancelamento_em = GETDATE()
+                                dat_cancelamento_em = GETDATE()
                             WHERE id_rel_usuario_grupo = :id_rel_usuario_grupo
-                            AND data_cancelamento_em IS NULL";
+                            AND dat_cancelamento_em IS NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
 
@@ -302,7 +303,7 @@ class usuarioModel extends Model
     public function AtualizarSenha($params)
     {
         try {
-            $Usuario_id = $params['Usuario_id'];
+            $usuario_id = $params['usuario_id'];
             $nova_senha = $params['nova_senha'];
 
 
@@ -315,7 +316,7 @@ class usuarioModel extends Model
                     ,   dat_senha_Bloqueado_em = NULL
                 WHERE id_Usuario = :id_Usuario";
             $cmd2 = $this->conexao->prepare($consultaUpdate);
-            $cmd2->execute([':nova_senha' => $nova_senha, ':id_Usuario' => $Usuario_id]);
+            $cmd2->execute([':nova_senha' => $nova_senha, ':id_Usuario' => $usuario_id]);
             $rows = $cmd2->rowCount();
 
             return [
@@ -335,7 +336,7 @@ class usuarioModel extends Model
     public function GerarSenhaTemporaria($params)
     {
         try {
-            $Usuario_id = $params['Usuario_id'];
+            $usuario_id = $params['usuario_id'];
 
             // gera senha aleatória (8 hex chars)
             $senhaGerada = bin2hex(random_bytes(4));
@@ -349,7 +350,7 @@ class usuarioModel extends Model
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute([
                 ':senha' => $senhaGerada,
-                ':id_Usuario' => $Usuario_id
+                ':id_Usuario' => $usuario_id
             ]);
 
             $rows = $comando->rowCount();
@@ -375,7 +376,7 @@ class usuarioModel extends Model
     public function AtualizarUsuarios($params)
     {
         try {
-            $Usuario_id = $params['Usuario_id'];
+            $usuario_id = $params['usuario_id'];
             $nome_Completo = $params['nome_Completo'] ?? null;
 
             if ($nome_Completo === null) {
@@ -384,7 +385,7 @@ class usuarioModel extends Model
 
             $consultaSql = "UPDATE RH.Tbl_Usuarios SET nome_Completo = :nome_Completo WHERE id_Usuario = :id_Usuario";
             $cmd = $this->conexao->prepare($consultaSql);
-            $cmd->execute([':nome_Completo' => $nome_Completo, ':id_Usuario' => $Usuario_id]);
+            $cmd->execute([':nome_Completo' => $nome_Completo, ':id_Usuario' => $usuario_id]);
             $rows = $cmd->rowCount();
 
             return ['status' => $rows > 0, 'mensagem' => $rows > 0 ? 'Nome atualizado.' : 'Nenhuma alteração realizada.'];

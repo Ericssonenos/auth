@@ -146,7 +146,7 @@ $(function () {
                     url: '/rh/api/permissoes/dados',
                     // enviar parametros dinamicamente a cada requisição
                     data: function (requestData) {
-                        requestData.Usuario_id = usuario_Id_Atual; // variável atualizada antes do reload
+                        requestData.usuario_id = usuario_Id_Atual; // variável atualizada antes do reload
                         requestData.order_by = 'CASE WHEN rup.id_rel_usuario_permissao IS NOT NULL THEN 1 ELSE 0 END, p.cod_permissao';
                         return requestData;
                     },
@@ -171,12 +171,7 @@ $(function () {
                     { data: 'cod_permissao', title: 'Código' },
                     { data: 'descricao_permissao', title: 'Descrição' },
                     {
-                        data: null,
-                        orderable: false,
-                        // filtrar por id_rel_usuario_permissao para saber se o usuário já tem a permissão
-                        filter: function (data, type, row) {
-                            return row.id_rel_usuario_permissao ? 1 : 0;
-                        },
+                        data: 'id_rel_usuario_permissao',
                         render: function (data, type, row) {
 
                             if (row.id_rel_usuario_permissao) {
@@ -199,17 +194,21 @@ $(function () {
 
     // handler para add/remover permissões dentro do modal
     $('#dataTable_Permissoes_Modal').on('click', '.btn-permissao-toggle', function () {
+
+        const tr = $(this).closest('tr');
+        const rowData = dataTable_Permissoes_Modal.row(tr).data();
+        const usuario_id = usuario_Id_Atual;
+        const id_rel_usuario_permissao = rowData.id_rel_usuario_permissao;
+        const permissao_id = rowData.id_permissao;
+
         const $btn = $(this);
-        const action = $btn.data('action');
-        const id = $btn.data('id');
-        const usuario_Id = $('#permUsuario_id').val();
         $btn.prop('disabled', true).text('...');
 
-        if (action === 'adicionar') {
+        if (!id_rel_usuario_permissao) {
             $.ajax({
-                url: '/rh/api/usuario/' + encodeURIComponent(usuario_Id) + '/permissao/adicionar',
+                url: '/rh/api/usuario/permissao/adicionar',
                 method: 'POST',
-                data: { Usuario_id: usuario_Id, permissao_id: id, criado_Usuario_id: null },
+                data: { usuario_id: usuario_id, permissao_id: permissao_id },
                 dataType: 'json',
                 success: function (resp) {
                     if (resp && resp.status) {
@@ -232,9 +231,8 @@ $(function () {
         } else {
             // remover usa id_rel_usuario_permissao
             $.ajax({
-                url: '/rh/api/usuario/' + encodeURIComponent(usuario_Id) + '/permissao/remover',
-                method: 'POST',
-                data: { id_rel_usuario_permissao: id, cancelamento_Usuario_id: null },
+                url: '/rh/api/usuario/permissao/remover/' + encodeURIComponent(id_rel_usuario_permissao),
+                method: 'delete',
                 dataType: 'json',
                 success: function (resp) {
                     if (resp && resp.status) {

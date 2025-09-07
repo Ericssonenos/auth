@@ -51,7 +51,8 @@ class UsuarioMiddleware
 
             return response()
                 ->json(
-                    ['mensagem' => "Você não possui permissão para acessar API: {$request->path()}",
+                    // retirar os dados sensíveis do path
+                    ['mensagem' => "Você não possui permissão para acessar API: " . str_replace('_', '/', $this->formatarUriDaRequisicao($request->path())),
                     'cod_permissoesNecessarias' => $cod_permissoesNecessarias
                 ], 403);
         }

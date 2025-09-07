@@ -63,11 +63,11 @@ try {
     echo "Permissoes atribuídas ao grupo.\n";
 
     // 5) atribuir grupo ao usuario
-    $userModel->AtribuirGrupo(['Usuario_id' => $usuario, 'grupo_id' => $g->id_Grupo, 'criado_Usuario_id' => $criado_Usuario_id]);
+    $userModel->AtribuirGrupo(['usuario_id' => $usuario, 'grupo_id' => $g->id_Grupo, 'criado_Usuario_id' => $criado_Usuario_id]);
     echo "Grupo atribuído ao usuário.\n";
 
     // 6) verificar permissões do usuário (deverá retornar as SMOKE_TEST_P1 e SMOKE_TEST_P2)
-    $permissao = $userModel->ObterPermissoesUsuario(['Usuario_id' => $usuario]);
+    $permissao = $userModel->ObterPermissoesUsuario(['usuario_id' => $usuario]);
     echo "Permissoes do usuario apos atribuicao: "; print_r($permissao); echo "\n";
 
     // rollback para não deixar alterações

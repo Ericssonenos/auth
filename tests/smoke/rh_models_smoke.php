@@ -43,7 +43,7 @@ try {
 
     // Exemplo de consulta de permissões por is_usuario (usar is_usuario existente ou a que você seedou)
     $usuarioExemplo = 'C000000';
-    $permsByMat = $userModel->ObterPermissoesUsuario(['Usuario_id' => $usuarioExemplo]);
+    $permsByMat = $userModel->ObterPermissoesUsuario(['usuario_id' => $usuarioExemplo]);
     dumpResult('ObterPermissoesUsuario('.$usuarioExemplo.')', $permsByMat);
 
     echo "Smoke test concluído.\n";

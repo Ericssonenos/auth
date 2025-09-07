@@ -25,11 +25,11 @@ Route::prefix('rh')->group(function () {
     Route::get('usuarios', [UsuarioController::class, 'index'])->name('usuario.view')->middleware('usuarioMiddleware');
     Route::post('api/usuarios/dados', [UsuarioController::class, 'ObterDadosUsuarios'])->name('usuarios.dados')->middleware('usuarioMiddleware'); // para DataTable AJAX
     Route::post('api/usuario/cadastrar', [UsuarioController::class, 'CadastrarUsuarios'])->name('usuario.cadastrar')->middleware('usuarioMiddleware');
-    Route::put('api/usuario/atualizar/{id}', [UsuarioController::class, 'AtualizarUsuarios'])->name('usuario.atualizar')->middleware('usuarioMiddleware');
+    Route::put('api/usuario/atualizar/{usuario_id}', [UsuarioController::class, 'AtualizarUsuarios'])->name('usuario.atualizar')->middleware('usuarioMiddleware');
     // permissões: obter lista com flag (possui), e endpoints para adicionar/remover
     Route::post('api/permissoes/dados', [PermissaoController::class, 'ObterDadosPermissoes'])->name('permissoes.dados')->middleware('usuarioMiddleware');
-   // Route::post('api/usuario/{id}/permissao/adicionar', [UsuarioController::class, 'AtribuirPermissoes'])->name('usuario.permissao.adicionar')->middleware('usuarioMiddleware');
-   // Route::post('api/usuario/{id}/permissao/remover', [UsuarioController::class, 'RemoverPermissoes'])->name('usuario.permissao.remover')->middleware('usuarioMiddleware');
+    Route::post('api/usuario/permissao/adicionar', [UsuarioController::class, 'AtribuirPermissoes'])->name('usuario.permissao.adicionar')->middleware('usuarioMiddleware');
+    Route::delete('api/usuario/permissao/remover/{id_rel_usuario_permissao}', [UsuarioController::class, 'RemoverPermissoes'])->name('usuario.permissao.remover')->middleware('usuarioMiddleware');
     Route::post('usuario/{id}/gerar-senha', [UsuarioController::class, 'GerarNovaSenha'])->name('usuario.gerar_senha')->middleware('usuarioMiddleware');
 
 

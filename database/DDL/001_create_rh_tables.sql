@@ -124,21 +124,21 @@ BEGIN
     CREATE TABLE RH.Tbl_Rel_Usuarios_Grupos
     (
         id_rel_usuario_grupo INT IDENTITY(1,1) PRIMARY KEY,
-        Usuario_id int NOT NULL,
+        usuario_id int NOT NULL,
         grupo_id INT NOT NULL,
         criado_Usuario_id int NOT NULL,
         dat_criado_em DATETIME2(3) NOT NULL DEFAULT GETDATE(),
         cancelamento_Usuario_id INT,
         dat_cancelamento_em DATETIME2(3) NULL,
         CONSTRAINT FK_Rel_Usuario_Grupos_Grupo FOREIGN KEY (grupo_id) REFERENCES RH.Tbl_Grupos(id_Grupo),
-        CONSTRAINT FK_Rel_Usuario_Grupos_Usuario FOREIGN KEY (Usuario_id) REFERENCES RH.Tbl_Usuarios(id_Usuario)
+        CONSTRAINT FK_Rel_Usuario_Grupos_Usuario FOREIGN KEY (usuario_id) REFERENCES RH.Tbl_Usuarios(id_Usuario)
     );
     IF NOT EXISTS (SELECT 1
     FROM sys.indexes
     WHERE name = 'UQ_Rel_Usuarios_Grupos_Usuario_Grupo_Active' AND object_id = OBJECT_ID('RH.Tbl_Rel_Usuarios_Grupos'))
     BEGIN
         CREATE UNIQUE INDEX UQ_Rel_Usuarios_Grupos_Usuario_Grupo_Active
-        ON RH.Tbl_Rel_Usuarios_Grupos(Usuario_id, grupo_id)
+        ON RH.Tbl_Rel_Usuarios_Grupos(usuario_id, grupo_id)
         WHERE dat_cancelamento_em IS NULL;
     END
 END
@@ -148,21 +148,21 @@ BEGIN
     CREATE TABLE RH.Tbl_Rel_Usuarios_Permissoes
     (
         id_rel_usuario_permissao INT IDENTITY(1,1) PRIMARY KEY,
-        Usuario_id int NOT NULL,
+        usuario_id int NOT NULL,
         permissao_id INT NOT NULL,
         criado_Usuario_id int NOT NULL,
         dat_criado_em DATETIME2(3) NOT NULL DEFAULT GETDATE(),
         cancelamento_Usuario_id INT,
         dat_cancelamento_em DATETIME2(3) NULL,
         CONSTRAINT FK_Rel_Usuario_Permissao_Permissao FOREIGN KEY (permissao_id) REFERENCES RH.Tbl_Permissoes(id_permissao),
-        CONSTRAINT FK_Rel_Usuario_Permissao_Usuario FOREIGN KEY (Usuario_id) REFERENCES RH.Tbl_Usuarios(id_Usuario)
+        CONSTRAINT FK_Rel_Usuario_Permissao_Usuario FOREIGN KEY (usuario_id) REFERENCES RH.Tbl_Usuarios(id_Usuario)
     );
     IF NOT EXISTS (SELECT 1
     FROM sys.indexes
     WHERE name = 'UQ_Rel_Usuarios_Permissoes_Usuario_Permissao_Active' AND object_id = OBJECT_ID('RH.Tbl_Rel_Usuarios_Permissoes'))
     BEGIN
         CREATE UNIQUE INDEX UQ_Rel_Usuarios_Permissoes_Usuario_Permissao_Active
-        ON RH.Tbl_Rel_Usuarios_Permissoes(Usuario_id, permissao_id)
+        ON RH.Tbl_Rel_Usuarios_Permissoes(usuario_id, permissao_id)
         WHERE dat_cancelamento_em IS NULL;
     END
 END

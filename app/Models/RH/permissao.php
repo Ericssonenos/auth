@@ -39,9 +39,9 @@ class permissao extends Model
 
         // filtros de execução específicos
         $On_id_usuario = " ";
-        if(isset($params['Usuario_id'])) {
-            $On_id_usuario = "AND rup.Usuario_id = :usuario ";
-            $execParams[':usuario'] = $params['Usuario_id'];
+        if(isset($params['usuario_id'])) {
+            $On_id_usuario = "AND rup.usuario_id = :usuario ";
+            $execParams[':usuario'] = $params['usuario_id'];
         }
 
 

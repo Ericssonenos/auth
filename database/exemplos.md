@@ -9,7 +9,7 @@ User story (comportamento esperado)
 Como os dados são usados (principais operações)
 1. Atribuir usuário → grupo
 ```sql
-INSERT INTO RH.Tbl_Rel_Usuarios_Grupos (Usuario_id, grupo_id, criado_Usuario_id, dat_criado_em)
+INSERT INTO RH.Tbl_Rel_Usuarios_Grupos (usuario_id, grupo_id, criado_Usuario_id, dat_criado_em)
 VALUES (@usuario, @grupo_id, @mat_logado, GETDATE());
 ```
 
@@ -26,7 +26,7 @@ DECLARE @data DATETIME2 = GETDATE();
 
 SELECT *
 FROM RH.Tbl_Rel_Usuarios_Grupos r
-WHERE r.Usuario_id = @usuario
+WHERE r.usuario_id = @usuario
   AND r.dat_criado_em <= @data
   AND (r.dat_cancelamento_em IS NULL OR r.dat_cancelamento_em > @data);
 ```
@@ -45,7 +45,7 @@ DECLARE @data DATETIME2 = GETDATE();
 WITH UserGroups AS (
     SELECT grupo_id
     FROM RH.Tbl_Rel_Usuarios_Grupos
-    WHERE Usuario_id = @usuario
+    WHERE usuario_id = @usuario
       AND dat_criado_em <= @data
       AND (dat_cancelamento_em IS NULL OR dat_cancelamento_em > @data)
 ),
@@ -65,7 +65,7 @@ GrpHierarchy AS (
 SELECT DISTINCT p.id_permissao, p.cod_permissao
 FROM RH.Tbl_Permissoes p
 JOIN RH.Tbl_Rel_Usuarios_Permissoes rup ON rup.permissao_id = p.id_permissao
-WHERE rup.Usuario_id = @usuario
+WHERE rup.usuario_id = @usuario
   AND rup.dat_criado_em <= @data
   AND (rup.dat_cancelamento_em IS NULL OR rup.dat_cancelamento_em > @data)
 
@@ -81,7 +81,7 @@ WHERE gp.dat_criado_em <= @data
 ```
 
 Boas práticas rápidas
-- Definir índice único filtrado (ex.: `(Usuario_id, grupo_id)` WHERE dat_cancelamento_em IS NULL) para garantir só um vínculo ativo por par.
+- Definir índice único filtrado (ex.: `(usuario_id, grupo_id)` WHERE dat_cancelamento_em IS NULL) para garantir só um vínculo ativo por par.
 - Consultas temporais devem sempre usar a lógica: criado <= data AND (cancelamento IS NULL OR cancelamento > data).
 - Não usar PKs compostas que impeçam histórico (usar surrogate ID).
 - Em relatórios, criar views que exponham somente vínculos ativos para simplificar UX.

@@ -42,7 +42,7 @@ VALUES
 
 
 -- Atribuir várias permissões (evita duplicatas ativas) — insira os códigos abaixo
-DECLARE @Usuario_id         int      = 1;
+DECLARE @usuario_id         int      = 1;
 DECLARE @criado_Usuario_id  int      = 2;
 DECLARE @Permissoes TABLE (cod_permissao NVARCHAR(200));
 
@@ -59,9 +59,9 @@ VALUES
 
 -- Atribuir permissões ao usuário
 INSERT INTO RH.Tbl_Rel_Usuarios_Permissoes
-    (Usuario_id, permissao_id, criado_Usuario_id)
+    (usuario_id, permissao_id, criado_Usuario_id)
 SELECT
-    @Usuario_id,
+    @usuario_id,
     p.id_permissao,
     @criado_Usuario_id
 FROM RH.Tbl_Permissoes p
@@ -70,7 +70,7 @@ WHERE p.dat_cancelamento_em IS NULL
     AND NOT EXISTS (
       SELECT 1
     FROM RH.Tbl_Rel_Usuarios_Permissoes rup
-    WHERE rup.Usuario_id =@Usuario_id
+    WHERE rup.usuario_id =@usuario_id
         AND rup.permissao_id = p.id_permissao
         AND rup.dat_cancelamento_em IS NULL
   );

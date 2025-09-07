@@ -91,7 +91,7 @@ class LoginController extends Controller
 
         $modelPermissao = new permissao();
         // Obter permissões do usuário
-        $permissoesUsuario = $modelPermissao->ObterDadosPermissoes(['Usuario_id' => $dadosUsuario['id_Usuario']]);
+        $permissoesUsuario = $modelPermissao->ObterDadosPermissoes(['usuario_id' => $dadosUsuario['id_Usuario']]);
 
         // Verificar se a resposta contém permissões
         if (isset($permissoesUsuario['status']) && $permissoesUsuario['status'] === true) {
@@ -179,7 +179,7 @@ class LoginController extends Controller
 
         $modeloUsuario = new usuarioModel();
         $resultado = $modeloUsuario->AtualizarSenha([
-            'Usuario_id' => $usuarioId,
+            'usuario_id' => $usuarioId,
             'senha_atual' => $request->input('senha_atual'),
             'nova_senha' => $request->input('nova_senha'),
             'criado_Usuario_id' => $usuarioId,

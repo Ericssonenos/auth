@@ -30,13 +30,13 @@ try {
     // 2) garantir que o usuário tenha a permissão via vínculo direto
     $perm = DB::table('RH.Tbl_Permissoes')->where('cod_permissao', 'PERM_GERENCIAR_PERMISSOES')->first();
     $relExists = DB::table('RH.Tbl_Rel_Usuarios_Permissoes')
-        ->where('Usuario_id', $usuario)
+        ->where('usuario_id', $usuario)
         ->where('permissao_id', $perm->id_permissao)
         ->whereNull('dat_cancelamento_em')
         ->exists();
     if (!$relExists) {
         DB::table('RH.Tbl_Rel_Usuarios_Permissoes')->insert([
-            'Usuario_id' => $usuario,
+            'usuario_id' => $usuario,
             'permissao_id' => $perm->id_permissao,
             'criado_Usuario_id' => $criado_Usuario_id,
             'dat_criado_em' => DB::raw('GETDATE()')

@@ -38,7 +38,7 @@ class UsuarioController extends Controller
         return response()->json($respostaStatusCadastro, $status ?? 400);
     }
 
-    // corresponde a usuario->ObterDadosUsuario(['Usuario_id' => $usuario])
+    // corresponde a usuario->ObterDadosUsuario(['usuario_id' => $usuario])
     public function ObterDadosUsuarios(Request $request)
     {
 
@@ -55,7 +55,7 @@ class UsuarioController extends Controller
         $payload = $request->all();
         $respostaStatusAtribuicao = $this->usuarioModel->AtribuirPermissoes($payload);
 
-        // [ ] validar uso
+        // [x] validar uso
         return response()->json($respostaStatusAtribuicao);
     }
 
@@ -70,12 +70,13 @@ class UsuarioController extends Controller
     }
 
     // remove vínculo permissão->usuário
-    public function RemoverPermissoes(Request $request)
+    public function RemoverPermissoes(Request $request, $id_rel_usuario_permissao)
     {
         $payload = $request->all();
+        $payload['id_rel_usuario_permissao'] = $id_rel_usuario_permissao;
         $respostaStatusRemocao = $this->usuarioModel->RemoverPermissoes($payload);
 
-        // [ ] validar uso
+        // [x] validar uso
         return response()->json($respostaStatusRemocao);
     }
 
@@ -95,7 +96,7 @@ class UsuarioController extends Controller
     public function GerarNovaSenha(Request $request, $id)
     {
         // privilégio: este endpoint deve ser protegido por middleware/permissão
-        $res = $this->usuarioModel->GerarSenhaTemporaria(['Usuario_id' => $id]);
+        $res = $this->usuarioModel->GerarSenhaTemporaria(['usuario_id' => $id]);
         if (!empty($res['status']) && $res['status'] === true) {
             return response()->json($res, 200);
         }
@@ -105,10 +106,10 @@ class UsuarioController extends Controller
     /**
      * Atualiza apenas o nome_Completo do usuário identificado por id.
      */
-    public function AtualizarUsuarios(Request $request, $id)
+    public function AtualizarUsuarios(Request $request, $usuario_id)
     {
         $payload = $request->all();
-        $payload['Usuario_id'] = $id;
+        $payload['usuario_id'] = $usuario_id;
 
         $res = $this->usuarioModel->AtualizarUsuarios($payload);
         if (!empty($res['status']) && $res['status'] === true) {
