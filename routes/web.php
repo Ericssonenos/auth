@@ -26,5 +26,6 @@ Route::prefix('rh')->group(function () {
     Route::post('api/usuario/cadastrar', [UsuarioController::class, 'CadastrarUsuarios'])->name('usuario.cadastrar')->middleware('usuarioMiddleware');
     Route::put('api/usuario/atualizar/{id}', [UsuarioController::class, 'AtualizarUsuarios'])->name('usuario.atualizar')->middleware('usuarioMiddleware');
     Route::post('usuario/{id}/gerar-senha', [UsuarioController::class, 'GerarNovaSenha'])->name('usuario.gerar_senha')->middleware('usuarioMiddleware');
-    // endpoints adicionais serão adicionados conforme necessidade
+
+
 });

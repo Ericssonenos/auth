@@ -417,6 +417,30 @@ class usuarioModel extends Model
         }
     }
 
+    /**
+     * Atualiza apenas o nome_Completo do usuário.
+     */
+    public function AtualizarUsuarios($params)
+    {
+        try {
+            $Usuario_id = $params['Usuario_id'];
+            $nome_Completo = $params['nome_Completo'] ?? null;
+
+            if ($nome_Completo === null) {
+                return ['status' => false, 'mensagem' => 'nome_Completo é obrigatório.'];
+            }
+
+            $consultaSql = "UPDATE RH.Tbl_Usuarios SET nome_Completo = :nome_Completo WHERE id_Usuario = :id_Usuario";
+            $cmd = $this->conexao->prepare($consultaSql);
+            $cmd->execute([':nome_Completo' => $nome_Completo, ':id_Usuario' => $Usuario_id]);
+            $rows = $cmd->rowCount();
+
+            return ['status' => $rows > 0, 'mensagem' => $rows > 0 ? 'Nome atualizado.' : 'Nenhuma alteração realizada.'];
+        } catch (\Exception $e) {
+            return ['status' => false, 'mensagem' => $e->getMessage()];
+        }
+    }
+
 
     public function __destruct()
     {

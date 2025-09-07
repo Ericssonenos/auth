@@ -226,21 +226,50 @@ $(function () {
                 }
             });
         } else {
-            // atualizar (ainda não implementado no controller)
+            const payload = {
+                nome_Completo: $('#nome_Completo_Modal').val(),
+            };
+            // atualizar (usa mesmo molde de retorno/erros que o POST de cadastro)
             $.ajax({
-                url: '/rh/usuarios/' + id,
+                url: '/rh/api/usuario/atualizar/' + encodeURIComponent(id),
                 method: 'PUT',
                 data: payload,
+                dataType: 'json',
                 success: function (resp) {
-                    if (resp.status) {
+                    if (resp && resp.status) {
+                        // se a API retornar senha (resp.data.senha) preenche e mostra como no fluxo gerar-senha
+                        if (resp.data && resp.data.senha) {
+                            $('#senha_Modal').val(resp.data.senha);
+                            $('#divSenhaModal').removeClass('d-none');
+
+                            // mostrar senha em texto por 8s
+                            const $senhaInput = $('#senha_Modal');
+                            $senhaInput.attr('type', 'text');
+                            setTimeout(() => {
+                                $senhaInput.attr('type', 'password');
+                            }, 8000);
+
+                            window.alerta?.sucesso?.('Usuário atualizado. Senha temporária: 10 minutos');
+                        } else {
+                            window.alerta?.sucesso?.('Usuário atualizado com sucesso.');
+                        }
+
+
+
+                        // fecha modal e atualiza tabela
                         $('#modalUser').modal('hide');
                         table.ajax.reload();
                     } else {
-                        alert('Erro: ' + (resp.mensagem || 'não foi possível atualizar'));
+                        window.alerta?.erro?.(resp.mensagem || 'Resposta inesperada do servidor.');
                     }
                 },
-                error: function (xhr) {
-                    mostrarErroAjax(xhr);
+                error: function (xhr, status, err) {
+                    if (xhr.status === 403) {
+                        window.alerta.erroPermissoes?.(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
+                        return;
+                    } else {
+                        window.alerta?.erro?.('Erro: ' + (xhr.responseJSON?.mensagem || err), 'Erro', 7000);
+                    }
                 }
             });
         }
