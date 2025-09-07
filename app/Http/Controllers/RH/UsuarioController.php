@@ -49,14 +49,6 @@ class UsuarioController extends Controller
         return response()->json($respostaDadosUsuario, $status ?? 400);
     }
 
-    // corresponde a usuario->ObterPermissoesUsuario(['Usuario_id' => $usuario])
-    public function ObterPermissoesUsuario($usuario)
-    {
-        // [ ] validar uso
-        $respostaPermissoesUsuario = $this->usuarioModel->ObterPermissoesUsuario(['Usuario_id' => $usuario]);
-        return response()->json($respostaPermissoesUsuario);
-    }
-
     // atribui permissão direta ao usuário
     public function AtribuirPermissoes(Request $request)
     {

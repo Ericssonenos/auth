@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\RH\usuarioModel;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Controller;
+use App\Models\RH\permissao;
 
 class LoginController extends Controller
 {
@@ -87,8 +88,10 @@ class LoginController extends Controller
         // Se o login for bem-sucedido
         $dadosUsuario = $resultadoStatus_Usuario['data'][0];
 
+
+        $modelPermissao = new permissao();
         // Obter permissões do usuário
-        $permissoesUsuario = $modeloUsuario->ObterPermissoesUsuario(['Usuario_id' => $dadosUsuario['id_Usuario']]);
+        $permissoesUsuario = $modelPermissao->ObterDadosPermissoes(['Usuario_id' => $dadosUsuario['id_Usuario']]);
 
         // Verificar se a resposta contém permissões
         if (isset($permissoesUsuario['status']) && $permissoesUsuario['status'] === true) {

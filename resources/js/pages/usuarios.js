@@ -6,6 +6,17 @@ $(function () {
     // se a tabela não existir nesta página, aborta
     if (!document.querySelector('#dataTable_Usuarios')) return;
 
+    $('#btnNovo').on('click', function () {
+        $('#modalUsuarioTitulo').text('Novo usuário');
+        $('#id_Usuario_Modal').val('');
+        $('#formUser')[0].reset();
+        $('#btnGerarNovaSenha').addClass('d-none');
+        $('#email_Modal').prop('disabled', false);
+        $('#divSenhaModal').addClass('d-none');
+    // ocultar botão de mostrar senha ao criar novo usuário
+    $('#btnMostrarSenha').addClass('d-none');
+        new bootstrap.Modal(document.getElementById('modalUser')).show();
+    });
 
     const table = $('#dataTable_Usuarios').DataTable({
         ajax: {
@@ -44,22 +55,11 @@ $(function () {
                     return `
                         <button class="btn btn-sm btn-primary btn-edit" data-id="${row.id_Usuario}">Editar</button>
                         <button class="btn btn-sm btn-secondary btn-grupo" data-id="${row.id_Usuario}">Atribuir grupo</button>
+                        <button class="btn btn-sm btn-info btn-permissoes" data-id="${row.id_Usuario}">Permissões</button>
                     `;
                 }
             }
         ]
-    });
-
-    $('#btnNovo').on('click', function () {
-        $('#modalUsuarioTitulo').text('Novo usuário');
-        $('#id_Usuario_Modal').val('');
-        $('#formUser')[0].reset();
-        $('#btnGerarNovaSenha').addClass('d-none');
-        $('#email_Modal').prop('disabled', false);
-        $('#divSenhaModal').addClass('d-none');
-    // ocultar botão de mostrar senha ao criar novo usuário
-    $('#btnMostrarSenha').addClass('d-none');
-        new bootstrap.Modal(document.getElementById('modalUser')).show();
     });
 
     $('#dataTable_Usuarios').on('click', '.btn-edit', function () {
@@ -97,10 +97,6 @@ $(function () {
 
         }
 
-
-
-
-
         new bootstrap.Modal(document.getElementById('modalUser')).show();
 
     });
@@ -124,6 +120,144 @@ $(function () {
         // mostrar modal
         new bootstrap.Modal(document.getElementById('modalGrupos')).show();
     });
+
+
+    //
+    //
+    // abrir modal de permissões
+    let dataTable_Permissoes_Modal = null;
+    $('#dataTable_Usuarios').on('click', '.btn-permissoes', function () {
+        const $tr = $(this).closest('tr');
+        const rowData = table.row($tr).data();
+        const usuario_Id = rowData.id_Usuario;
+        // abrir modal
+        const modal = new bootstrap.Modal(document.getElementById('modalPermissoes'));
+        modal.show();
+
+
+
+        // inicializar ou recarregar DataTable de permissões
+        // passar o id_usuario pelo body da requisição POST
+        if (!dataTable_Permissoes_Modal) {
+            dataTable_Permissoes_Modal = $('#dataTable_Permissoes_Modal').DataTable({
+                ajax: {
+                    method: 'POST',
+                    url: '/rh/api/permissoes/dados',
+                    data: {
+                         Usuario_id: usuario_Id,
+                         order_by: 'CASE WHEN rup.id_rel_usuario_permissao IS NOT NULL THEN 1 ELSE 0 END, p.cod_permissao'
+                        },
+                    dataSrc: function (json) {
+                        try {
+                            if (!json) {
+                                window.alerta.erroPermissoes(mensagem = 'Acesso negado');
+                                return [];
+                            }
+                            if (Array.isArray(json.data)) return json.data;
+                            if (Array.isArray(json)) return json;
+                        } catch (e) {
+                            window.alerta.erroPermissoes({ mensagem: String(e) });
+                            return [];
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
+                    }
+                },
+                columns: [
+                    { data: 'cod_permissao', title: 'Código' },
+                    { data: 'descricao_permissao', title: 'Descrição' },
+                    {
+                        data: null,
+                        orderable: false,
+                        // filtrar por id_rel_usuario_permissao para saber se o usuário já tem a permissão
+                        filter: function (data, type, row) {
+                            return row.id_rel_usuario_permissao ? 1 : 0;
+                        },
+                        render: function (data, type, row) {
+
+                            if (row.id_rel_usuario_permissao) {
+                                return `<button class="btn btn-sm btn-danger btn-permissao-toggle" data-id="${row.id_rel_usuario_permissao}" data-action="remover">Remover</button>`;
+                            }
+                            return `<button class="btn btn-sm btn-success btn-permissao-toggle" data-id="${row.id_permissao}" data-action="adicionar">Adicionar</button>`;
+                        }
+                    }
+                ]
+            });
+        } else {
+            // precisa limpar tabela anterior
+            $('#dataTable_Permissoes_Modal').DataTable().clear().draw();
+            // precisa passar um novo parâmetro para o ajax.data
+            dataTable_Permissoes_Modal.ajax.params({
+                Usuario_id: usuario_Id,
+                order_by: 'CASE WHEN rup.id_rel_usuario_permissao IS NOT NULL THEN 1 ELSE 0 END, p.cod_permissao'
+            });
+            dataTable_Permissoes_Modal.ajax.reload(null, true);
+
+        }
+    });
+
+
+    // handler para add/remover permissões dentro do modal
+    $('#dataTable_Permissoes_Modal').on('click', '.btn-permissao-toggle', function () {
+        const $btn = $(this);
+        const action = $btn.data('action');
+        const id = $btn.data('id');
+        const usuario_Id = $('#permUsuario_id').val();
+        $btn.prop('disabled', true).text('...');
+
+        if (action === 'adicionar') {
+            $.ajax({
+                url: '/rh/api/usuario/' + encodeURIComponent(usuario_Id) + '/permissao/adicionar',
+                method: 'POST',
+                data: { Usuario_id: usuario_Id, permissao_id: id, criado_Usuario_id: null },
+                dataType: 'json',
+                success: function (resp) {
+                    if (resp && resp.status) {
+                        window.alerta?.sucesso?.(resp.mensagem || 'Permissão adicionada.');
+                        dataTable_Permissoes_Modal.ajax.reload(null, false);
+                    } else {
+                        window.alerta?.erro?.(resp.mensagem || 'Erro ao adicionar permissão.');
+                        $btn.prop('disabled', false).text('Adicionar');
+                    }
+                },
+                error: function (xhr) {
+                    if (xhr.status === 403) {
+                        window.alerta.erroPermissoes(xhr.responseJSON.mensagem, xhr.responseJSON.cod_permissoesNecessarias);
+                        return;
+                    } else {
+                        window.alerta.erro('Erro: ' + (xhr.responseJSON?.mensagem || err), 'Erro', 7000);
+                    }
+                }
+            });
+        } else {
+            // remover usa id_rel_usuario_permissao
+            $.ajax({
+                url: '/rh/api/usuario/' + encodeURIComponent(usuario_Id) + '/permissao/remover',
+                method: 'POST',
+                data: { id_rel_usuario_permissao: id, cancelamento_Usuario_id: null },
+                dataType: 'json',
+                success: function (resp) {
+                    if (resp && resp.status) {
+                        window.alerta?.sucesso?.(resp.mensagem || 'Permissão removida.');
+                        dataTable_Permissoes_Modal.ajax.reload(null, false);
+                    } else {
+                        window.alerta?.erro?.(resp.mensagem || 'Erro ao remover permissão.');
+                        $btn.prop('disabled', false).text('Remover');
+                    }
+                },
+                error: function (xhr) {
+                   if (xhr.status === 403) {
+                        window.alerta.erroPermissoes(xhr.responseJSON.mensagem, xhr.responseJSON.cod_permissoesNecessarias);
+                        return;
+                    } else {
+                        window.alerta.erro('Erro: ' + (xhr.responseJSON?.mensagem || err), 'Erro', 7000);
+                    }
+                }
+            });
+        }
+    });
+
 
     // onlclik para gera nova senha - chama API e preenche o campo senha_Modal com a senha retornada
     $('#btnGerarNovaSenha').on('click', function () {

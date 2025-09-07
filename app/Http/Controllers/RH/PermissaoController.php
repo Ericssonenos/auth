@@ -13,23 +13,22 @@ class PermissaoController extends Controller
 
     public function __construct()
     {
-        // [ ] validar uso
         $this->permissaoModel = new permissao();
     }
 
-    // corresponde a permissao->ListaPermissoes()
-    public function ListaPermissoes()
+    /**
+     * Retorna todas as permissões com flag indicando se o usuário já possui cada uma.
+     */
+    public function ObterDadosPermissoes(Request $request)
     {
-        // [ ] validar uso
-        return response()->json($this->permissaoModel->ListaPermissoes());
+        $respostaDadosPermissao = $this->permissaoModel->ObterDadosPermissoes($request->all());
+        if (!empty($respostaDadosPermissao['status']) && $respostaDadosPermissao['status'] === true) {
+            return response()->json($respostaDadosPermissao, 200);
+        }
+        return response()->json($respostaDadosPermissao, 400);
     }
 
-    // corresponde a permissao->ObterPermissaoPorId()
-    public function ObterPermissaoPorId($id)
-    {
-        // [ ] validar uso
-        return response()->json($this->permissaoModel->ObterPermissaoPorId($id));
-    }
+
 
     // corresponde a permissao->CriarPermissao()
     public function CriarPermissao(Request $request)

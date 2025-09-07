@@ -13,7 +13,7 @@ class Operacao
     // Implementação dos métodos de operação
 
     /**
-     * Mapeia \PDOException para um array padronizado com pdo_status, código e mensagem amigável.
+     * Mapeia \PDOException para um array padronizado com status, código e mensagem amigável.
      * $contexto pode conter chaves como 'locatario_id', 'email', 'grupo_id' para mensagens mais claras.
      */
     public static function mapearExcecaoPDO(PDOException $pdoException, array $params = []): array
@@ -243,7 +243,7 @@ class Operacao
         }
 
         return [
-            'pdo_status' => $httpStatusCode,
+            'status' => $httpStatusCode,
             'mensagem'     => "errorCode: $errorCode - $userFriendlyMessage",
             'data'        =>  []
         ];
@@ -489,7 +489,15 @@ class Operacao
         $errors = [];
 
         foreach ($Params as $key => $val) {
-            if ($val === null || $val === '' || $key === '_' || $key === 'dados_do_usuario_logado' || $key === 'permissoes_do_usuario_logado') continue;
+            if (
+                    $val === null
+                ||  $val === ''
+                ||  $key === '_'
+                ||  $key === 'dados_do_usuario_logado'
+                ||  $key === 'permissoes_do_usuario_logado'
+                ||  $key === 'token'
+                ||  str_ends_with($key, '_id')
+                ) continue;
 
             // plural -> IN (...) quando valor for array
             if (str_ends_with($key, 's') && is_array($val)) {
@@ -510,15 +518,10 @@ class Operacao
                 continue;
             }
 
-            // colunas de texto -> busca parcial
-            if (str_starts_with($key, 'txt_') === true) {
-                $whereParams[] = " AND $key ILIKE :$key";
-                $execParams[':' . $key] = '%' . $val . '%';
-                continue;
-            }
+
 
             // flags booleanas
-            if (str_starts_with($key, 'flg_') === true) {
+            if (str_starts_with($key, 'b_') === true) {
                 $whereParams[] = " AND $key = :$key";
                 $execParams[':' . $key] = (bool)$val;
                 continue;
@@ -568,11 +571,7 @@ class Operacao
                         continue;
                     }
 
-                    // validar formato básico de order_by (coluna [ASC|DESC])
-                    if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*(\s+(ASC|DESC))?$/i', trim($val))) {
-                        $errors[$key] = "O parâmetro order_by deve seguir o formato: 'nome_coluna' ou 'nome_coluna ASC/DESC'.";
-                        continue;
-                    }
+
 
                     // A chave vem como order_by , mas quando utilizada na query, deve ser substituída por "order by"
                     $sql_key = str_replace('_', ' ', $key);
@@ -589,7 +588,7 @@ class Operacao
         // se há erros de validação, retornar erro
         if (!empty($errors)) {
             return [
-                'statusParams' => 422,
+                'status' => 422,
                 'error_code' => 'Erros de parametrização',
                 'mensagem' => $errors,
                 'whereParams' => [],
@@ -600,7 +599,7 @@ class Operacao
 
         // sucesso
         return [
-            'statusParams' => 200,
+            'status' => 200,
             'whereParams' => $whereParams,
             'execParams' => $execParams,
             'optsParams' => $optsParams
@@ -713,7 +712,7 @@ class Operacao
 
         return [
             'dados' => $dadosErro,
-            'status' => (int)$dadosErro['pdo_status'],
+            'status' => (int)$dadosErro['status'],
             'headers' => $headers
         ];
     }
@@ -751,8 +750,8 @@ class Operacao
 
         // Adicionar headers de paginação se for listagem
 
-        // aplicar paginação quando $data for array e pdo_status não estiver definido ou for um código positivo
-        if ($retorno && $retorno["pdo_status"] && $retorno['pdo_status'] == 200) {
+        // aplicar paginação quando $data for array e status não estiver definido ou for um código positivo
+        if ($retorno && $retorno["status"] && $retorno['status'] == 200) {
             $headersPaginacao = self::gerarHeadersPaginacao($request->all(), count($retorno['data']), $request->url());
             $headers = array_merge($headers, $headersPaginacao);
         }

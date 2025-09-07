@@ -2,6 +2,7 @@
 
 namespace App\Models\RH;
 
+use App\Services\Operacao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -14,22 +15,64 @@ class permissao extends Model
         $this->conexao = DB::connection()->getPdo();
     }
 
-    public function ListaPermissoes()
-    {
-        try {
-            $consultaSql = "SELECT id_permissao, cod_permissao, descricao_permissao
-                            FROM RH.Tbl_Permissoes
-                            WHERE cod_permissao IS NOT NULL";
 
+    /**
+     * Retorna todas as permissões com flag indicando se o usuário possui cada permissão (vínculo ativo).
+     */
+    public function ObterDadosPermissoes($params)
+    {
+
+
+        $parametrizacao = Operacao::Parametrizar($params);
+        // Verifica se houve erro na parametrização
+        if ($parametrizacao['status'] === false) {
+            return [
+                'status' => $parametrizacao['status'],
+                'mensagem' => $parametrizacao['mensagem'],
+                'data' => []
+            ];
+        }
+
+        $whereParams = $parametrizacao['whereParams'];
+        $optsParams = $parametrizacao['optsParams'];
+        $execParams = $parametrizacao['execParams'];
+
+        // filtros de execução específicos
+        $On_id_usuario = " ";
+        if(isset($params['Usuario_id'])) {
+            $On_id_usuario = "AND rup.Usuario_id = :usuario ";
+            $execParams[':usuario'] = $params['Usuario_id'];
+        }
+
+
+        $consultaSql = "SELECT
+                            p.id_permissao
+                        ,   p.cod_permissao
+                        ,   p.descricao_permissao
+                        ,   rup.id_rel_usuario_permissao
+                        FROM RH.Tbl_Permissoes p
+                        LEFT JOIN RH.Tbl_Rel_Usuarios_Permissoes rup
+                            ON rup.permissao_id = p.id_permissao
+                            $On_id_usuario
+                            AND rup.dat_cancelamento_em IS NULL
+                        WHERE p.dat_cancelamento_em IS NULL"
+            . implode(' ', $whereParams)
+            . ($optsParams['order_by'] ?? "  ")
+            . ($optsParams['limit'] ?? "  ")
+            . ($optsParams['offset'] ?? "  ");
+
+        try {
             $comando = $this->conexao->prepare($consultaSql);
-            $comando->execute();
+            $comando->execute($execParams);
             $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
 
-            return [
-                'status' => true,
-                'mensagem' => 'Lista de permissoes recuperada.',
-                'data' => $data
-            ];
+            if (empty($data)) {
+                return [
+                    'status' => false,
+                    'mensagem' => 'Nenhuma permissão encontrada com os critérios fornecidos.',
+                    'data' => []
+                ];
+            }
         } catch (\Exception $e) {
             return [
                 'status' => false,
@@ -37,32 +80,12 @@ class permissao extends Model
                 'data' => null
             ];
         }
-    }
 
-    public function ObterPermissaoPorId($id_permissao)
-    {
-        try {
-        $consultaSql = "SELECT id_permissao, cod_permissao, descricao_permissao,
-                    criado_Usuario_id, dat_criado_em, cancelamento_Usuario_id, dat_cancelamento_em
-                FROM RH.Tbl_Permissoes
-                WHERE id_permissao = :id_permissao";
-
-            $comando = $this->conexao->prepare($consultaSql);
-            $comando->execute([':id_permissao' => $id_permissao]);
-            $data = $comando->fetch(\PDO::FETCH_ASSOC);
-
-            return [
-                'status' => true,
-                'mensagem' => 'Permissao recuperada.',
-                'data' => $data
-            ];
-        } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => $e->getMessage(),
-                'data' => null
-            ];
-        }
+        return [
+            'status' => true,
+            'mensagem' => 'Permissões carregadas.',
+            'data' => $data
+        ];
     }
 
     public function CriarPermissao($params)
@@ -180,5 +203,4 @@ class permissao extends Model
     {
         $this->conexao = null;
     }
-
 }

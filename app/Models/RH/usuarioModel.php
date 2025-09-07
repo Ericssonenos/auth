@@ -6,7 +6,7 @@ use App\Services\Operacao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Services\RH\usuarioServices;
-use PhpParser\Node\Expr\FuncCall;
+
 
 class usuarioModel extends Model
 {
@@ -22,9 +22,9 @@ class usuarioModel extends Model
 
         $parametrizacao = Operacao::Parametrizar($params);
         // Verifica se houve erro na parametrização
-        if ($parametrizacao['statusParams'] !== 200) {
+        if ($parametrizacao['status'] !== 200) {
             return [
-                'pdo_status' => $parametrizacao['statusParams'],
+                'status' => $parametrizacao['status'],
                 'mensagem' => $parametrizacao['mensagem'],
                 'data' => []
             ];
@@ -40,11 +40,11 @@ class usuarioModel extends Model
                         nome_Completo,
                         email,
                         senha =CASE
-                            WHEN senha_Temporaria = 1
-                            AND (senha_Bloqueado_em IS NULL OR senha_Bloqueado_em > GETDATE())
+                            WHEN b_senha_Temporaria = 1
+                            AND (dat_senha_Bloqueado_em IS NULL OR dat_senha_Bloqueado_em > GETDATE())
                         THEN senha ELSE null END,
                         senha_bloqueada = CASE
-                            WHEN (senha_Bloqueado_em < GETDATE())
+                            WHEN (dat_senha_Bloqueado_em < GETDATE())
                             THEN 1 ELSE 0 END,
                         dat_criado_em,
                         criado_Usuario_id
@@ -55,9 +55,8 @@ class usuarioModel extends Model
             . ($optsParams['limit']      ?? '')
             . ($optsParams['offset']     ?? '');
 
-        $comando = $this->conexao->prepare($consultaSql);
-
         try {
+            $comando = $this->conexao->prepare($consultaSql);
             $comando->execute($execParams);
             $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -81,54 +80,6 @@ class usuarioModel extends Model
             'mensagem' => 'Dados do usuário recuperados.',
             'data' => $data
         ];
-    }
-
-    public function ObterPermissoesUsuario($params)
-    {
-        try {
-            $usuario = $params['Usuario_id'];
-
-            $consultaSql = "SELECT DISTINCT cod_permissao FROM (
-                                -- Permissões diretas do usuário
-                                SELECT p.cod_permissao
-                                FROM RH.Tbl_Permissoes p
-                                INNER JOIN RH.Tbl_Rel_Usuarios_Permissoes rup ON rup.permissao_id = p.id_permissao
-                                WHERE rup.Usuario_id = :usuario1
-                                    AND rup.dat_cancelamento_em IS NULL
-                                    AND p.dat_cancelamento_em IS NULL
-
-                                UNION
-
-                                -- Permissões via grupos
-                                SELECT p.cod_permissao
-                                FROM RH.Tbl_Permissoes p
-                                INNER JOIN RH.Tbl_Rel_Grupos_Permissoes gp ON gp.permissao_id = p.id_permissao
-                                INNER JOIN RH.Tbl_Grupos g ON g.id_Grupo = gp.grupo_id
-                                INNER JOIN RH.Tbl_Rel_Usuarios_Grupos ug ON ug.grupo_id = g.id_Grupo
-                                WHERE ug.Usuario_id = :usuario2
-                                    AND ug.dat_cancelamento_em IS NULL
-                                    AND gp.dat_cancelamento_em IS NULL
-                                    AND g.dat_cancelamento_em IS NULL
-                                    AND p.dat_cancelamento_em IS NULL
-                        ) AS permissao
-                        ORDER BY cod_permissao";
-
-            $comando = $this->conexao->prepare($consultaSql);
-            $comando->execute([':usuario1' => $usuario, ':usuario2' => $usuario]);
-            $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
-
-            return [
-                'status' => true,
-                'mensagem' => 'Permissões recuperadas.',
-                'data' => $data
-            ];
-        } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => $e->getMessage(),
-                'data' => null
-            ];
-        }
     }
 
     public function AtribuirPermissoes($params)
@@ -278,6 +229,7 @@ class usuarioModel extends Model
             ];
         }
     }
+
     public function CadastrarUsuarios($params)
     {
         try {
@@ -288,17 +240,17 @@ class usuarioModel extends Model
             $criado_Usuario_id = app(usuarioServices::class)->id_Usuario;
 
             $consultaSql = "INSERT INTO RH.Tbl_Usuarios
-                            (nome_Completo,  email,   senha,  criado_Usuario_id,  senha_Temporaria,  senha_Bloqueado_em,  locatario_id)
+                            (nome_Completo,  email,   senha,  criado_Usuario_id,  b_senha_Temporaria,  dat_senha_Bloqueado_em,  locatario_id)
                             VALUES
-                            (:nome_Completo, :email, :senha, :criado_Usuario_id, :senha_Temporaria, :senha_Bloqueado_em, :locatario_id)";
+                            (:nome_Completo, :email, :senha, :criado_Usuario_id, :b_senha_Temporaria, :dat_senha_Bloqueado_em, :locatario_id)";
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute([
                 ':nome_Completo' => $nome_Completo,
                 ':email' => $email,
                 ':senha' => $senhaGerada,
                 ':criado_Usuario_id' => $criado_Usuario_id,
-                ':senha_Temporaria' => 1,
-                ':senha_Bloqueado_em' => date('Y-m-d H:i:s', strtotime('+10 minutes')),
+                ':b_senha_Temporaria' => 1,
+                ':dat_senha_Bloqueado_em' => date('Y-m-d H:i:s', strtotime('+10 minutes')),
                 ':locatario_id' => 1 // Supplytek
             ]);
 
@@ -354,13 +306,13 @@ class usuarioModel extends Model
             $nova_senha = $params['nova_senha'];
 
 
-            // Atualizar senha e marcar senha_Temporaria
+            // Atualizar senha e marcar b_senha_Temporaria
             $consultaUpdate = "UPDATE
                 RH.Tbl_Usuarios
                 SET
                         senha = :nova_senha
-                    ,   senha_Temporaria = 0
-                    ,   senha_Bloqueado_em = NULL
+                    ,   b_senha_Temporaria = 0
+                    ,   dat_senha_Bloqueado_em = NULL
                 WHERE id_Usuario = :id_Usuario";
             $cmd2 = $this->conexao->prepare($consultaUpdate);
             $cmd2->execute([':nova_senha' => $nova_senha, ':id_Usuario' => $Usuario_id]);
@@ -390,8 +342,8 @@ class usuarioModel extends Model
 
             $consultaSql = "UPDATE RH.Tbl_Usuarios
                             SET senha = :senha,
-                                senha_Temporaria = 1,
-                                senha_Bloqueado_em = DATEADD(minute, 10, GETDATE())
+                                b_senha_Temporaria = 1,
+                                dat_senha_Bloqueado_em = DATEADD(minute, 10, GETDATE())
                             WHERE id_Usuario = :id_Usuario";
 
             $comando = $this->conexao->prepare($consultaSql);
