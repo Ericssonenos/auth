@@ -90,11 +90,12 @@ class LoginController extends Controller
 
 
         $modelPermissao = new permissao();
-        // Obter permissões do usuário
-        $permissoesUsuario = $modelPermissao->ObterDadosPermissoes(['usuario_id' => $dadosUsuario['id_Usuario']]);
+        // id_usuario traz as permissões ativas
+        // usuario_id traz todas as permissões com flag (possui ou não)
+        $permissoesUsuario = $modelPermissao->ObterDadosPermissoes(['id_usuario' => $dadosUsuario['id_Usuario']]);
 
         // Verificar se a resposta contém permissões
-        if (isset($permissoesUsuario['status']) && $permissoesUsuario['status'] === true) {
+        if (isset($permissoesUsuario['status']) && $permissoesUsuario['status'] === true ) {
             $dadosUsuario['permissoesUsuario'] = $permissoesUsuario['data'];
         } else {
             $dadosUsuario['permissoesUsuario'] = [];

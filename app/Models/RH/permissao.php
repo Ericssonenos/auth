@@ -39,9 +39,15 @@ class permissao extends Model
 
         // filtros de execução específicos
         $On_id_usuario = " ";
-        if(isset($params['usuario_id'])) {
+        if (isset($params['usuario_id'])) {
             $On_id_usuario = "AND rup.usuario_id = :usuario ";
             $execParams[':usuario'] = $params['usuario_id'];
+        }
+
+        $left_Usuario = " ";
+        if (isset($params['id_usuario'])) {
+            $left_Usuario = " LEFT JOIN RH.Tbl_Usuario u
+                            ON rup.usuario_id = u.id_usuario";
         }
 
 
@@ -55,6 +61,7 @@ class permissao extends Model
                             ON rup.permissao_id = p.id_permissao
                             $On_id_usuario
                             AND rup.dat_cancelamento_em IS NULL
+                        $left_Usuario
                         WHERE p.dat_cancelamento_em IS NULL"
             . implode(' ', $whereParams)
             . ($optsParams['order_by'] ?? "  ")

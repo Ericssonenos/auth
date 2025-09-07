@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use App\Services\RH\usuarioServices;
+use Illuminate\Support\Facades\Cache;
+use App\Models\RH\permissao as PermissaoModel;
 
 class UsuarioMiddleware
 {
@@ -26,6 +28,37 @@ class UsuarioMiddleware
                 ]);
 
 
+        }
+
+        // Verifica se existe uma versão de permissões global para este usuário
+        // se existir e for diferente da versão armazenada na sessão, recarrega as permissões
+        if (!empty($dados['id_Usuario'])) {
+            $cacheKey = "perms_version_user_{$dados['id_Usuario']}";
+            $globalVersion = Cache::get($cacheKey, null);
+            $sessionVersion = $dados['perms_version'] ?? null;
+
+            if ($globalVersion !== null && $globalVersion !== $sessionVersion) {
+                // Recarregar permissões do usuário via model (mesma lógica do LoginController)
+                try {
+                    $permissaoModel = new PermissaoModel();
+                    // id_usuario traz as permissões ativas
+                    // usuario_id traz todas as permissões com flag (possui ou não)
+                    $permissoesUsuario = $permissaoModel->ObterDadosPermissoes(['id_usuario' => $dados['id_usuario']]);
+
+                    if (isset($permissoesUsuario['status']) && $permissoesUsuario['status'] === true) {
+                        $dados['permissoesUsuario'] = $permissoesUsuario['data'];
+                    } else {
+                        $dados['permissoesUsuario'] = [];
+                    }
+
+                    // Atualiza a versão na sessão para marcar que já sincronizamos
+                    $dados['perms_version'] = $globalVersion;
+                    session(['dadosUsuarioSession' => $dados]);
+                } catch (\Throwable $e) {
+                    // Em caso de erro, continuamos sem bloquear a requisição; permissões permanecerão as antigas
+                    // Poderíamos registrar o erro se houver um logger disponível
+                }
+            }
         }
 
         // Se nenhuma permissão foi passada, tenta detectar automaticamente
