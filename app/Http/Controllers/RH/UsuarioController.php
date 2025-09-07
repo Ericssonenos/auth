@@ -59,11 +59,7 @@ class UsuarioController extends Controller
         // [x] validar uso
         // Se atribuição foi bem sucedida, atualiza versão de permissões para o usuário afetado
         if (!empty($respostaStatusAtribuicao['status']) && $respostaStatusAtribuicao['status'] === true) {
-            $usuarioId = $payload['usuario_id'] ?? ($respostaStatusAtribuicao['data']['usuario_id'] ?? null) ?? null;
-            if (!empty($usuarioId)) {
-                $cacheKey = "perms_version_user_{$usuarioId}";
-                Cache::put($cacheKey, time());
-            }
+            Cache::put("Permissao_versao", time());
         }
 
         return response()->json($respostaStatusAtribuicao);
@@ -77,11 +73,7 @@ class UsuarioController extends Controller
 
         // [ ] validar uso
         if (!empty($respostaStatusAtribuicao['status']) && $respostaStatusAtribuicao['status'] === true) {
-            $usuarioId = $payload['usuario_id'] ?? ($respostaStatusAtribuicao['data']['usuario_id'] ?? null) ?? null;
-            if (!empty($usuarioId)) {
-                $cacheKey = "perms_version_user_{$usuarioId}";
-                Cache::put($cacheKey, time());
-            }
+            Cache::put("Permissao_versao", time());
         }
 
         return response()->json($respostaStatusAtribuicao);
@@ -96,11 +88,7 @@ class UsuarioController extends Controller
 
         // [x] validar uso
         if (!empty($respostaStatusRemocao['status']) && $respostaStatusRemocao['status'] === true) {
-            $usuarioId = $payload['usuario_id'] ?? ($respostaStatusRemocao['data']['usuario_id'] ?? null) ?? null;
-            if (!empty($usuarioId)) {
-                $cacheKey = "perms_version_user_{$usuarioId}";
-                Cache::put($cacheKey, time());
-            }
+            Cache::put("Permissao_versao", time());
         }
 
         return response()->json($respostaStatusRemocao);
@@ -116,8 +104,7 @@ class UsuarioController extends Controller
         if (!empty($respostaStatusRemocao['status']) && $respostaStatusRemocao['status'] === true) {
             $usuarioId = $payload['usuario_id'] ?? ($respostaStatusRemocao['data']['usuario_id'] ?? null) ?? null;
             if (!empty($usuarioId)) {
-                $cacheKey = "perms_version_user_{$usuarioId}";
-                Cache::put($cacheKey, time());
+                 Cache::put("Permissao_versao", time());
             }
         }
 

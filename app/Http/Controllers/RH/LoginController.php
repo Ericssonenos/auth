@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\RH\usuarioModel;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Controller;
-use App\Models\RH\permissao;
+use App\Models\RH\permissaoModel;
 use Illuminate\Support\Facades\Cache;
 
 class LoginController extends Controller
@@ -90,10 +90,10 @@ class LoginController extends Controller
         $dadosUsuario = $resultadoStatus_Usuario['data'][0];
 
 
-        $modelPermissao = new permissao();
-        // id_usuario traz as permissões ativas
+    $modelPermissao = new permissaoModel();
+        // id_Usuario traz as permissões ativas
         // usuario_id traz todas as permissões com flag (possui ou não)
-        $permissoesUsuario = $modelPermissao->ObterDadosPermissoes(['id_usuario' => $dadosUsuario['id_Usuario']]);
+        $permissoesUsuario = $modelPermissao->ObterDadosPermissoes(['id_Usuario' => $dadosUsuario['id_Usuario']]);
 
         // Verificar se a resposta contém permissões
         if (isset($permissoesUsuario['status']) && $permissoesUsuario['status'] === true ) {
@@ -102,9 +102,9 @@ class LoginController extends Controller
             $dadosUsuario['permissoesUsuario'] = [];
         }
 
-        // Armazenar os dados do usuário na sessão
-        // Sincroniza versão de permissões: se existir uma versão global, usa-a; caso contrário cria
-        $cacheKey = "perms_version_user_{$dadosUsuario['id_Usuario']}";
+        // Armazenar uma versão geral
+        $cacheKey = "Permissao_versao";
+        // Sincroniza versão de permissões: se existir uma versão global, usa-a;
         $globalVersion = Cache::get($cacheKey, null);
         if ($globalVersion === null) {
             $globalVersion = time();

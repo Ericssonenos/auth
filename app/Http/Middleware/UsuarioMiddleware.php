@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use App\Services\RH\usuarioServices;
 use Illuminate\Support\Facades\Cache;
-use App\Models\RH\permissao as PermissaoModel;
+use App\Models\RH\permissaoModel;
 
 class UsuarioMiddleware
 {
@@ -26,43 +26,42 @@ class UsuarioMiddleware
                 ->with('erro', [
                     'mensagem' => "Você precisa estar autenticado para acessar esta página."
                 ]);
-
-
         }
 
         // Verifica se existe uma versão de permissões global para este usuário
         // se existir e for diferente da versão armazenada na sessão, recarrega as permissões
-        if (!empty($dados['id_Usuario'])) {
-            $cacheKey = "perms_version_user_{$dados['id_Usuario']}";
-            $globalVersion = Cache::get($cacheKey, null);
-            $sessionVersion = $dados['perms_version'] ?? null;
 
-            if ($globalVersion !== null && $globalVersion !== $sessionVersion) {
-                // Recarregar permissões do usuário via model (mesma lógica do LoginController)
-                try {
-                    $permissaoModel = new PermissaoModel();
-                    // id_usuario traz as permissões ativas
-                    // usuario_id traz todas as permissões com flag (possui ou não)
-                    $permissoesUsuario = $permissaoModel->ObterDadosPermissoes(['id_usuario' => $dados['id_usuario']]);
+        $globalVersion = Cache::get("Permissao_versao", null);
+        $sessionVersion = $dados['perms_version'] ?? null;
 
-                    if (isset($permissoesUsuario['status']) && $permissoesUsuario['status'] === true) {
-                        $dados['permissoesUsuario'] = $permissoesUsuario['data'];
-                    } else {
-                        $dados['permissoesUsuario'] = [];
-                    }
+        if ($globalVersion !== null && $globalVersion !== $sessionVersion) {
+            // Recarregar permissões do usuário via model (mesma lógica do LoginController)
+            try {
+                $permissaoModel = new permissaoModel();
+                // id_Usuario traz as permissões ativas
+                // usuario_id traz todas as permissões com flag (possui ou não)
+                $permissoesUsuario = $permissaoModel->ObterDadosPermissoes(['id_Usuario' => $dados['id_Usuario']]);
 
-                    // Atualiza a versão na sessão para marcar que já sincronizamos
-                    $dados['perms_version'] = $globalVersion;
-                    session(['dadosUsuarioSession' => $dados]);
-                } catch (\Throwable $e) {
-                    // Em caso de erro, continuamos sem bloquear a requisição; permissões permanecerão as antigas
-                    // Poderíamos registrar o erro se houver um logger disponível
+                if (isset($permissoesUsuario['status']) && $permissoesUsuario['status'] === true) {
+                    $dados['permissoesUsuario'] = $permissoesUsuario['data'];
+                } else {
+                    $dados['permissoesUsuario'] = [];
                 }
+
+                // Atualiza a versão na sessão para marcar que já sincronizamos
+                $dados['perms_version'] = $globalVersion;
+                session(['dadosUsuarioSession' => $dados]);
+            } catch (\Throwable $e) {
+                // Em caso de erro, limpa as permissões do usuário para evitar inconsistências
+                $dados['permissoesUsuario'] = [];
+                $dados['perms_version'] = null;
+                session(['dadosUsuarioSession' => $dados]);
             }
         }
 
+
         // Se nenhuma permissão foi passada, tenta detectar automaticamente
-        if(!$cod_permissoesNecessarias) {
+        if (!$cod_permissoesNecessarias) {
             // Obter as permissões necessárias
             $cod_permissoesNecessarias = $this->detectarcod_permissoesNecessariasPelaRota($request);
         }
@@ -85,17 +84,20 @@ class UsuarioMiddleware
             return response()
                 ->json(
                     // retirar os dados sensíveis do path
-                    ['mensagem' => "Você não possui permissão para acessar API: " . str_replace('_', '/', $this->formatarUriDaRequisicao($request->path())),
-                    'cod_permissoesNecessarias' => $cod_permissoesNecessarias
-                ], 403);
+                    [
+                        'mensagem' => "Você não possui permissão para acessar API: " . str_replace('_', '/', $this->formatarUriDaRequisicao($request->path())),
+                        'cod_permissoesNecessarias' => $cod_permissoesNecessarias
+                    ],
+                    403
+                );
         }
 
         // Para requisições web, redireciona com mensagens na sessão
         return redirect()->back()
             ->with('erro', [
-                    'mensagem' => "Você não possui permissão para acessar esta página.",
-                    'cod_permissoesNecessarias' => $cod_permissoesNecessarias
-                ]);
+                'mensagem' => "Você não possui permissão para acessar esta página.",
+                'cod_permissoesNecessarias' => $cod_permissoesNecessarias
+            ]);
     }
 
     /**

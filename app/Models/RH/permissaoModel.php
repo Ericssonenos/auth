@@ -6,7 +6,7 @@ use App\Services\Operacao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class permissao extends Model
+class permissaoModel extends Model
 {
     private $conexao;
 
@@ -45,9 +45,9 @@ class permissao extends Model
         }
 
         $left_Usuario = " ";
-        if (isset($params['id_usuario'])) {
-            $left_Usuario = " LEFT JOIN RH.Tbl_Usuario u
-                            ON rup.usuario_id = u.id_usuario";
+        if (isset($params['id_Usuario'])) {
+            $left_Usuario = " LEFT JOIN RH.Tbl_Usuarios u
+                            ON rup.usuario_id = u.id_Usuario";
         }
 
 

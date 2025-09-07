@@ -19,7 +19,7 @@ try {
     // Instanciar modelos
     $userModel = new \App\Models\RH\usuario();
     $groupModel = new \App\Models\RH\grupo();
-    $permModel = new \App\Models\RH\permissao();
+    $permModel = new \App\Models\RH\permissaoModel();
     $catModel = new \App\Models\RH\categoria();
 
 

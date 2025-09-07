@@ -14,7 +14,7 @@ try {
     $pdo->beginTransaction();
 
     $categoriaModel = new \App\Models\RH\categoria();
-    $permModel = new \App\Models\RH\permissao();
+    $permModel = new \App\Models\RH\permissaoModel();
     $groupModel = new \App\Models\RH\grupo();
     $userModel = new \App\Models\RH\usuario();
 

@@ -5,15 +5,15 @@ namespace App\Http\Controllers\RH;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use App\Models\RH\permissao;
+use App\Models\RH\permissaoModel;
 
 class PermissaoController extends Controller
 {
-    private permissao $permissaoModel;
+    private permissaoModel $permissaoModel;
 
     public function __construct()
     {
-        $this->permissaoModel = new permissao();
+        $this->permissaoModel = new permissaoModel();
     }
 
     /**

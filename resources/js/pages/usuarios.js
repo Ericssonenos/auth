@@ -138,7 +138,7 @@ $(function () {
 
 
         // inicializar ou recarregar DataTable de permissões
-        // passar o id_usuario pelo body da requisição POST
+        // passar o id_Usuario pelo body da requisição POST
         if (!dataTable_Permissoes_Modal) {
             dataTable_Permissoes_Modal = $('#dataTable_Permissoes_Modal').DataTable({
                 ajax: {
