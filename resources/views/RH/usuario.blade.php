@@ -27,20 +27,23 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" id="id_Usuario_Modal" />
+
 
                         <div class="mb-3">
 
                             <label class="form-label" for="nome_Completo_Modal">Nome</label>
                             <!-- ter no minimo 4 caracteres -->
-                            <input id="nome_Completo_Modal" minlength="4" name="nome_Completo" class="form-control" maxlength="255" required aria-describedby="nome_Completo_Modal_feedback nome_Completo_Modal_help" />
+                            <input id="nome_Completo_Modal" minlength="4" name="nome_Completo" class="form-control"
+                                maxlength="255" required
+                                aria-describedby="nome_Completo_Modal_feedback nome_Completo_Modal_help" />
                             <div id="nome_Completo_Modal_help" class="form-text">Mínimo de 4 caracteres.</div>
                             <div id="nome_Completo_Modal_feedback" class="invalid-feedback">&nbsp;</div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label" for="email_Modal">Email</label>
-                            <input id="email_Modal" name="email" class="form-control" type="email" maxlength="255" required aria-describedby="email_Modal_feedback" />
+                            <input id="email_Modal" name="email" class="form-control" type="email" maxlength="255"
+                                required aria-describedby="email_Modal_feedback" />
                             <div id="email_Modal_feedback" class="invalid-feedback">&nbsp;</div>
                             <div class="form-text text-muted">O email será usado como login e deve ser único.</div>
                         </div>
@@ -48,13 +51,16 @@
                         <div class="mb-3 d-none" id="divSenhaModal">
                             <label class="form-label" for="senha_Modal">Senha Temporária</label>
                             <div class="d-flex align-items-center">
-                                <input id="senha_Modal" name="senha" class="form-control me-2" type="password" disabled aria-describedby="senha_Modal_feedback" />
-                                <button type="button" id="btnMostrarSenha" class="btn btn-sm btn-outline-secondary d-none" title="Mostrar senha por 10s">Mostrar</button>
+                                <input id="senha_Modal" name="senha" class="form-control me-2" type="password" disabled
+                                    aria-describedby="senha_Modal_feedback" />
+                                <button type="button" id="btnMostrarSenha" class="btn btn-sm btn-outline-secondary d-none"
+                                    title="Mostrar senha por 10s">Mostrar</button>
                             </div>
                             <div id="senha_Modal_feedback" class="invalid-feedback">&nbsp;</div>
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <button type="button" id="btnExcluirUsuario" class="btn btn-danger" data-bs-dismiss="modal">Excluir</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Salvar</button>
                         <button type="button" id="btnGerarNovaSenha" class="btn btn-warning">Gerar Nova Senha</button>
@@ -69,7 +75,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Gerenciar Permissões do Usuário</h5>
+                    <h5 id="modalPermissoesTitulo" class="modal-title"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
@@ -79,6 +85,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>
+
             </div>
         </div>
     </div>

@@ -7,8 +7,8 @@ $(function () {
     if (!document.querySelector('#dataTable_Usuarios')) return;
 
     $('#btnNovo').on('click', function () {
+        usuario_Id_Atual = null; // resetar variável global
         $('#modalUsuarioTitulo').text('Novo usuário');
-        $('#id_Usuario_Modal').val('');
         $('#formUser')[0].reset();
         $('#btnGerarNovaSenha').addClass('d-none');
         $('#email_Modal').prop('disabled', false);
@@ -68,11 +68,12 @@ $(function () {
 
         const $tr = $(this).closest('tr');
         const rowData = table.row($tr).data();
-        $('#id_Usuario_Modal').val(rowData.id_Usuario);
+        usuario_Id_Atual = rowData.id_Usuario; // atualizar variável global
         $('#nome_Completo_Modal').val(rowData.nome_Completo);
         $('#email_Modal').val(rowData.email);
         $('#email_Modal').prop('disabled', true);
         $('#btnGerarNovaSenha').removeClass('d-none');
+
 
         if (rowData?.senha) {
             $('#senha_Modal').val(rowData.senha);
@@ -135,6 +136,7 @@ $(function () {
         const modal = new bootstrap.Modal(document.getElementById('modalPermissoes'));
         modal.show();
 
+        $('#modalPermissoesTitulo').text('Permissões do usuário: ' + (rowData?.email || '??'));
 
 
         // inicializar ou recarregar DataTable de permissões
@@ -258,13 +260,13 @@ $(function () {
 
     // onlclik para gera nova senha - chama API e preenche o campo senha_Modal com a senha retornada
     $('#btnGerarNovaSenha').on('click', function () {
-        const id = $('#id_Usuario_Modal').val();
+
 
         const $btn = $(this);
         $btn.prop('disabled', true).text('Gerando...');
 
         $.ajax({
-            url: '/rh/usuario/' + encodeURIComponent(id) + '/gerar-senha',
+            url: '/rh/usuario/' + encodeURIComponent(usuario_Id_Atual) + '/gerar-senha',
             method: 'POST',
             dataType: 'json',
             success: function (resp) {
@@ -306,14 +308,14 @@ $(function () {
             }
         });
     });
+      // onlclik para gera nova senha - chama API e preenche o campo senha_Modal com a senha retornada
+
 
 
     $('#formUser').on('submit', function (e) {
         e.preventDefault();
-        const id = $('#id_Usuario_Modal').val();
 
-
-        if (!id) {
+        if (!usuario_Id_Atual) {
 
             const payload = {
                 nome_Completo: $('#nome_Completo_Modal').val(),
@@ -351,7 +353,7 @@ $(function () {
 
                         // se a API retornar lastId, preencher o id no modal para permitir gerar nova senha / edição
                         if (resp.data && resp.data.lastId) {
-                            $('#id_Usuario_Modal').val(resp.data.lastId);
+                            usuario_Id_Atual = resp.data.lastId;
                             $('#email_Modal').prop('disabled', true);
                             $('#btnGerarNovaSenha').removeClass('d-none');
                         }
@@ -377,7 +379,7 @@ $(function () {
             };
             // atualizar (usa mesmo molde de retorno/erros que o POST de cadastro)
             $.ajax({
-                url: '/rh/api/usuario/atualizar/' + encodeURIComponent(id),
+                url: '/rh/api/usuario/atualizar/' + encodeURIComponent(usuario_Id_Atual),
                 method: 'PUT',
                 data: payload,
                 dataType: 'json',
