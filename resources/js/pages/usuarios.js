@@ -126,10 +126,11 @@ $(function () {
     //
     // abrir modal de permissões
     let dataTable_Permissoes_Modal = null;
+    let usuario_Id_Atual = null;
     $('#dataTable_Usuarios').on('click', '.btn-permissoes', function () {
         const $tr = $(this).closest('tr');
         const rowData = table.row($tr).data();
-        const usuario_Id = rowData.id_Usuario;
+         usuario_Id_Atual = rowData.id_Usuario;
         // abrir modal
         const modal = new bootstrap.Modal(document.getElementById('modalPermissoes'));
         modal.show();
@@ -143,10 +144,12 @@ $(function () {
                 ajax: {
                     method: 'POST',
                     url: '/rh/api/permissoes/dados',
-                    data: {
-                         Usuario_id: usuario_Id,
-                         order_by: 'CASE WHEN rup.id_rel_usuario_permissao IS NOT NULL THEN 1 ELSE 0 END, p.cod_permissao'
-                        },
+                    // enviar parametros dinamicamente a cada requisição
+                    data: function (requestData) {
+                        requestData.Usuario_id = usuario_Id_Atual; // variável atualizada antes do reload
+                        requestData.order_by = 'CASE WHEN rup.id_rel_usuario_permissao IS NOT NULL THEN 1 ELSE 0 END, p.cod_permissao';
+                        return requestData;
+                    },
                     dataSrc: function (json) {
                         try {
                             if (!json) {
@@ -185,14 +188,10 @@ $(function () {
                 ]
             });
         } else {
-            // precisa limpar tabela anterior
-            $('#dataTable_Permissoes_Modal').DataTable().clear().draw();
-            // precisa passar um novo parâmetro para o ajax.data
-            dataTable_Permissoes_Modal.ajax.params({
-                Usuario_id: usuario_Id,
-                order_by: 'CASE WHEN rup.id_rel_usuario_permissao IS NOT NULL THEN 1 ELSE 0 END, p.cod_permissao'
-            });
-            dataTable_Permissoes_Modal.ajax.reload(null, true);
+            // atualizar variável com o id atual e recarregar (ajax.data() lerá usuario_Id_Atual)
+            // (não é necessário mudar a URL)
+            dataTable_Permissoes_Modal.ajax.reload(null, false); // false mantém a página atual
+            dataTable_Permissoes_Modal.columns.adjust().draw();
 
         }
     });
