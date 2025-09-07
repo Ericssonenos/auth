@@ -57,6 +57,8 @@ $(function () {
         $('#btnGerarNovaSenha').addClass('d-none');
         $('#email_Modal').prop('disabled', false);
         $('#divSenhaModal').addClass('d-none');
+    // ocultar botão de mostrar senha ao criar novo usuário
+    $('#btnMostrarSenha').addClass('d-none');
         new bootstrap.Modal(document.getElementById('modalUser')).show();
     });
 
@@ -76,15 +78,22 @@ $(function () {
             $('#senha_Modal').val(rowData.senha);
             $('#divSenhaModal').removeClass('d-none');
 
-            // retirar typeo password por 5 segundos
-            const $senhaInput = $('#senha_Modal');
-            $senhaInput.attr('type', 'text');
-            setTimeout(() => {
-                $senhaInput.attr('type', 'password');
-            }, 5000);
+            // mostrar botão de visualizar senha
+            $('#btnMostrarSenha').removeClass('d-none');
 
-        } else {
+            // retirar typeo password por 5 segundos
+                $('#modalUser').on('click', '#btnMostrarSenha', function () {
+                    const $senhaInput = $('#senha_Modal');
+                    $senhaInput.attr('type', 'text');
+                    setTimeout(() => {
+                        $senhaInput.attr('type', 'password');
+                    }, 5000);
+                });
+
+            } else {
             $('#divSenhaModal').addClass('d-none');
+            // ocultar botão quando não há senha
+            $('#btnMostrarSenha').addClass('d-none');
 
         }
 
@@ -133,7 +142,10 @@ $(function () {
                     $('#senha_Modal').val(resp.data.senha);
                     $('#divSenhaModal').removeClass('d-none');
 
-                    // mostrar senha em texto por 8s
+                    // mostrar botão de visualizar senha
+                    $('#btnMostrarSenha').removeClass('d-none');
+
+                    // mostrar senha em texto por 8s (comportamento automático existente)
                     const $senhaInput = $('#senha_Modal');
                     $senhaInput.attr('type', 'text');
                     setTimeout(() => {
@@ -190,6 +202,9 @@ $(function () {
                             $('#senha_Modal').val(resp.data.senha);
                             $('#divSenhaModal').removeClass('d-none');
 
+                            // mostrar botão de visualizar senha
+                            $('#btnMostrarSenha').removeClass('d-none');
+
                             // mostrar senha em texto por 8s
                             const $senhaInput = $('#senha_Modal');
                             $senhaInput.attr('type', 'text');
@@ -242,6 +257,9 @@ $(function () {
                             $('#senha_Modal').val(resp.data.senha);
                             $('#divSenhaModal').removeClass('d-none');
 
+                            // mostrar botão de visualizar senha
+                            $('#btnMostrarSenha').removeClass('d-none');
+
                             // mostrar senha em texto por 8s
                             const $senhaInput = $('#senha_Modal');
                             $senhaInput.attr('type', 'text');
@@ -273,5 +291,13 @@ $(function () {
                 }
             });
         }
+    });
+
+    $('btnMostrarSenha').on('click', function () {
+        const $senhaInput = $('#senha_Modal');
+        $senhaInput.attr('type', 'text');
+        setTimeout(() => {
+            $senhaInput.attr('type', 'password');
+        }, 15000);
     });
 });

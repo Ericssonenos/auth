@@ -47,7 +47,10 @@
 
                         <div class="mb-3 d-none" id="divSenhaModal">
                             <label class="form-label" for="senha_Modal">Senha Temporária</label>
-                            <input id="senha_Modal" name="senha" class="form-control" type="password" disabled aria-describedby="senha_Modal_feedback" />
+                            <div class="d-flex align-items-center">
+                                <input id="senha_Modal" name="senha" class="form-control me-2" type="password" disabled aria-describedby="senha_Modal_feedback" />
+                                <button type="button" id="btnMostrarSenha" class="btn btn-sm btn-outline-secondary d-none" title="Mostrar senha por 10s">Mostrar</button>
+                            </div>
                             <div id="senha_Modal_feedback" class="invalid-feedback">&nbsp;</div>
                         </div>
                     </div>
