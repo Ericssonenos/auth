@@ -7,7 +7,7 @@ $(function () {
     if (!document.querySelector('#dataTable_Usuarios')) return;
 
     $('#btnNovo').on('click', function () {
-        usuario_Id_Atual = null; // resetar variável global
+        usuarios_id_Selecionado = null; // resetar variável global
         $('#modalUsuarioTitulo').text('Novo usuário');
         $('#formUser')[0].reset();
         $('#btnGerarNovaSenha').addClass('d-none');
@@ -68,7 +68,7 @@ $(function () {
 
         const $tr = $(this).closest('tr');
         const rowData = table.row($tr).data();
-        usuario_Id_Atual = rowData.id_Usuario; // atualizar variável global
+        usuarios_id_Selecionado = rowData.id_Usuario; // atualizar variável global
         $('#nome_Completo_Modal').val(rowData.nome_Completo);
         $('#email_Modal').val(rowData.email);
         $('#email_Modal').prop('disabled', true);
@@ -105,7 +105,7 @@ $(function () {
     // habilitar botão Excluir no modal e adicionar handler
     $('#btnExcluirUsuario').on('click', function (e) {
         e.preventDefault();
-        if (!usuario_Id_Atual) {
+        if (!usuarios_id_Selecionado) {
             window.alerta?.erroPermissoes?.({ mensagem: 'Nenhum usuário selecionado para exclusão.' });
             return;
         }
@@ -116,7 +116,7 @@ $(function () {
         $btn.prop('disabled', true).text('Excluindo...');
 
         $.ajax({
-            url: '/rh/api/usuario/deletar/' + encodeURIComponent(usuario_Id_Atual),
+            url: '/rh/api/usuario/deletar/' + encodeURIComponent(usuarios_id_Selecionado),
             method: 'DELETE',
             dataType: 'json',
             success: function (resp) {
@@ -168,11 +168,17 @@ $(function () {
     //
     // abrir modal de permissões
     let dataTable_Permissoes_Modal = null;
-    let usuario_Id_Atual = null;
+    let usuarios_id_Selecionado = null;
+
+    // resetar usuarios_id_Selecionado para 0 quando qualquer modal relevante for fechado
+    $('#modalUser, #modalGrupos, #modalPermissoes').on('hidden.bs.modal', function () {
+        usuarios_id_Selecionado = 0;
+    });
+
     $('#dataTable_Usuarios').on('click', '.btn-permissoes', function () {
         const $tr = $(this).closest('tr');
         const rowData = table.row($tr).data();
-         usuario_Id_Atual = rowData.id_Usuario;
+         usuarios_id_Selecionado = rowData.id_Usuario;
         // abrir modal
         const modal = new bootstrap.Modal(document.getElementById('modalPermissoes'));
         modal.show();
@@ -189,7 +195,7 @@ $(function () {
                     url: '/rh/api/permissoes/dados',
                     // enviar parametros dinamicamente a cada requisição
                     data: function (requestData) {
-                        requestData.usuario_id = usuario_Id_Atual; // variável atualizada antes do reload
+                        requestData.usuario_id = usuarios_id_Selecionado; // variável atualizada antes do reload
                         requestData.order_by = 'CASE WHEN rup.id_rel_usuario_permissao IS NOT NULL THEN 1 ELSE 0 END, p.cod_permissao';
                         return requestData;
                     },
@@ -226,7 +232,7 @@ $(function () {
                 ]
             });
         } else {
-            // atualizar variável com o id atual e recarregar (ajax.data() lerá usuario_Id_Atual)
+            // atualizar variável com o id atual e recarregar (ajax.data() lerá usuarios_id_Selecionado)
             // (não é necessário mudar a URL)
             //limpar a tabela de permissões
             $('#dataTable_Permissoes_Modal').DataTable().clear().draw();
@@ -242,7 +248,7 @@ $(function () {
 
         const tr = $(this).closest('tr');
         const rowData = dataTable_Permissoes_Modal.row(tr).data();
-        const usuario_id = usuario_Id_Atual;
+        const usuario_id = usuarios_id_Selecionado;
         const id_rel_usuario_permissao = rowData.id_rel_usuario_permissao;
         const permissao_id = rowData.id_permissao;
 
@@ -309,7 +315,7 @@ $(function () {
         $btn.prop('disabled', true).text('Gerando...');
 
         $.ajax({
-            url: '/rh/usuario/' + encodeURIComponent(usuario_Id_Atual) + '/gerar-senha',
+            url: '/rh/usuario/' + encodeURIComponent(usuarios_id_Selecionado) + '/gerar-senha',
             method: 'POST',
             dataType: 'json',
             success: function (resp) {
@@ -358,7 +364,7 @@ $(function () {
     $('#formUser').on('submit', function (e) {
         e.preventDefault();
 
-        if (!usuario_Id_Atual) {
+        if (!usuarios_id_Selecionado) {
 
             const payload = {
                 nome_Completo: $('#nome_Completo_Modal').val(),
@@ -396,7 +402,7 @@ $(function () {
 
                         // se a API retornar lastId, preencher o id no modal para permitir gerar nova senha / edição
                         if (resp.data && resp.data.lastId) {
-                            usuario_Id_Atual = resp.data.lastId;
+                            usuarios_id_Selecionado = resp.data.lastId;
                             $('#email_Modal').prop('disabled', true);
                             $('#btnGerarNovaSenha').removeClass('d-none');
                         }
@@ -422,7 +428,7 @@ $(function () {
             };
             // atualizar (usa mesmo molde de retorno/erros que o POST de cadastro)
             $.ajax({
-                url: '/rh/api/usuario/atualizar/' + encodeURIComponent(usuario_Id_Atual),
+                url: '/rh/api/usuario/atualizar/' + encodeURIComponent(usuarios_id_Selecionado),
                 method: 'PUT',
                 data: payload,
                 dataType: 'json',
