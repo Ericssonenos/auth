@@ -228,6 +228,8 @@ $(function () {
         } else {
             // atualizar variável com o id atual e recarregar (ajax.data() lerá usuario_Id_Atual)
             // (não é necessário mudar a URL)
+            //limpar a tabela de permissões
+            $('#dataTable_Permissoes_Modal').DataTable().clear().draw();
             dataTable_Permissoes_Modal.ajax.reload(null, false); // false mantém a página atual
             dataTable_Permissoes_Modal.columns.adjust().draw();
 
