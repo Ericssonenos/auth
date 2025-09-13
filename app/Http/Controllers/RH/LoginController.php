@@ -41,7 +41,7 @@ class LoginController extends Controller
 
         $modeloUsuario = new usuarioModel();
 
-        $resultadoStatus_Usuario = $modeloUsuario->ObterDadosUsuarios(
+        $resultadoStatus_Usuario = $modeloUsuario->ObterLoginUsuario(
             [
                 'email' => $request['email'],
                 'senha' => $request['senha'], //[ ] usar hash apos os teste
@@ -50,10 +50,7 @@ class LoginController extends Controller
         );
 
         // Se o status do usuário for inválido ou os dados estiverem vazios
-        if (
-            $resultadoStatus_Usuario['status'] == false
-            ||  empty($resultadoStatus_Usuario['data'])
-        ) {
+        if ($resultadoStatus_Usuario['status'] == false) {
             // Apagar dados da sessão
             Session::forget('dadosUsuarioSession');
 
@@ -66,7 +63,7 @@ class LoginController extends Controller
         }
 
         // Verificar se a conta do usuário está bloqueada
-        if ($resultadoStatus_Usuario['data'][0]['senha_bloqueada'] == 1) {
+        if ($resultadoStatus_Usuario['dados']['senha_bloqueada'] == 1) {
             // Apagar dados da sessão
             Session::forget('dadosUsuarioSession');
 
@@ -79,7 +76,7 @@ class LoginController extends Controller
         }
 
         // Verificar se o usuário retorna senha, se sim forçar alteração
-        if ($resultadoStatus_Usuario['data'][0]['senha'] != null) {
+        if ($resultadoStatus_Usuario['dados']['senha'] != null) {
             // Apagar dados da sessão
             Session::forget('dadosUsuarioSession');
             // Redirecionar para a página de alteração de senha
@@ -87,17 +84,17 @@ class LoginController extends Controller
         }
 
         // Se o login for bem-sucedido
-        $dadosUsuario = $resultadoStatus_Usuario['data'][0];
+        $dadosUsuario = $resultadoStatus_Usuario['dados'];
 
 
-    $modelPermissao = new permissaoModel();
+        $modelPermissao = new permissaoModel();
         // id_Usuario traz as permissões ativas
         // usuario_id traz todas as permissões com flag (possui ou não)
-        $permissoesUsuario = $modelPermissao->ObterDadosPermissoes(['id_Usuario' => $dadosUsuario['id_Usuario']]);
+        $permissoesUsuario = $modelPermissao->ObterLoginPermissoes(['id_Usuario' => $dadosUsuario['id_Usuario']]);
 
         // Verificar se a resposta contém permissões
-        if (isset($permissoesUsuario['status']) && $permissoesUsuario['status'] === true ) {
-            $dadosUsuario['permissoesUsuario'] = $permissoesUsuario['data'];
+        if ($permissoesUsuario['status'] == 200) {
+            $dadosUsuario['permissoesUsuario'] = $permissoesUsuario['dados'];
         } else {
             $dadosUsuario['permissoesUsuario'] = [];
         }
@@ -166,7 +163,7 @@ class LoginController extends Controller
             ]
         );
 
-         // Se o status do usuário for inválido ou os dados estiverem vazios
+        // Se o status do usuário for inválido ou os dados estiverem vazios
         if (
             $resultadoStatus_Usuario['status'] == false
             ||  empty($resultadoStatus_Usuario['data'])

@@ -68,8 +68,7 @@ class UsuarioController extends Controller
     // atribui grupo ao usuário
     public function AtribuirGrupo(Request $request)
     {
-        $payload = $request->all();
-        $respostaStatusAtribuicao = $this->usuarioModel->AtribuirGrupo($payload);
+        $respostaStatusAtribuicao = $this->usuarioModel->AtribuirGrupo($request->all());
 
         // [ ] validar uso
         if (!empty($respostaStatusAtribuicao['status']) && $respostaStatusAtribuicao['status'] === true) {
@@ -95,17 +94,15 @@ class UsuarioController extends Controller
     }
 
     // remove vínculo grupo->usuário
-    public function RemoverGrupo(Request $request)
+    public function RemoverGrupo(Request $request, $id_rel_usuario_grupo)
     {
         $payload = $request->all();
+        $payload['id_rel_usuario_grupo'] = $id_rel_usuario_grupo;
         $respostaStatusRemocao = $this->usuarioModel->RemoverGrupo($payload);
 
         // [ ] validar uso
         if (!empty($respostaStatusRemocao['status']) && $respostaStatusRemocao['status'] === true) {
-            $usuarioId = $payload['usuario_id'] ?? ($respostaStatusRemocao['data']['usuario_id'] ?? null) ?? null;
-            if (!empty($usuarioId)) {
-                 Cache::put("Permissao_versao", time());
-            }
+            Cache::put("Permissao_versao", time());
         }
 
         return response()->json($respostaStatusRemocao);

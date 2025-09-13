@@ -4,31 +4,31 @@ namespace App\Http\Controllers\RH;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
-use App\Models\RH\grupo;
+use App\Models\RH\grupoModel;
+
 
 class GrupoController extends Controller
 {
-    private grupo $grupoModel;
+    private grupoModel $grupoModel;
 
     public function __construct()
     {
-        // [ ] validar uso
-        $this->grupoModel = new grupo();
+        // [x] validar uso
+        $this->grupoModel = new grupoModel();
     }
 
-    // corresponde a grupo->ListaGrupos()
-    public function ListaGrupos()
+
+    // endpoint para DataTable: lista grupos com indicação se usuário pertence (usa usuario_id no POST)
+    public function ObterDadosGrupo(Request $request)
     {
-        // [ ] validar uso
-        return response()->json($this->grupoModel->ListaGrupos());
+
+        $respostaDadosGrupo = $this->grupoModel->ObterDadosGrupo($request->all());
+        if(!empty($respostaDadosGrupo['status']) && $respostaDadosGrupo['status'] === true) {
+            return response()->json($respostaDadosGrupo, 200);
+        }
+        return response()->json($respostaDadosGrupo, 400);
     }
 
-    // corresponde a grupo->ObterGrupoPorId()
-    public function ObterGrupoPorId($id)
-    {
-        return response()->json($this->grupoModel->ObterGrupoPorId($id));
-    }
 
     // corresponde a grupo->CriarGrupo()
     public function CriarGrupo(Request $request)
@@ -85,8 +85,7 @@ class GrupoController extends Controller
     // cria relação pai->filho entre grupos
     public function AtribuirGrupoGrupo(Request $request)
     {
-        $payload = $request->all();
-        $respostaStatusAtribuicao = $this->grupoModel->AtribuirGrupoGrupo($payload);
+        $respostaStatusAtribuicao = $this->grupoModel->AtribuirGrupoGrupo($request->all());
 
         // [ ] validar uso
         return response()->json($respostaStatusAtribuicao);

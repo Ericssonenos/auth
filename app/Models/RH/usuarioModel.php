@@ -17,6 +17,61 @@ class usuarioModel extends Model
         $this->conexao = DB::connection()->getPdo();
     }
 
+    // primeiro contato exite o maximo de segurança
+    public function ObterLoginUsuario($params)
+    {
+
+        $execParams[":email"] = $params['email'];
+        $execParams[":senha"] = $params['senha'];
+        $execParams[":locatario_id"] = $params['locatario_id'];
+
+        //montar a consulta SQL
+        $consultaSql = "SELECT
+                        id_Usuario,
+                        nome_Completo,
+                        email,
+                        senha =CASE
+                            WHEN b_senha_Temporaria = 1
+                            AND (dat_senha_Bloqueado_em IS NULL OR dat_senha_Bloqueado_em > GETDATE())
+                        THEN senha ELSE null END,
+                        senha_bloqueada = CASE
+                            WHEN (dat_senha_Bloqueado_em < GETDATE())
+                            THEN 1 ELSE 0 END,
+                        dat_criado_em,
+                        criado_Usuario_id
+                    FROM RH.Tbl_Usuarios
+                    WHERE dat_cancelamento_em IS NULL
+                    and email = :email
+                    and senha = :senha
+                    and locatario_id = :locatario_id";
+
+
+        try {
+            $comando = $this->conexao->prepare($consultaSql);
+            $comando->execute($execParams);
+
+            $data = $comando->fetch(\PDO::FETCH_ASSOC);
+
+            if (empty($data)) {
+                return [
+                    'dados' => ['mensagem' => 'Nenhum usuário encontrado com os critérios fornecidos.'],
+                    'status' => false
+                ];
+            }
+        } catch (\Exception $e) {
+            return [
+                'dados' => ['mensagem' => 'Erro ao executar consulta: ' . $e->getMessage()],
+                'status' => false
+            ];
+        }
+
+        return [
+            'dados' => $data,
+            'status' => true
+        ];
+    }
+
+
     public function ObterDadosUsuarios($params)
     {
 
@@ -126,7 +181,7 @@ class usuarioModel extends Model
         try {
             $usuario_id = $params['usuario_id'];
             $grupo_id = $params['grupo_id'];
-            $criado_Usuario_id = $params['criado_Usuario_id'];
+            $criado_Usuario_id = app(usuarioServices::class)->id_Usuario;
 
             $consultaSql = "INSERT INTO RH.Tbl_Rel_Usuarios_Grupos (
                         usuario_id
@@ -199,7 +254,7 @@ class usuarioModel extends Model
     {
         try {
             $id_rel_usuario_grupo = $params['id_rel_usuario_grupo'];
-            $cancelamento_Usuario_id = $params['cancelamento_Usuario_id'];
+            $cancelamento_Usuario_id = app(usuarioServices::class)->id_Usuario;
 
             $consultaSql = "UPDATE RH.Tbl_Rel_Usuarios_Grupos
                             SET cancelamento_Usuario_id = :cancelamento_Usuario_id,

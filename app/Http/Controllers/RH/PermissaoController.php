@@ -4,7 +4,6 @@ namespace App\Http\Controllers\RH;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use App\Models\RH\permissaoModel;
 
 class PermissaoController extends Controller
@@ -19,13 +18,10 @@ class PermissaoController extends Controller
     /**
      * Retorna todas as permissões com flag indicando se o usuário já possui cada uma.
      */
-    public function ObterDadosPermissoes(Request $request)
+    public function ObterRHPermissoes(Request $request)
     {
-        $respostaDadosPermissao = $this->permissaoModel->ObterDadosPermissoes($request->all());
-        if (!empty($respostaDadosPermissao['status']) && $respostaDadosPermissao['status'] === true) {
-            return response()->json($respostaDadosPermissao, 200);
-        }
-        return response()->json($respostaDadosPermissao, 400);
+        $respostaDadosPermissao = $this->permissaoModel->ObterRHPermissoes($request->all());
+        return response()->json($respostaDadosPermissao['dados'], $respostaDadosPermissao['status']);
     }
 
 

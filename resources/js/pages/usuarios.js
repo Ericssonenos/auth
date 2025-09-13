@@ -3,6 +3,15 @@
 import $ from 'jquery';
 
 $(function () {
+
+    // abrir modal de permissões
+    let dataTable_Permissoes_Modal = null;
+    let usuarios_id_Selecionado = null;
+
+    // gerenciamento de grupos: inicializa DataTable de grupos + subtabelas de permissões por grupo
+    let dataTable_Grupos_Modal = null;
+    const dataTable_SubPermissoes = {}; // cache de DataTables por id_Grupo
+
     // se a tabela não existir nesta página, aborta
     if (!document.querySelector('#dataTable_Usuarios')) return;
 
@@ -13,8 +22,8 @@ $(function () {
         $('#btnGerarNovaSenha').addClass('d-none');
         $('#email_Modal').prop('disabled', false);
         $('#divSenhaModal').addClass('d-none');
-    // ocultar botão de mostrar senha ao criar novo usuário
-    $('#btnMostrarSenha').addClass('d-none');
+        // ocultar botão de mostrar senha ao criar novo usuário
+        $('#btnMostrarSenha').addClass('d-none');
         new bootstrap.Modal(document.getElementById('modalUser')).show();
     });
 
@@ -83,15 +92,15 @@ $(function () {
             $('#btnMostrarSenha').removeClass('d-none');
 
             // retirar typeo password por 5 segundos
-                $('#modalUser').on('click', '#btnMostrarSenha', function () {
-                    const $senhaInput = $('#senha_Modal');
-                    $senhaInput.attr('type', 'text');
-                    setTimeout(() => {
-                        $senhaInput.attr('type', 'password');
-                    }, 5000);
-                });
+            $('#modalUser').on('click', '#btnMostrarSenha', function () {
+                const $senhaInput = $('#senha_Modal');
+                $senhaInput.attr('type', 'text');
+                setTimeout(() => {
+                    $senhaInput.attr('type', 'password');
+                }, 5000);
+            });
 
-            } else {
+        } else {
             $('#divSenhaModal').addClass('d-none');
             // ocultar botão quando não há senha
             $('#btnMostrarSenha').addClass('d-none');
@@ -129,7 +138,7 @@ $(function () {
                     // recarregar tabela de usuários
                     try { table.ajax.reload(null, false); } catch (e) { }
 
-                    window.alerta.sucesso?.(resp.mensagem );
+                    window.alerta.sucesso?.(resp.mensagem);
                 } else {
                     window.alerta.erroPermissoes(xhr.responseJSON.mensagem, xhr.responseJSON.cod_permissoesNecessarias);
                 }
@@ -142,10 +151,6 @@ $(function () {
             }
         });
     });
-
-    // gerenciamento de grupos: inicializa DataTable de grupos + subtabelas de permissões por grupo
-    let dataTable_Grupos_Modal = null;
-    const dataTable_SubPermissoes = {}; // cache de DataTables por id_Grupo
 
     $('#dataTable_Usuarios').on('click', '.btn-grupo', function () {
         const $tr = $(this).closest('tr');
@@ -188,7 +193,6 @@ $(function () {
                     { data: 'nome_Grupo', title: 'Grupo' },
                     {
                         data: null,
-                        orderable: false,
                         render: function (row) {
                             const assigned = row.id_rel_usuario_grupo;
                             const toggleBtn = assigned
@@ -197,7 +201,10 @@ $(function () {
                             const expandBtn = `<button class="btn btn-sm btn-light btn-expand-grupo" data-grupo="${row.id_Grupo}">Permissões</button>`;
                             return expandBtn + ' ' + toggleBtn;
                         }
-                    }
+                    },
+                    // coluna oculta para armazenar as permissões em XML usado no filtro
+                    { data: 'permissoes_Grupo', title: 'Permissões (XML)', visible: false }
+
                 ]
             });
 
@@ -207,7 +214,7 @@ $(function () {
                 const tr = $btn.closest('tr');
                 const row = dataTable_Grupos_Modal.row(tr);
                 const rowData = row.data();
-                const grupoId = rowData.id_Grupo;
+                const grupo_id = rowData.id_Grupo;
 
                 // alterna child row
                 if (row.child.isShown()) {
@@ -217,21 +224,26 @@ $(function () {
                 }
 
                 // garante id único e evita reuse de elemento antigo
-                const childId = 'subPermissoes_' + grupoId + '_' + Date.now();
+                const childId = 'subPermissoes_' + grupo_id + '_' + Date.now();
                 const childHtml = `<div style="padding:10px;"><table id="${childId}" class="table table-sm w-100"></table></div>`;
                 row.child(childHtml).show();
                 tr.addClass('shown');
 
                 // destruir cache antigo referente ao mesmo grupo (se existir) para evitar sobreposição
-                if (dataTable_SubPermissoes[grupoId]) {
-                    try { dataTable_SubPermissoes[grupoId].destroy(); } catch (e) {}
-                    delete dataTable_SubPermissoes[grupoId];
+                if (dataTable_SubPermissoes[grupo_id]) {
+                    try { dataTable_SubPermissoes[grupo_id].destroy(); } catch (e) { }
+                    delete dataTable_SubPermissoes[grupo_id];
                 }
 
-                dataTable_SubPermissoes[grupoId] = $('#' + childId).DataTable({
+                dataTable_SubPermissoes[grupo_id] = $('#' + childId).DataTable({
                     ajax: {
-                        method: 'GET',
-                        url: '/rh/api/grupo/' + encodeURIComponent(grupoId) + '/permissoes',
+                        method: 'POST',
+                        url: '/rh/api/permissoes/dados',
+                        data: function (requestData) {
+                            requestData.grupo_id = grupo_id;
+                            requestData.fn = 'btn-expand-grupo';
+                            return requestData;
+                        },
                         dataSrc: function (json) {
                             if (!json) { window.alerta.erroPermissoes('Erro ao ler permissões do grupo'); return []; }
                             if (Array.isArray(json.data)) return json.data;
@@ -242,7 +254,10 @@ $(function () {
                             window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
                         }
                     },
-                    paging: false,
+                    // ocultar dataTable_Grupos_Modal_length
+                    lengthChange: false,
+                    pageLength: 3,
+                    paging: true,
                     searching: false,
                     info: false,
                     columns: [
@@ -250,55 +265,6 @@ $(function () {
                         { data: 'descricao_permissao', title: 'Descrição' }
                     ]
                 });
-            });
-
-            // adicionar / remover grupo
-            $('#dataTable_Grupos_Modal tbody').on('click', '.btn-grupo-toggle', function () {
-                const $btn = $(this);
-                const action = $btn.data('action');
-                const id = $btn.data('id');
-                $btn.prop('disabled', true).text('...');
-
-                if (action === 'adicionar') {
-                    $.ajax({
-                        url: '/rh/api/usuario/grupo/adicionar',
-                        method: 'POST',
-                        data: { usuario_id: usuarios_id_Selecionado, grupo_id: id },
-                        dataType: 'json',
-                        success: function (resp) {
-                            if (resp && resp.status) {
-                                window.alerta.sucesso?.(resp.mensagem || 'Grupo adicionado.');
-                                dataTable_Grupos_Modal.ajax.reload(null, false);
-                            } else {
-                                window.alerta.erroPermissoes(resp?.mensagem || 'Erro ao adicionar grupo');
-                                $btn.prop('disabled', false).text('Adicionar');
-                            }
-                        },
-                        error: function (xhr) {
-                            window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
-                            $btn.prop('disabled', false).text('Adicionar');
-                        }
-                    });
-                } else {
-                    $.ajax({
-                        url: '/rh/api/usuario/grupo/remover/' + encodeURIComponent(id),
-                        method: 'DELETE',
-                        dataType: 'json',
-                        success: function (resp) {
-                            if (resp && resp.status) {
-                                window.alerta.sucesso?.(resp.mensagem || 'Grupo removido.');
-                                dataTable_Grupos_Modal.ajax.reload(null, false);
-                            } else {
-                                window.alerta.erroPermissoes(resp?.mensagem || 'Erro ao remover grupo');
-                                $btn.prop('disabled', false).text('Remover');
-                            }
-                        },
-                        error: function (xhr) {
-                            window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
-                            $btn.prop('disabled', false).text('Remover');
-                        }
-                    });
-                }
             });
 
         } else {
@@ -311,7 +277,7 @@ $(function () {
             });
             // destruir subtabelas cacheadas
             Object.keys(dataTable_SubPermissoes).forEach(k => {
-                try { dataTable_SubPermissoes[k].destroy(); } catch (e) {}
+                try { dataTable_SubPermissoes[k].destroy(); } catch (e) { }
                 delete dataTable_SubPermissoes[k];
             });
 
@@ -322,9 +288,61 @@ $(function () {
     });
 
 
-    // abrir modal de permissões
-    let dataTable_Permissoes_Modal = null;
-    let usuarios_id_Selecionado = null;
+
+    // adicionar / remover grupo
+    $('#dataTable_Grupos_Modal').on('click', '.btn-grupo-toggle', function () {
+
+        const tr = $(this).closest('tr');
+        const rowData = dataTable_Grupos_Modal.row(tr).data();
+        const grupo_id = rowData.id_Grupo; // id do grupo
+        const id_rel_usuario_grupo = rowData.id_rel_usuario_grupo; // id do relacionamento (se existir)
+        const usuario_id = usuarios_id_Selecionado;
+
+        const $btn = $(this);
+        $btn.prop('disabled', true).text('...');
+
+        if (!id_rel_usuario_grupo) {
+            $.ajax({
+                url: '/rh/api/usuario/grupo/adicionar',
+                method: 'POST',
+                data: {
+                    usuario_id: usuario_id,
+                    grupo_id: grupo_id
+                },
+                dataType: 'json',
+                success: function (resp) {
+                    if (resp && resp.status) {
+                        window.alerta.sucesso?.(resp.mensagem || 'Grupo adicionado.');
+                        dataTable_Grupos_Modal.ajax.reload(null, false);
+                    } else {
+                        window.alerta.erroPermissoes(resp?.mensagem || 'Erro ao adicionar grupo');
+                        $btn.prop('disabled', false).text('Adicionar');
+                    }
+                },
+                error: function (xhr) {
+                    window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
+                }
+            });
+        } else {
+            $.ajax({
+                url: '/rh/api/usuario/grupo/remover/' + encodeURIComponent(id_rel_usuario_grupo),
+                method: 'DELETE',
+                dataType: 'json',
+                success: function (resp) {
+                    if (resp && resp.status) {
+                        window.alerta.sucesso?.(resp.mensagem || 'Grupo removido.');
+                        dataTable_Grupos_Modal.ajax.reload(null, false);
+                    } else {
+                        window.alerta.erroPermissoes(resp?.mensagem || 'Erro ao remover grupo');
+                        $btn.prop('disabled', false).text('Remover');
+                    }
+                },
+                error: function (xhr) {
+                    window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
+                }
+            });
+        }
+    });
 
     // resetar usuarios_id_Selecionado para 0 quando qualquer modal relevante for fechado
     $('#modalUser, #modalGrupos, #modalPermissoes').on('hidden.bs.modal', function () {
@@ -353,7 +371,7 @@ $(function () {
     $('#dataTable_Usuarios').on('click', '.btn-permissoes', function () {
         const $tr = $(this).closest('tr');
         const rowData = table.row($tr).data();
-         usuarios_id_Selecionado = rowData.id_Usuario;
+        usuarios_id_Selecionado = rowData.id_Usuario;
         // abrir modal
         const modal = new bootstrap.Modal(document.getElementById('modalPermissoes'));
         modal.show();
@@ -371,6 +389,7 @@ $(function () {
                     // enviar parametros dinamicamente a cada requisição
                     data: function (requestData) {
                         requestData.usuario_id = usuarios_id_Selecionado; // variável atualizada antes do reload
+                        requestData.fn = 'btn-permissoes';
                         requestData.order_by = 'CASE WHEN rup.id_rel_usuario_permissao IS NOT NULL THEN 1 ELSE 0 END, p.cod_permissao';
                         return requestData;
                     },
@@ -397,11 +416,20 @@ $(function () {
                     {
                         data: 'id_rel_usuario_permissao',
                         render: function (data, type, row) {
-
-                            if (row.id_rel_usuario_permissao) {
-                                return `<button class="btn btn-sm btn-danger btn-permissao-toggle" data-id="${row.id_rel_usuario_permissao}" data-action="remover">Remover</button>`;
+                            let retorno = '';
+                            if (row.ativo_Grupo) {
+                                // criar um bolinha pequena com title "Vinculado por grupo"
+                                retorno = '<span class="badge bg-success" title="Vinculado por grupo">G</span> ';
                             }
-                            return `<button class="btn btn-sm btn-success btn-permissao-toggle" data-id="${row.id_permissao}" data-action="adicionar">Adicionar</button>`;
+                            if (row.id_rel_usuario_permissao) {
+                                retorno
+                                    += `<button class="btn btn-sm btn-danger btn-permissao-toggle" data-id="${row.id_rel_usuario_permissao}" data-action="remover">Remover</button>`;
+                            } else {
+                                retorno += `<button class="btn btn-sm btn-success btn-permissao-toggle" data-id="${row.id_permissao}" data-action="adicionar">Adicionar</button>`;
+                            }
+
+
+                            return retorno;
                         }
                     }
                 ]
@@ -416,7 +444,6 @@ $(function () {
 
         }
     });
-
 
     // handler para add/remover permissões dentro do modal
     $('#dataTable_Permissoes_Modal').on('click', '.btn-permissao-toggle', function () {
@@ -434,7 +461,10 @@ $(function () {
             $.ajax({
                 url: '/rh/api/usuario/permissao/adicionar',
                 method: 'POST',
-                data: { usuario_id: usuario_id, permissao_id: permissao_id },
+                data: {
+                    usuario_id: usuario_id,
+                    permissao_id: permissao_id
+                },
                 dataType: 'json',
                 success: function (resp) {
                     if (resp && resp.status) {
@@ -458,7 +488,7 @@ $(function () {
             // remover usa id_rel_usuario_permissao
             $.ajax({
                 url: '/rh/api/usuario/permissao/remover/' + encodeURIComponent(id_rel_usuario_permissao),
-                method: 'delete',
+                method: 'DELETE',
                 dataType: 'json',
                 success: function (resp) {
                     if (resp && resp.status) {
@@ -470,7 +500,7 @@ $(function () {
                     }
                 },
                 error: function (xhr) {
-                   if (xhr.status === 403) {
+                    if (xhr.status === 403) {
                         window.alerta.erroPermissoes(xhr.responseJSON.mensagem, xhr.responseJSON.cod_permissoesNecessarias);
                         return;
                     } else {
@@ -480,7 +510,6 @@ $(function () {
             });
         }
     });
-
 
     // onlclik para gera nova senha - chama API e preenche o campo senha_Modal com a senha retornada
     $('#btnGerarNovaSenha').on('click', function () {
@@ -531,7 +560,7 @@ $(function () {
             }
         });
     });
-      // onlclik para gera nova senha - chama API e preenche o campo senha_Modal com a senha retornada
+    // onlclik para gera nova senha - chama API e preenche o campo senha_Modal com a senha retornada
 
     $('#formUser').on('submit', function (e) {
         e.preventDefault();

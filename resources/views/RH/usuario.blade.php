@@ -79,7 +79,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="permUsuario_id" />
                     <table id="dataTable_Permissoes_Modal" class="table table-sm table-striped" style="width:100%"></table>
                 </div>
                 <div class="modal-footer">
@@ -99,7 +98,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="gruposList">Carregando...</div>
+                    <table id="dataTable_Grupos_Modal" class="table table-sm table-striped" style="width:100%"></table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>

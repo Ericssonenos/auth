@@ -2,10 +2,11 @@
 
 namespace App\Models\RH;
 
+use App\Services\Operacao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class grupo extends Model
+class grupoModel extends Model
 {
     private $conexao;
 
@@ -14,56 +15,89 @@ class grupo extends Model
         $this->conexao = DB::connection()->getPdo();
     }
 
-    public function ListaGrupos()
+    public function ObterDadosGrupo($params)
     {
-        try {
-            $consultaSql = "SELECT id_Grupo, nome_Grupo, descricao_Grupo, categoria_id
-                            FROM RH.Tbl_Grupos
-                            WHERE nome_Grupo IS NOT NULL";
+        $parametrizacao = Operacao::Parametrizar($params);
+        // Verifica se houve erro na parametrização
+        if ($parametrizacao['status'] === false) {
+            return [
+                'status' => $parametrizacao['status'],
+                'mensagem' => $parametrizacao['mensagem'],
+                'data' => []
+            ];
+        }
 
+        $whereParams = $parametrizacao['whereParams'];
+        $optsParams = $parametrizacao['optsParams'];
+        $execParams = $parametrizacao['execParams'];
+
+        // filtros de execução específicos
+        $and_usuario_id = " ";
+        if (isset($params['usuario_id'])) {
+            $and_usuario_id = "AND rug.usuario_id = :usuario_id ";
+            $execParams[':usuario_id'] = $params['usuario_id'];
+        }
+
+
+        // execParams id_usuario já foi adicionado no Parametiza
+        $join_Tbl_Usuarios = " ";
+        if (isset($params['id_Usuario'])) {
+            $join_Tbl_Usuarios = " LEFT JOIN RH.Tbl_Usuarios u
+             ON     u.id_usuario = rug.usuario_id
+             AND    u.dat_cancelamento_em IS NULL ";
+        }
+
+        $consultaSql = "SELECT
+                            g.id_Grupo
+                        ,   g.nome_Grupo
+                        ,   g.descricao_Grupo
+                        ,   g.categoria_id
+                        ,   rug.id_rel_usuario_grupo
+                        ,   permissoes_Grupo = RH.Fn_GetPermissoesGrupoXML(g.id_Grupo)
+                        FROM RH.Tbl_Grupos g
+                        LEFT JOIN RH.Tbl_Rel_Usuarios_Grupos rug
+                            ON rug.grupo_id = g.id_Grupo
+                            $and_usuario_id
+                            AND rug.dat_cancelamento_em IS NULL
+                        $join_Tbl_Usuarios
+                        WHERE g.dat_cancelamento_em IS NULL"
+            . implode(" ", $whereParams)
+            . ($optsParams['order_by'] ?? " ORDER BY g.nome_Grupo ASC ")
+            . ($optsParams['limit'] ?? "")
+            . ($optsParams['offset'] ?? "");
+
+
+        try {
             $comando = $this->conexao->prepare($consultaSql);
-            $comando->execute();
+            $comando->execute($execParams);
             $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
 
-            return [
-                'status' => true,
-                'mensagem' => 'Lista de grupos recuperada.',
-                'data' => $data
-            ];
-        } catch (\Exception $e) {
+            if(empty($data)) {
+                return [
+                    'status' => false,
+                    'mensagem' => 'Nenhum grupo encontrado.',
+                    'data' => []
+                ];
+            }
+
+        }catch (\Exception $e) {
             return [
                 'status' => false,
                 'mensagem' => $e->getMessage(),
                 'data' => null
             ];
         }
+
+        return [
+            'status' => true,
+            'mensagem' => 'Grupos recuperados.',
+            'data' => $data
+        ];
+
+
     }
 
-    public function ObterGrupoPorId($id_Grupo)
-    {
-        try {
-            $consultaSql = "SELECT id_Grupo, nome_Grupo, descricao_Grupo, categoria_id,
-                                    criado_Usuario_id, dat_criado_em, cancelamento_Usuario_id, dat_cancelamento_em
-                            FROM RH.Tbl_Grupos
-                            WHERE id_Grupo = :id_Grupo";
 
-            $comando = $this->conexao->prepare($consultaSql);
-            $comando->execute([':id_Grupo' => $id_Grupo]);
-            $data = $comando->fetch(\PDO::FETCH_ASSOC);
-
-            return [
-                'status' => true,
-                'mensagem' => 'Grupo recuperado.',
-                'data' => $data
-            ];
-        } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => $e->getMessage(),
-                'data' => null
-            ];
-        }
-    }
 
     public function CriarGrupo($params)
     {

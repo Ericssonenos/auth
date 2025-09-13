@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Services\RH\usuarioServices;
 use Illuminate\Support\Facades\Cache;
 use App\Models\RH\permissaoModel;
 
@@ -40,10 +39,11 @@ class UsuarioMiddleware
                 $permissaoModel = new permissaoModel();
                 // id_Usuario traz as permissões ativas
                 // usuario_id traz todas as permissões com flag (possui ou não)
-                $permissoesUsuario = $permissaoModel->ObterDadosPermissoes(['id_Usuario' => $dados['id_Usuario']]);
+                $permissoesUsuario = $permissaoModel->ObterLoginPermissoes(['id_Usuario' => $dados['id_Usuario']]);
 
-                if (isset($permissoesUsuario['status']) && $permissoesUsuario['status'] === true) {
-                    $dados['permissoesUsuario'] = $permissoesUsuario['data'];
+                // Verificar se a resposta contém permissões
+                if ($permissoesUsuario['status'] == 200) {
+                    $dados['permissoesUsuario'] = $permissoesUsuario['dados'];
                 } else {
                     $dados['permissoesUsuario'] = [];
                 }

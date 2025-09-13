@@ -191,5 +191,30 @@ BEGIN
     END
 END
 
+-- Função para obter permissões de um grupo em formato XML
+IF OBJECT_ID('RH.Fn_GetPermissoesGrupoXML', 'FN') IS NOT NULL
+BEGIN
+    DROP FUNCTION RH.Fn_GetPermissoesGrupoXML;
+END
+GO
+
+CREATE FUNCTION RH.Fn_GetPermissoesGrupoXML(@id_Grupo INT)
+RETURNS NVARCHAR(MAX)
+AS
+BEGIN
+    DECLARE @PermissoesXML NVARCHAR(MAX);
+
+    SELECT @PermissoesXML = STRING_AGG(p.cod_permissao, ', ')
+    FROM RH.Tbl_Permissoes p
+    INNER JOIN RH.Tbl_Rel_Grupos_Permissoes rgp ON p.id_permissao = rgp.permissao_id
+    WHERE rgp.grupo_id = @id_Grupo
+        AND rgp.dat_cancelamento_em IS NULL
+        AND p.dat_cancelamento_em IS NULL
+    ORDER BY p.cod_permissao;
+
+    RETURN ISNULL(@PermissoesXML, '');
+END
+GO
+
 
 
