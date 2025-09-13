@@ -15,7 +15,7 @@ $(function () {
     // se a tabela não existir nesta página, aborta
     if (!document.querySelector('#dataTable_Usuarios')) return;
 
-    $('#btnNovo').on('click', function () {
+    $('#btnNovo').off('click').on('click', function () {
         usuarios_id_Selecionado = null; // resetar variável global
         $('#modalUsuarioTitulo').text('Novo usuário');
         $('#formUser')[0].reset();
@@ -71,7 +71,7 @@ $(function () {
         ]
     });
 
-    $('#dataTable_Usuarios').on('click', '.btn-edit', function () {
+    $('#dataTable_Usuarios').off('click', '.btn-edit').on('click', '.btn-edit', function () {
 
         $('#modalUsuarioTitulo').text('Editar usuário');
 
@@ -92,7 +92,7 @@ $(function () {
             $('#btnMostrarSenha').removeClass('d-none');
 
             // retirar typeo password por 5 segundos
-            $('#modalUser').on('click', '#btnMostrarSenha', function () {
+            $('#modalUser').off('click', '#btnMostrarSenha').on('click', '#btnMostrarSenha', function () {
                 const $senhaInput = $('#senha_Modal');
                 $senhaInput.attr('type', 'text');
                 setTimeout(() => {
@@ -112,7 +112,7 @@ $(function () {
     });
 
     // habilitar botão Excluir no modal e adicionar handler
-    $('#btnExcluirUsuario').on('click', function (e) {
+    $('#btnExcluirUsuario').off('click').on('click', function (e) {
         e.preventDefault();
         if (!usuarios_id_Selecionado) {
             window.alerta?.erroPermissoes?.({ mensagem: 'Nenhum usuário selecionado para exclusão.' });
@@ -152,7 +152,7 @@ $(function () {
         });
     });
 
-    $('#dataTable_Usuarios').on('click', '.btn-grupo', function () {
+    $('#dataTable_Usuarios').off('click', '.btn-grupo').on('click', '.btn-grupo', function () {
         const $tr = $(this).closest('tr');
         const rowData = table.row($tr).data();
         usuarios_id_Selecionado = rowData.id_Usuario;
@@ -209,7 +209,7 @@ $(function () {
             });
 
             // expandir/mostrar subtabela de permissões do grupo
-            $('#dataTable_Grupos_Modal tbody').on('click', '.btn-expand-grupo', function () {
+            $('#dataTable_Grupos_Modal tbody').off('click', '.btn-expand-grupo').on('click', '.btn-expand-grupo', function () {
                 const $btn = $(this);
                 const tr = $btn.closest('tr');
                 const row = dataTable_Grupos_Modal.row(tr);
@@ -290,7 +290,7 @@ $(function () {
 
 
     // adicionar / remover grupo
-    $('#dataTable_Grupos_Modal').on('click', '.btn-grupo-toggle', function () {
+    $('#dataTable_Grupos_Modal').off('click', '.btn-grupo-toggle').on('click', '.btn-grupo-toggle', function () {
 
         const tr = $(this).closest('tr');
         const rowData = dataTable_Grupos_Modal.row(tr).data();
@@ -368,7 +368,7 @@ $(function () {
         } catch (e) { }
     });
 
-    $('#dataTable_Usuarios').on('click', '.btn-permissoes', function () {
+    $('#dataTable_Usuarios').off('click', '.btn-permissoes').on('click', '.btn-permissoes', function () {
         const $tr = $(this).closest('tr');
         const rowData = table.row($tr).data();
         usuarios_id_Selecionado = rowData.id_Usuario;
@@ -446,7 +446,7 @@ $(function () {
     });
 
     // handler para add/remover permissões dentro do modal
-    $('#dataTable_Permissoes_Modal').on('click', '.btn-permissao-toggle', function () {
+    $('#dataTable_Permissoes_Modal').off('click', '.btn-permissao-toggle').on('click', '.btn-permissao-toggle', function () {
 
         const tr = $(this).closest('tr');
         const rowData = dataTable_Permissoes_Modal.row(tr).data();
@@ -512,7 +512,7 @@ $(function () {
     });
 
     // onlclik para gera nova senha - chama API e preenche o campo senha_Modal com a senha retornada
-    $('#btnGerarNovaSenha').on('click', function () {
+    $('#btnGerarNovaSenha').off('click').on('click', function () {
 
 
         const $btn = $(this);
@@ -676,7 +676,7 @@ $(function () {
         }
     });
 
-    $('btnMostrarSenha').on('click', function () {
+    $('#btnMostrarSenha').off('click').on('click', function () {
         const $senhaInput = $('#senha_Modal');
         $senhaInput.attr('type', 'text');
         setTimeout(() => {
