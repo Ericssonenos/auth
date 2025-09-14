@@ -29,6 +29,7 @@ try {
 
 // Importar scripts específicos por página
 import './pages/usuarios';
+import './pages/grupos';
 
 
 

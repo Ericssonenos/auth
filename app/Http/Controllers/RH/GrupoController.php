@@ -5,6 +5,7 @@ namespace App\Http\Controllers\RH;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\RH\grupoModel;
+use Illuminate\Support\Facades\Cache;
 
 
 class GrupoController extends Controller
@@ -17,11 +18,19 @@ class GrupoController extends Controller
         $this->grupoModel = new grupoModel();
     }
 
+    /**
+     * Página de listagem de grupos (exibe DataTable)
+     */
+    public function index()
+    {
+        // só acessa quem tiver a permissão GESTAO_GRUPOS
+        return view('RH.grupo');
+    }
+
 
     // endpoint para DataTable: lista grupos com indicação se usuário pertence (usa usuario_id no POST)
     public function ObterDadosGrupo(Request $request)
     {
-
         $respostaDadosGrupo = $this->grupoModel->ObterDadosGrupo($request->all());
         if(!empty($respostaDadosGrupo['status']) && $respostaDadosGrupo['status'] === true) {
             return response()->json($respostaDadosGrupo, 200);
@@ -29,6 +38,50 @@ class GrupoController extends Controller
         return response()->json($respostaDadosGrupo, 400);
     }
 
+    /**
+     * Cadastrar novo grupo
+     */
+    public function CadastrarGrupo(Request $request)
+    {
+        $payload = $request->all();
+        $respostaStatusCadastro = $this->grupoModel->CadastrarGrupo($payload);
+
+        if (!empty($respostaStatusCadastro['status']) && $respostaStatusCadastro['status'] === true) {
+            $status = 200;
+        }
+        return response()->json($respostaStatusCadastro, $status ?? 400);
+    }
+
+    /**
+     * Excluir (logicamente) grupo
+     */
+    public function DeletarGrupo(Request $request, $grupo_id)
+    {
+        $payload = $request->all();
+        $payload['grupo_id'] = $grupo_id;
+
+        $res = $this->grupoModel->DeletarGrupo($payload);
+
+        // atualizar versão de permissões se alteração efetiva
+        if (!empty($res['status']) && $res['status'] === true) {
+            Cache::put("Permissao_versao", time());
+            return response()->json($res, 200);
+        }
+
+        return response()->json($res, 400);
+    }
+
+    /**
+     * Obter dados das categorias para select
+     */
+    public function ObterCategorias(Request $request)
+    {
+        $respostaCategorias = $this->grupoModel->ObterCategorias($request->all());
+        if ($respostaCategorias['status']) {
+            $status = 200;
+        }
+        return response()->json($respostaCategorias, $status ?? 400);
+    }
 
     // corresponde a grupo->CriarGrupo()
     public function CriarGrupo(Request $request)
@@ -68,17 +121,26 @@ class GrupoController extends Controller
         $payload = $request->all();
         $respostaStatusAtribuicao = $this->grupoModel->AtribuirPermissaoGrupo($payload);
 
-        // [ ] validar uso
+        // Atualizar versão de permissões se alteração efetiva
+        if (!empty($respostaStatusAtribuicao['status']) && $respostaStatusAtribuicao['status'] === true) {
+            Cache::put("Permissao_versao", time());
+        }
+
         return response()->json($respostaStatusAtribuicao);
     }
 
     // remove permissão de um grupo
-    public function RemoverPermissaoGrupo(Request $request)
+    public function RemoverPermissaoGrupo(Request $request, $id_rel_grupo_permissao)
     {
         $payload = $request->all();
+        $payload['id_rel_grupo_permissao'] = $id_rel_grupo_permissao;
         $respostaStatusRemocao = $this->grupoModel->RemoverPermissaoGrupo($payload);
 
-        // [ ] validar uso
+        // Atualizar versão de permissões se alteração efetiva
+        if (!empty($respostaStatusRemocao['status']) && $respostaStatusRemocao['status'] === true) {
+            Cache::put("Permissao_versao", time());
+        }
+
         return response()->json($respostaStatusRemocao);
     }
 

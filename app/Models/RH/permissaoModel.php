@@ -33,8 +33,10 @@ class permissaoModel extends Model
                             SELECT
                                PRM.cod_permissao
                             FROM RH.Tbl_Permissoes PRM
-                            LEFT JOIN RH.Tbl_Rel_Usuarios_Permissoes REL_USUARIO_G
-                                ON REL_USUARIO_G.permissao_id = PRM.id_permissao
+                            LEFT JOIN RH.Tbl_Rel_Grupos_Permissoes REL_GRUPO_P
+                                ON REL_GRUPO_P.permissao_id = PRM.id_permissao
+                            LEFT JOIN RH.Tbl_Rel_Usuarios_Grupos REL_USUARIO_G
+                                ON REL_USUARIO_G.grupo_id = REL_GRUPO_P.grupo_id
                             WHERE   REL_USUARIO_G.dat_cancelamento_em IS NULL
                             AND     PRM.dat_cancelamento_em IS NULL
                             AND     REL_USUARIO_G.usuario_id = :id_Usuario_Grupo
@@ -101,6 +103,24 @@ class permissaoModel extends Model
                                 ON rup.permissao_id = p.id_permissao
                                 AND rup.usuario_id = :usuario_id
                                 AND rup.dat_cancelamento_em IS NULL
+                            WHERE p.dat_cancelamento_em IS NULL"
+                . implode(' ', $whereParams)
+                . ($optsParams['order_by'] ?? "  ")
+                . ($optsParams['limit'] ?? "  ")
+                . ($optsParams['offset'] ?? "  ");
+
+        }else if($params['fn'] == 'btn-permissoes-grupo'){
+            $execParams[':grupo_id'] = $params['grupo_id'];
+            $consultaSql = "SELECT
+                                p.id_permissao
+                            ,   p.cod_permissao
+                            ,   p.descricao_permissao
+                            ,   rgp.id_rel_grupo_permissao
+                            FROM RH.Tbl_Permissoes p
+                            LEFT JOIN RH.Tbl_Rel_Grupos_Permissoes rgp
+                                ON rgp.permissao_id = p.id_permissao
+                                AND rgp.grupo_id = :grupo_id
+                                AND rgp.dat_cancelamento_em IS NULL
                             WHERE p.dat_cancelamento_em IS NULL"
                 . implode(' ', $whereParams)
                 . ($optsParams['order_by'] ?? "  ")

@@ -43,6 +43,7 @@
 
         <nav class="navbar st-metal" aria-label="Primary navigation">
           <div class="nav">
+
             <a class="active" href="{{ route('home.view') }}"><i class="bi bi-house-door-fill" aria-hidden="true"></i> Início</a>
 
             <div class="dropdown">
@@ -55,8 +56,17 @@
               </div>
             </div>
 
+            <div class="dropdown">
+              <a href="#" aria-haspopup="true" aria-expanded="false"><i class="bi bi-shield-lock" aria-hidden="true"></i> Permissões ▾</a>
+              <div class="dropdown-menu" role="menu" aria-label="Configurações">
+                @href_permissa('usuario.view', 'Usuários', 'bi bi-people')
 
-             @href_permissa('usuario.view', 'Cadastros', 'bi bi-people')
+                @href_permissa('grupos.view', 'Grupos', 'bi bi-people-fill')
+              </div>
+            </div>
+
+
+
           </div>
 
           <!-- Filtros à direita da navbar -->

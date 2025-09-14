@@ -5,6 +5,7 @@ namespace App\Models\RH;
 use App\Services\Operacao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Services\RH\usuarioServices;
 
 class grupoModel extends Model
 {
@@ -31,54 +32,68 @@ class grupoModel extends Model
         $optsParams = $parametrizacao['optsParams'];
         $execParams = $parametrizacao['execParams'];
 
-        // filtros de execução específicos
-        $and_usuario_id = " ";
-        if (isset($params['usuario_id'])) {
-            $and_usuario_id = "AND rug.usuario_id = :usuario_id ";
-            $execParams[':usuario_id'] = $params['usuario_id'];
-        }
-
-
-        // execParams id_usuario já foi adicionado no Parametiza
-        $join_Tbl_Usuarios = " ";
-        if (isset($params['id_Usuario'])) {
-            $join_Tbl_Usuarios = " LEFT JOIN RH.Tbl_Usuarios u
-             ON     u.id_usuario = rug.usuario_id
-             AND    u.dat_cancelamento_em IS NULL ";
-        }
-
-        $consultaSql = "SELECT
-                            g.id_Grupo
-                        ,   g.nome_Grupo
-                        ,   g.descricao_Grupo
-                        ,   g.categoria_id
-                        ,   rug.id_rel_usuario_grupo
-                        ,   permissoes_Grupo = RH.Fn_GetPermissoesGrupoXML(g.id_Grupo)
+        // Se fn = 'listar-grupos', buscar todos os grupos para a página principal
+        if (isset($params['fn']) && $params['fn'] === 'listar-grupos') {
+            $consultaSql = "SELECT
+                            g.id_Grupo,
+                            g.nome_Grupo,
+                            g.descricao_Grupo,
+                            g.categoria_id,
+                            c.nome_Categoria,
+                            RH.Fn_GetPermissoesGrupoXML(g.id_Grupo) as permissoes_XML
                         FROM RH.Tbl_Grupos g
-                        LEFT JOIN RH.Tbl_Rel_Usuarios_Grupos rug
-                            ON rug.grupo_id = g.id_Grupo
-                            $and_usuario_id
-                            AND rug.dat_cancelamento_em IS NULL
-                        $join_Tbl_Usuarios
-                        WHERE g.dat_cancelamento_em IS NULL"
-            . implode(" ", $whereParams)
-            . ($optsParams['order_by'] ?? " ORDER BY g.nome_Grupo ASC ")
-            . ($optsParams['limit'] ?? "")
-            . ($optsParams['offset'] ?? "");
+                        LEFT JOIN RH.Tbl_Categorias c ON g.categoria_id = c.id_categoria
+                        WHERE g.dat_cancelamento_em IS NULL
+                        AND (c.dat_cancelamento_em IS NULL OR c.dat_cancelamento_em IS NOT NULL)"
+                . implode(' ', $whereParams)
+                . ($optsParams['order_by'] ?? ' ORDER BY g.nome_Grupo')
+                . ($optsParams['limit'] ?? '')
+                . ($optsParams['offset'] ?? '');
+        } else {
+            // Consulta original para modal de grupos de usuário
+            $and_usuario_id = " ";
+            if (isset($params['usuario_id'])) {
+                $and_usuario_id = "AND rug.usuario_id = :usuario_id ";
+                $execParams[':usuario_id'] = $params['usuario_id'];
+            }
 
+            $join_Tbl_Usuarios = " ";
+            if (isset($params['id_Usuario'])) {
+                $join_Tbl_Usuarios = " LEFT JOIN RH.Tbl_Usuarios u
+                 ON     u.id_usuario = rug.usuario_id
+                 AND    u.dat_cancelamento_em IS NULL ";
+            }
+
+            $consultaSql = "SELECT
+                                g.id_Grupo
+                            ,   g.nome_Grupo
+                            ,   g.descricao_Grupo
+                            ,   g.categoria_id
+                            ,   rug.id_rel_usuario_grupo
+                            ,   permissoes_Grupo = RH.Fn_GetPermissoesGrupoXML(g.id_Grupo)
+                            FROM RH.Tbl_Grupos g
+                            LEFT JOIN RH.Tbl_Rel_Usuarios_Grupos rug
+                                ON rug.grupo_id = g.id_Grupo
+                                $and_usuario_id
+                                AND rug.dat_cancelamento_em IS NULL
+                            $join_Tbl_Usuarios
+                            WHERE g.dat_cancelamento_em IS NULL"
+                . implode(" ", $whereParams)
+                . ($optsParams['order_by'] ?? " ORDER BY g.nome_Grupo ASC ")
+                . ($optsParams['limit'] ?? "")
+                . ($optsParams['offset'] ?? "");
+        }
 
         try {
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute($execParams);
             $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
 
-            if(empty($data)) {
-                return [
-                    'status' => false,
-                    'mensagem' => 'Nenhum grupo encontrado.',
-                    'data' => []
-                ];
-            }
+            return [
+                'status' => true,
+                'mensagem' => 'Grupos recuperados.',
+                'data' => $data
+            ];
 
         }catch (\Exception $e) {
             return [
@@ -87,25 +102,22 @@ class grupoModel extends Model
                 'data' => null
             ];
         }
-
-        return [
-            'status' => true,
-            'mensagem' => 'Grupos recuperados.',
-            'data' => $data
-        ];
-
-
     }
 
 
 
     public function CriarGrupo($params)
     {
+        return $this->CadastrarGrupo($params);
+    }
+
+    public function CadastrarGrupo($params)
+    {
         try {
-            $nome_Grupo = $params['nome_Grupo'];
-            $descricao_Grupo = $params['descricao_Grupo'] ?? null;
-            $categoria_id = $params['categoria_id'] ?? null;
-            $criado_Usuario_id = $params['criado_Usuario_id'];
+            $nome_Grupo = trim($params['nome_Grupo']);
+            $descricao_Grupo = trim($params['descricao_Grupo'] ?? '');
+            $categoria_id = !empty($params['categoria_id']) ? $params['categoria_id'] : null;
+            $criado_Usuario_id = app(usuarioServices::class)->id_Usuario;
 
             $consultaSql = "INSERT INTO RH.Tbl_Grupos (
                             nome_Grupo, descricao_Grupo, categoria_id, criado_Usuario_id
@@ -124,13 +136,13 @@ class grupoModel extends Model
 
             return [
                 'status' => $rows > 0,
-                'mensagem' => $rows > 0 ? 'Grupo criado.' : 'Nenhuma linha inserida.',
+                'mensagem' => $rows > 0 ? 'Grupo criado com sucesso!' : 'Nenhuma linha inserida.',
                 'data' => ['affected' => $rows]
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'mensagem' => $e->getMessage(),
+                'mensagem' => 'Erro ao criar grupo: ' . $e->getMessage(),
                 'data' => null
             ];
         }
@@ -139,19 +151,19 @@ class grupoModel extends Model
     public function AtualizarGrupo($params)
     {
         try {
-            $id_Grupo = $params['id_Grupo'];
-            $nome_Grupo = $params['nome_Grupo'];
-            $descricao_Grupo = $params['descricao_Grupo'] ?? null;
-            $categoria_id = $params['categoria_id'] ?? null;
-            $usuario_atualizado_por = $params['usuario_atualizado_por'];
+            $grupo_id = $params['grupo_id'] ?? $params['id_Grupo'];
+            $nome_Grupo = trim($params['nome_Grupo']);
+            $descricao_Grupo = trim($params['descricao_Grupo'] ?? '');
+            $categoria_id = !empty($params['categoria_id']) ? $params['categoria_id'] : null;
+            $atualizado_Usuario_id = app(usuarioServices::class)->id_Usuario;
 
             $consultaSql = "UPDATE RH.Tbl_Grupos
                             SET nome_Grupo = :nome_Grupo,
                                 descricao_Grupo = :descricao_Grupo,
                                 categoria_id = :categoria_id,
-                                atualizado_Usuario_id = :usuario_atualizado_por,
+                                atualizado_Usuario_id = :atualizado_Usuario_id,
                                 dat_atualizado_em = GETDATE()
-                            WHERE id_Grupo = :id_Grupo
+                            WHERE id_Grupo = :grupo_id
                               AND dat_cancelamento_em IS NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
@@ -159,8 +171,8 @@ class grupoModel extends Model
                 ':nome_Grupo' => $nome_Grupo,
                 ':descricao_Grupo' => $descricao_Grupo,
                 ':categoria_id' => $categoria_id,
-                ':usuario_atualizado_por' => $usuario_atualizado_por,
-                ':id_Grupo' => $id_Grupo
+                ':atualizado_Usuario_id' => $atualizado_Usuario_id,
+                ':grupo_id' => $grupo_id
             ]);
 
             $rows = $comando->rowCount();
@@ -168,13 +180,13 @@ class grupoModel extends Model
 
             return [
                 'status' => $rows > 0,
-                'mensagem' => $rows > 0 ? 'Grupo atualizado.' : 'Nenhuma linha atualizada.',
+                'mensagem' => $rows > 0 ? 'Grupo atualizado com sucesso!' : 'Nenhuma linha atualizada.',
                 'data' => ['affected' => $rows]
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'mensagem' => $e->getMessage(),
+                'mensagem' => 'Erro ao atualizar grupo: ' . $e->getMessage(),
                 'data' => null
             ];
         }
@@ -182,20 +194,25 @@ class grupoModel extends Model
 
     public function RemoverGrupo($params)
     {
+        return $this->DeletarGrupo($params);
+    }
+
+    public function DeletarGrupo($params)
+    {
         try {
-            $id_Grupo = $params['id_Grupo'];
-            $cancelamento_Usuario_id = $params['cancelamento_Usuario_id'];
+            $grupo_id = $params['grupo_id'] ?? $params['id_Grupo'];
+            $cancelamento_Usuario_id = app(usuarioServices::class)->id_Usuario;
 
             $consultaSql = "UPDATE RH.Tbl_Grupos
                             SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
                                 dat_cancelamento_em = GETDATE()
-                            WHERE id_Grupo = :id_Grupo
+                            WHERE id_Grupo = :grupo_id
                               AND dat_cancelamento_em IS NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute([
                 ':cancelamento_Usuario_id' => $cancelamento_Usuario_id,
-                ':id_Grupo' => $id_Grupo
+                ':grupo_id' => $grupo_id
             ]);
 
             $rows = $comando->rowCount();
@@ -203,13 +220,13 @@ class grupoModel extends Model
 
             return [
                 'status' => $rows > 0,
-                'mensagem' => $rows > 0 ? 'Grupo removido (cancelado).' : 'Nenhuma linha atualizada.',
+                'mensagem' => $rows > 0 ? 'Grupo excluído com sucesso!' : 'Grupo não encontrado ou já excluído.',
                 'data' => ['affected' => $rows]
             ];
         } catch (\Exception $e) {
             return [
                 'status' => false,
-                'mensagem' => $e->getMessage(),
+                'mensagem' => 'Erro ao excluir grupo: ' . $e->getMessage(),
                 'data' => null
             ];
         }
@@ -218,49 +235,90 @@ class grupoModel extends Model
     // atribui permissão a um grupo (evita duplicata ativa)
     public function AtribuirPermissaoGrupo($params)
     {
-        $grupo_id = $params['grupo_id'];
-        $permissao_id = $params['permissao_id'];
-        $criado_Usuario_id = $params['criado_Usuario_id'];
+        return $this->AtribuirPermissao($params);
+    }
 
-        // verificar se já existe vínculo ativo
-        $checkSql = "SELECT 1 FROM RH.Tbl_Rel_Grupos_Permissoes WHERE grupo_id = :grupo_id AND permissao_id = :permissao_id AND dat_cancelamento_em IS NULL";
-        $check = $this->conexao->prepare($checkSql);
-        $check->execute([':grupo_id' => $grupo_id, ':permissao_id' => $permissao_id]);
-        $exists = $check->fetchColumn();
-        $check->closeCursor();
+    public function AtribuirPermissao($params)
+    {
+        try {
+            $grupo_id = $params['grupo_id'];
+            $permissao_id = $params['permissao_id'];
+            $criado_Usuario_id = app(usuarioServices::class)->id_Usuario;
 
-        if ($exists) {
-            return; // já existe vínculo ativo
+            // verificar se já existe vínculo ativo
+            $checkSql = "SELECT 1 FROM RH.Tbl_Rel_Grupos_Permissoes WHERE grupo_id = :grupo_id AND permissao_id = :permissao_id AND dat_cancelamento_em IS NULL";
+            $check = $this->conexao->prepare($checkSql);
+            $check->execute([':grupo_id' => $grupo_id, ':permissao_id' => $permissao_id]);
+            $exists = $check->fetchColumn();
+            $check->closeCursor();
+
+            if ($exists) {
+                return [
+                    'status' => false,
+                    'mensagem' => 'Permissão já atribuída a este grupo.'
+                ];
+            }
+
+            $consultaSql = "INSERT INTO RH.Tbl_Rel_Grupos_Permissoes (grupo_id, permissao_id, criado_Usuario_id) VALUES (:grupo_id, :permissao_id, :criado_Usuario_id)";
+            $comando = $this->conexao->prepare($consultaSql);
+            $comando->execute([
+                ':grupo_id' => $grupo_id,
+                ':permissao_id' => $permissao_id,
+                ':criado_Usuario_id' => $criado_Usuario_id
+            ]);
+
+            $rows = $comando->rowCount();
+            $comando->closeCursor();
+
+            return [
+                'status' => $rows > 0,
+                'mensagem' => $rows > 0 ? 'Permissão atribuída ao grupo com sucesso!' : 'Nenhuma permissão foi atribuída.'
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => false,
+                'mensagem' => 'Erro ao atribuir permissão ao grupo: ' . $e->getMessage()
+            ];
         }
-
-        $consultaSql = "INSERT INTO RH.Tbl_Rel_Grupos_Permissoes (grupo_id, permissao_id, criado_Usuario_id) VALUES (:grupo_id, :permissao_id, :criado_Usuario_id)";
-        $comando = $this->conexao->prepare($consultaSql);
-        $comando->execute([
-            ':grupo_id' => $grupo_id,
-            ':permissao_id' => $permissao_id,
-            ':criado_Usuario_id' => $criado_Usuario_id
-        ]);
-        $comando->closeCursor();
     }
 
     // remove (marca cancelamento) vínculo permissão->grupo
     public function RemoverPermissaoGrupo($params)
     {
-        $id_rel_grupo_permissao = $params['id_rel_grupo_permissao'];
-        $cancelamento_Usuario_id = $params['cancelamento_Usuario_id'];
+        return $this->RemoverPermissao($params);
+    }
 
-        $consultaSql = "UPDATE RH.Tbl_Rel_Grupos_Permissoes
-                        SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
-                            dat_cancelamento_em = GETDATE()
-                        WHERE id_rel_grupo_permissao = :id_rel_grupo_permissao
-                          AND dat_cancelamento_em IS NULL";
+    public function RemoverPermissao($params)
+    {
+        try {
+            $id_rel_grupo_permissao = $params['id_rel_grupo_permissao'];
+            $cancelamento_Usuario_id = app(usuarioServices::class)->id_Usuario;
 
-        $comando = $this->conexao->prepare($consultaSql);
-        $comando->execute([
-            ':id_rel_grupo_permissao' => $id_rel_grupo_permissao,
-            ':cancelamento_Usuario_id' => $cancelamento_Usuario_id
-        ]);
-        $comando->closeCursor();
+            $consultaSql = "UPDATE RH.Tbl_Rel_Grupos_Permissoes
+                            SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
+                                dat_cancelamento_em = GETDATE()
+                            WHERE id_rel_grupo_permissao = :id_rel_grupo_permissao
+                              AND dat_cancelamento_em IS NULL";
+
+            $comando = $this->conexao->prepare($consultaSql);
+            $comando->execute([
+                ':id_rel_grupo_permissao' => $id_rel_grupo_permissao,
+                ':cancelamento_Usuario_id' => $cancelamento_Usuario_id
+            ]);
+
+            $rows = $comando->rowCount();
+            $comando->closeCursor();
+
+            return [
+                'status' => $rows > 0,
+                'mensagem' => $rows > 0 ? 'Permissão removida do grupo com sucesso!' : 'Relacionamento não encontrado ou já removido.'
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => false,
+                'mensagem' => 'Erro ao remover permissão do grupo: ' . $e->getMessage()
+            ];
+        }
     }
 
     // cria relação pai->filho entre grupos (evita duplicata ativa e self-link)
@@ -312,6 +370,37 @@ class grupoModel extends Model
             ':cancelamento_Usuario_id' => $cancelamento_Usuario_id
         ]);
         $comando->closeCursor();
+    }
+
+    /**
+     * Obter dados das categorias para select
+     */
+    public function ObterCategorias($params = [])
+    {
+        try {
+            $consultaSql = "SELECT
+                id_categoria,
+                nome_Categoria,
+                descricao_Categoria
+            FROM RH.Tbl_Categorias
+            WHERE dat_cancelamento_em IS NULL
+            ORDER BY nome_Categoria";
+
+            $comando = $this->conexao->prepare($consultaSql);
+            $comando->execute();
+            $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
+
+            return [
+                'status' => true,
+                'mensagem' => 'Categorias recuperadas com sucesso.',
+                'data' => $data
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => false,
+                'mensagem' => 'Erro ao recuperar categorias: ' . $e->getMessage()
+            ];
+        }
     }
 
     public function __destruct()

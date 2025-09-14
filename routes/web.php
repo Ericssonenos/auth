@@ -41,5 +41,18 @@ Route::prefix('rh')->group(function () {
     Route::post('api/usuario/grupo/adicionar', [UsuarioController::class, 'AtribuirGrupo'])->name('usuario.grupo.adicionar')->middleware('usuarioMiddleware');
     Route::delete('api/usuario/grupo/remover/{id_rel_usuario_grupo}', [UsuarioController::class, 'RemoverGrupo'])->name('usuario.grupo.remover')->middleware('usuarioMiddleware');
 
+    Route::get('grupos', [GrupoController::class, 'index'])->name('grupos.view')->middleware('usuarioMiddleware');
+
+    // Grupos: CRUD básico
+    Route::post('api/grupo/cadastrar', [GrupoController::class, 'CadastrarGrupo'])->name('grupo.cadastrar')->middleware('usuarioMiddleware');
+    Route::put('api/grupo/atualizar/{grupo_id}', [GrupoController::class, 'AtualizarGrupo'])->name('grupo.atualizar')->middleware('usuarioMiddleware');
+    Route::delete('api/grupo/deletar/{grupo_id}', [GrupoController::class, 'DeletarGrupo'])->name('grupo.deletar')->middleware('usuarioMiddleware');
+
+    // Grupos: Permissões
+    Route::post('api/grupo/permissao/adicionar', [GrupoController::class, 'AtribuirPermissaoGrupo'])->name('grupo.permissao.adicionar')->middleware('usuarioMiddleware');
+    Route::delete('api/grupo/permissao/remover/{id_rel_grupo_permissao}', [GrupoController::class, 'RemoverPermissaoGrupo'])->name('grupo.permissao.remover')->middleware('usuarioMiddleware');
+
+    // Categorias para select
+    Route::get('api/categorias/dados', [GrupoController::class, 'ObterCategorias'])->name('categorias.dados')->middleware('usuarioMiddleware');
 
 });
