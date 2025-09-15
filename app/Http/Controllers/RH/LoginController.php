@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\Cache;
 
 class LoginController extends Controller
 {
+    private usuarioModel $usuarioModel;
+    public function __construct()
+    {
+        $this->usuarioModel = new usuarioModel();
+    }
+
     /**
      * Exibir o formulário de login.
      * Este método simplesmente retorna a view de login.
@@ -39,9 +45,7 @@ class LoginController extends Controller
             ]
         );
 
-        $modeloUsuario = new usuarioModel();
-
-        $resultadoStatus_Usuario = $modeloUsuario->ObterLoginUsuario(
+        $resultadoStatus_Usuario = $this->usuarioModel->ObterLoginUsuario(
             [
                 'email' => $request['email'],
                 'senha' => $request['senha'], //[ ] usar hash apos os teste
@@ -125,7 +129,20 @@ class LoginController extends Controller
         Session::forget('dadosUsuarioSession');
         return redirect()->route('login');
     }
+      /**
+     * Gera uma nova senha temporária para o usuário e retorna a senha gerada (JSON).
+     */
+    public function GerarNovaSenha(Request $request, $id)
+    {
+        // privilégio: este endpoint deve ser protegido por middleware/permissão
+        $res = $this->usuarioModel->GerarSenhaTemporaria(['usuario_id' => $id]);
 
+        if (!empty($res['status']) && $res['status'] === true) {
+            Cache::put("Permissao_versao", time());
+            return response()->json($res, 200);
+        }
+        return response()->json($res, 400);
+    }
     /**
      * Exibir formulário de alteração de senha (quando for obrigatório alterar a senha ao logar)
      */
@@ -154,8 +171,7 @@ class LoginController extends Controller
             ]
         );
 
-        $modeloUsuario = new usuarioModel();
-        $resultadoStatus_Usuario = $modeloUsuario->ObterDadosUsuarios(
+        $resultadoStatus_Usuario = $this->usuarioModel->ObterDadosUsuarios(
             [
                 'email' => $request['email'],
                 'senha' => $request['senha_atual'], //[ ] usar hash apos os teste
@@ -185,8 +201,7 @@ class LoginController extends Controller
 
         $usuarioId = $dadosUsuario['id_Usuario'];
 
-        $modeloUsuario = new usuarioModel();
-        $resultado = $modeloUsuario->AtualizarSenha([
+        $resultado = $this->usuarioModel->AtualizarSenha([
             'usuario_id' => $usuarioId,
             'senha_atual' => $request->input('senha_atual'),
             'nova_senha' => $request->input('nova_senha'),

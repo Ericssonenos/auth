@@ -63,7 +63,7 @@ $(function () {
                 render: function (row) {
                     return `
                         <button class="btn btn-sm btn-primary btn-edit" data-id="${row.id_Usuario}">Editar</button>
-                        <button class="btn btn-sm btn-secondary btn-grupo" data-id="${row.id_Usuario}">Atribuir grupo</button>
+                        <button class="btn btn-sm btn-secondary btn-atribuir-grupo" data-id="${row.id_Usuario}">Atribuir grupo</button>
                         <button class="btn btn-sm btn-info btn-permissoes" data-id="${row.id_Usuario}">Permissões</button>
                     `;
                 }
@@ -152,7 +152,7 @@ $(function () {
         });
     });
 
-    $('#dataTable_Usuarios').off('click', '.btn-grupo').on('click', '.btn-grupo', function () {
+    $('#dataTable_Usuarios').off('click', '.btn-atribuir-grupo').on('click', '.btn-atribuir-grupo', function () {
         const $tr = $(this).closest('tr');
         const rowData = table.row($tr).data();
         usuarios_id_Selecionado = rowData.id_Usuario;
@@ -170,6 +170,7 @@ $(function () {
                     url: '/rh/api/grupos/dados',
                     data: function (d) {
                         d.usuario_id = usuarios_id_Selecionado;
+                        d.fn = 'btn-atribuir-grupo';
                         d.order_by = 'CASE WHEN rug.id_rel_usuario_grupo IS NOT NULL THEN 1 ELSE 0 END, g.nome_Grupo';
                         return d;
                     },
@@ -196,8 +197,8 @@ $(function () {
                         render: function (row) {
                             const assigned = row.id_rel_usuario_grupo;
                             const toggleBtn = assigned
-                                ? `<button class="btn btn-sm btn-danger btn-grupo-toggle" data-id="${row.id_rel_usuario_grupo}" data-action="remover">Remover</button>`
-                                : `<button class="btn btn-sm btn-success btn-grupo-toggle" data-id="${row.id_Grupo}" data-action="adicionar">Adicionar</button>`;
+                                ? `<button class="btn btn-sm btn-danger btn-atribuir-grupo-toggle" data-id="${row.id_rel_usuario_grupo}" data-action="remover">Remover</button>`
+                                : `<button class="btn btn-sm btn-success btn-atribuir-grupo-toggle" data-id="${row.id_Grupo}" data-action="adicionar">Adicionar</button>`;
                             const expandBtn = `<button class="btn btn-sm btn-light btn-expand-grupo" data-grupo="${row.id_Grupo}">Permissões</button>`;
                             return expandBtn + ' ' + toggleBtn;
                         }
@@ -290,7 +291,7 @@ $(function () {
 
 
     // adicionar / remover grupo
-    $('#dataTable_Grupos_Modal').off('click', '.btn-grupo-toggle').on('click', '.btn-grupo-toggle', function () {
+    $('#dataTable_Grupos_Modal').off('click', '.btn-atribuir-grupo-toggle').on('click', '.btn-atribuir-grupo-toggle', function () {
 
         const tr = $(this).closest('tr');
         const rowData = dataTable_Grupos_Modal.row(tr).data();

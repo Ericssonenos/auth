@@ -14,13 +14,35 @@ class categoria extends Model
         $this->conexao = DB::connection()->getPdo();
     }
 
-    public function ListaCategorias()
+       /**
+     * Obter dados das categorias para select
+     */
+    public function ObterCategorias($params = [])
     {
-        $consultaSql = "SELECT id_categoria, nome_Categoria, descricao_Categoria FROM RH.Tbl_Categorias WHERE dat_cancelamento_em IS NULL";
+        try {
+            $consultaSql = "SELECT
+                id_categoria,
+                nome_Categoria,
+                descricao_Categoria
+            FROM RH.Tbl_Categorias
+            WHERE dat_cancelamento_em IS NULL
+            ORDER BY nome_Categoria";
 
-        $comando = $this->conexao->prepare($consultaSql);
-        $comando->execute();
-        return $comando->fetchAll(\PDO::FETCH_ASSOC);
+            $comando = $this->conexao->prepare($consultaSql);
+            $comando->execute();
+            $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
+
+            return [
+                'status' => true,
+                'mensagem' => 'Categorias recuperadas com sucesso.',
+                'data' => $data
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => false,
+                'mensagem' => 'Erro ao recuperar categorias: ' . $e->getMessage()
+            ];
+        }
     }
 
     public function ObterCategoriaPorId($id_categoria)

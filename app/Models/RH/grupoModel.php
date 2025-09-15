@@ -49,21 +49,9 @@ class grupoModel extends Model
                 . ($optsParams['order_by'] ?? ' ORDER BY g.nome_Grupo')
                 . ($optsParams['limit'] ?? '')
                 . ($optsParams['offset'] ?? '');
-        } else {
-            // Consulta original para modal de grupos de usuário
-            $and_usuario_id = " ";
-            if (isset($params['usuario_id'])) {
-                $and_usuario_id = "AND rug.usuario_id = :usuario_id ";
-                $execParams[':usuario_id'] = $params['usuario_id'];
-            }
+        } else if (isset($params['fn']) && $params['fn'] === 'btn-atribuir-grupo') {
 
-            $join_Tbl_Usuarios = " ";
-            if (isset($params['id_Usuario'])) {
-                $join_Tbl_Usuarios = " LEFT JOIN RH.Tbl_Usuarios u
-                 ON     u.id_usuario = rug.usuario_id
-                 AND    u.dat_cancelamento_em IS NULL ";
-            }
-
+            $execParams[':usuario_id'] = $params['usuario_id'];
             $consultaSql = "SELECT
                                 g.id_Grupo
                             ,   g.nome_Grupo
@@ -74,14 +62,19 @@ class grupoModel extends Model
                             FROM RH.Tbl_Grupos g
                             LEFT JOIN RH.Tbl_Rel_Usuarios_Grupos rug
                                 ON rug.grupo_id = g.id_Grupo
-                                $and_usuario_id
+                                AND rug.usuario_id = :usuario_id
                                 AND rug.dat_cancelamento_em IS NULL
-                            $join_Tbl_Usuarios
                             WHERE g.dat_cancelamento_em IS NULL"
                 . implode(" ", $whereParams)
                 . ($optsParams['order_by'] ?? " ORDER BY g.nome_Grupo ASC ")
                 . ($optsParams['limit'] ?? "")
                 . ($optsParams['offset'] ?? "");
+        }else{
+            return [
+                'status' => false,
+                'mensagem' => 'Função (fn) inválida ou não especificada.',
+                'data' => []
+            ];
         }
 
         try {
@@ -94,8 +87,7 @@ class grupoModel extends Model
                 'mensagem' => 'Grupos recuperados.',
                 'data' => $data
             ];
-
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return [
                 'status' => false,
                 'mensagem' => $e->getMessage(),
@@ -232,13 +224,7 @@ class grupoModel extends Model
         }
     }
 
-    // atribui permissão a um grupo (evita duplicata ativa)
     public function AtribuirPermissaoGrupo($params)
-    {
-        return $this->AtribuirPermissao($params);
-    }
-
-    public function AtribuirPermissao($params)
     {
         try {
             $grupo_id = $params['grupo_id'];
@@ -282,13 +268,7 @@ class grupoModel extends Model
         }
     }
 
-    // remove (marca cancelamento) vínculo permissão->grupo
     public function RemoverPermissaoGrupo($params)
-    {
-        return $this->RemoverPermissao($params);
-    }
-
-    public function RemoverPermissao($params)
     {
         try {
             $id_rel_grupo_permissao = $params['id_rel_grupo_permissao'];
@@ -372,40 +352,10 @@ class grupoModel extends Model
         $comando->closeCursor();
     }
 
-    /**
-     * Obter dados das categorias para select
-     */
-    public function ObterCategorias($params = [])
-    {
-        try {
-            $consultaSql = "SELECT
-                id_categoria,
-                nome_Categoria,
-                descricao_Categoria
-            FROM RH.Tbl_Categorias
-            WHERE dat_cancelamento_em IS NULL
-            ORDER BY nome_Categoria";
 
-            $comando = $this->conexao->prepare($consultaSql);
-            $comando->execute();
-            $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
-
-            return [
-                'status' => true,
-                'mensagem' => 'Categorias recuperadas com sucesso.',
-                'data' => $data
-            ];
-        } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => 'Erro ao recuperar categorias: ' . $e->getMessage()
-            ];
-        }
-    }
 
     public function __destruct()
     {
         $this->conexao = null;
     }
-
 }

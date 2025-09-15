@@ -5,6 +5,7 @@ use App\Http\Controllers\RH\LoginController;
 use App\Http\Controllers\RH\UsuarioController;
 use App\Http\Controllers\RH\PermissaoController;
 use App\Http\Controllers\RH\GrupoController;
+use App\Http\Controllers\RH\CategoriaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -53,6 +54,6 @@ Route::prefix('rh')->group(function () {
     Route::delete('api/grupo/permissao/remover/{id_rel_grupo_permissao}', [GrupoController::class, 'RemoverPermissaoGrupo'])->name('grupo.permissao.remover')->middleware('usuarioMiddleware');
 
     // Categorias para select
-    Route::get('api/categorias/dados', [GrupoController::class, 'ObterCategorias'])->name('categorias.dados')->middleware('usuarioMiddleware');
+    Route::post('api/categorias/dados', [CategoriaController::class, 'ObterCategorias'])->name('categorias.dados')->middleware('usuarioMiddleware');
 
 });

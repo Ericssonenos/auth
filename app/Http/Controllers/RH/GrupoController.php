@@ -71,17 +71,7 @@ class GrupoController extends Controller
         return response()->json($res, 400);
     }
 
-    /**
-     * Obter dados das categorias para select
-     */
-    public function ObterCategorias(Request $request)
-    {
-        $respostaCategorias = $this->grupoModel->ObterCategorias($request->all());
-        if ($respostaCategorias['status']) {
-            $status = 200;
-        }
-        return response()->json($respostaCategorias, $status ?? 400);
-    }
+
 
     // corresponde a grupo->CriarGrupo()
     public function CriarGrupo(Request $request)
@@ -100,7 +90,7 @@ class GrupoController extends Controller
         $payload['id_Grupo'] = $id;
         $respostaStatusAtualizacao = $this->grupoModel->AtualizarGrupo($payload);
 
-        // [ ] validar uso
+        // [X] validar uso
         return response()->json($respostaStatusAtualizacao);
     }
 

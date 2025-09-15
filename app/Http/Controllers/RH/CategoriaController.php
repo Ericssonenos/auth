@@ -16,19 +16,18 @@ class CategoriaController extends Controller
         $this->categoriaModel = new categoria();
     }
 
-    // corresponde a categoria->ListaCategorias()
-    public function ListaCategorias()
+       /**
+     * Obter dados das categorias para select
+     */
+    public function ObterCategorias(Request $request)
     {
-        // [ ] validar uso
-        return response()->json($this->categoriaModel->ListaCategorias());
+        $respostaCategorias = $this->categoriaModel->ObterCategorias($request->all());
+        if ($respostaCategorias['status']) {
+            $status = 200;
+        }
+        return response()->json($respostaCategorias, $status ?? 400);
     }
 
-    // corresponde a categoria->ObterCategoriaPorId()
-    public function ObterCategoriaPorId($id)
-    {
-        // [ ] validar uso
-        return response()->json($this->categoriaModel->ObterCategoriaPorId($id));
-    }
 
     // corresponde a categoria->CriarCategoria()
     public function CriarCategoria(Request $request)

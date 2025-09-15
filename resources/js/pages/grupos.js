@@ -297,7 +297,7 @@ $(function () {
     function carregarCategorias() {
         $.ajax({
             url: '/rh/api/categorias/dados',
-            method: 'GET',
+            method: 'POST',
             dataType: 'json',
             success: function (resp) {
                 const $select = $('#categoria_id_Modal');
@@ -309,8 +309,8 @@ $(function () {
                     });
                 }
             },
-            error: function (xhr) {
-                console.error('Erro ao carregar categorias:', xhr);
+            error: function (xhr, status, error) {
+                window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
             }
         });
     }
