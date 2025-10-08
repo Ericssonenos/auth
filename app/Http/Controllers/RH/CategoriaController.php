@@ -4,16 +4,16 @@ namespace App\Http\Controllers\RH;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\RH\categoria;
+use App\Models\RH\categoriaModal;
 
 class CategoriaController extends Controller
 {
-    private categoria $categoriaModel;
+    private categoriaModal $categoriaModel;
 
     public function __construct()
     {
         // [ ] validar uso
-        $this->categoriaModel = new categoria();
+        $this->categoriaModel = new categoriaModal();
     }
 
        /**
@@ -29,7 +29,7 @@ class CategoriaController extends Controller
     }
 
 
-    // corresponde a categoria->CriarCategoria()
+    // corresponde a categoriaModal->CriarCategoria()
     public function CriarCategoria(Request $request)
     {
         $payload = $request->all();
@@ -37,7 +37,7 @@ class CategoriaController extends Controller
         return response()->json($this->categoriaModel->CriarCategoria($payload));
     }
 
-    // corresponde a categoria->AtualizarCategoria()
+    // corresponde a categoriaModal->AtualizarCategoria()
     public function AtualizarCategoria(Request $request, $id)
     {
         $payload = $request->all();
@@ -46,7 +46,7 @@ class CategoriaController extends Controller
         return response()->json($this->categoriaModel->AtualizarCategoria($payload));
     }
 
-    // corresponde a categoria->RemoverCategoria()
+    // corresponde a categoriaModal->RemoverCategoria()
     public function RemoverCategoria(Request $request, $id)
     {
         $payload = $request->all();

@@ -2,10 +2,11 @@
 
 namespace App\Models\RH;
 
+use App\Services\Operacao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class categoria extends Model
+class categoriaModal extends Model
 {
     private $conexao;
 
@@ -14,7 +15,7 @@ class categoria extends Model
         $this->conexao = DB::connection()->getPdo();
     }
 
-       /**
+    /**
      * Obter dados das categorias para select
      */
     public function ObterCategorias($params = [])
@@ -31,28 +32,25 @@ class categoria extends Model
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute();
             $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
+            // verificar se encontrou dados
+            if (!$data) {
+                return [
+                    'status' => 204,// Sucesso porem sem dados
+                    'mensagem' => 'Nenhuma categoria encontrada.',
+                    'data' => []
+                ];
+            }
 
             return [
-                'status' => true,
+                'status' => 200,
                 'mensagem' => 'Categorias recuperadas com sucesso.',
                 'data' => $data
             ];
         } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => 'Erro ao recuperar categorias: ' . $e->getMessage()
-            ];
+            return Operacao::mapearExcecaoPDO($e,$params);
         }
     }
 
-    public function ObterCategoriaPorId($id_categoria)
-    {
-        $consultaSql = "SELECT id_categoria, nome_Categoria, descricao_Categoria, criado_Usuario_id, dat_criado_em, cancelamento_Usuario_id, dat_cancelamento_em FROM RH.Tbl_Categorias WHERE id_categoria = :id_categoria";
-
-        $comando = $this->conexao->prepare($consultaSql);
-        $comando->execute([':id_categoria' => $id_categoria]);
-        return $comando->fetch(\PDO::FETCH_ASSOC);
-    }
 
     public function CriarCategoria($params)
     {

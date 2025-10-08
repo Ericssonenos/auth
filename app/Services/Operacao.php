@@ -463,23 +463,6 @@ class Operacao
         ];
     }
 
-    /**
-     * Monta resposta padronizada para sucesso (mesmo formato do mapeador de erros).
-     *
-     * @param array $data  Registro(s) ou payload a colocar em 'detail'
-     * @param int $httpStatus
-     * @param string $msg
-     * @param array $contexto
-     * @return array
-     */
-    public static function padronizarRespostaSucesso(array $data, string $msg, array $contexto = []): array
-    {
-        return [
-            'msg'     => $msg,
-            'detail'      => $data,
-            'contexto'    => $contexto,
-        ];
-    }
 
     public static function Parametrizar(array $Params): array
     {

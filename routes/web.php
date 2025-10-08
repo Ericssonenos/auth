@@ -33,7 +33,7 @@ Route::prefix('rh')->group(function () {
     Route::post('api/permissoes/dados', [PermissaoController::class, 'ObterRHPermissoes'])->name('permissoes.dados')->middleware('usuarioMiddleware');
     Route::post('api/usuario/permissao/adicionar', [UsuarioController::class, 'AtribuirPermissoes'])->name('usuario.permissao.adicionar')->middleware('usuarioMiddleware');
     Route::delete('api/usuario/permissao/remover/{id_rel_usuario_permissao}', [UsuarioController::class, 'RemoverPermissoes'])->name('usuario.permissao.remover')->middleware('usuarioMiddleware');
-    Route::post('usuario/{id}/gerar-senha', [UsuarioController::class, 'GerarNovaSenha'])->name('usuario.gerar_senha')->middleware('usuarioMiddleware');
+    Route::post('usuario/{id}/gerar-senha', [LoginController::class, 'GerarNovaSenha'])->name('usuario.gerar_senha')->middleware('usuarioMiddleware');
 
     // Grupos: listagem com associação por usuário e permissões do grupo
     Route::post('api/grupos/dados', [GrupoController::class, 'ObterDadosGrupo'])->name('grupos.dados')->middleware('usuarioMiddleware');

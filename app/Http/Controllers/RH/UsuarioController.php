@@ -21,33 +21,22 @@ class UsuarioController extends Controller
      */
     public function index()
     {
-        // so acessa quem tiver a permissão GESTAO_USUARIOS
-        //[ ] Criar uma regra global igual o @can
+        // [x] validar uso
         return view('RH.usuario');
     }
     // corresponde a usuario->CadastrarUsuarios($dados)
     public function CadastrarUsuarios(Request $request)
     {
-
-
-
         $payload = $request->all();
         $respostaStatusCadastro = $this->usuarioModel->CadastrarUsuarios($payload); // [x] validar uso
-        if (!empty($respostaStatusCadastro['status']) && $respostaStatusCadastro['status'] === true) {
-            $status = 200;
-        }
-        return response()->json($respostaStatusCadastro, $status ?? 400);
+        return response()->json($respostaStatusCadastro, $respostaStatusCadastro['status']);
     }
 
     // corresponde a usuario->ObterDadosUsuario(['usuario_id' => $usuario])
     public function ObterDadosUsuarios(Request $request)
     {
-
         $respostaDadosUsuario = $this->usuarioModel->ObterDadosUsuarios($request->all());
-        if ($respostaDadosUsuario['status']) {
-            $status = 200;
-        }
-        return response()->json($respostaDadosUsuario, $status ?? 400);
+        return response()->json($respostaDadosUsuario, $respostaDadosUsuario['status']);
     }
 
     // atribui permissão direta ao usuário
@@ -58,11 +47,11 @@ class UsuarioController extends Controller
 
         // [x] validar uso
         // Se atribuição foi bem sucedida, atualiza versão de permissões para o usuário afetado
-        if (!empty($respostaStatusAtribuicao['status']) && $respostaStatusAtribuicao['status'] === true) {
+        if ($respostaStatusAtribuicao['status']==201) {
             Cache::put("Permissao_versao", time());
         }
 
-        return response()->json($respostaStatusAtribuicao);
+        return response()->json($respostaStatusAtribuicao, $respostaStatusAtribuicao['status']);
     }
 
     // atribui grupo ao usuário
@@ -71,11 +60,11 @@ class UsuarioController extends Controller
         $respostaStatusAtribuicao = $this->usuarioModel->AtribuirGrupo($request->all());
 
         // [ ] validar uso
-        if (!empty($respostaStatusAtribuicao['status']) && $respostaStatusAtribuicao['status'] === true) {
+        if ($respostaStatusAtribuicao['status'] == 201) {
             Cache::put("Permissao_versao", time());
         }
 
-        return response()->json($respostaStatusAtribuicao);
+        return response()->json($respostaStatusAtribuicao, $respostaStatusAtribuicao['status']);
     }
 
     // remove vínculo permissão->usuário
@@ -86,11 +75,11 @@ class UsuarioController extends Controller
         $respostaStatusRemocao = $this->usuarioModel->RemoverPermissoes($payload);
 
         // [x] validar uso
-        if (!empty($respostaStatusRemocao['status']) && $respostaStatusRemocao['status'] === true) {
+        if ($respostaStatusRemocao['status'] === 201) {
             Cache::put("Permissao_versao", time());
         }
 
-        return response()->json($respostaStatusRemocao);
+        return response()->json($respostaStatusRemocao, $respostaStatusRemocao['status']);
     }
 
     // remove vínculo grupo->usuário
@@ -101,11 +90,11 @@ class UsuarioController extends Controller
         $respostaStatusRemocao = $this->usuarioModel->RemoverGrupo($payload);
 
         // [ ] validar uso
-        if (!empty($respostaStatusRemocao['status']) && $respostaStatusRemocao['status'] === true) {
+        if ($respostaStatusRemocao['status'] === 201) {
             Cache::put("Permissao_versao", time());
         }
 
-        return response()->json($respostaStatusRemocao);
+        return response()->json($respostaStatusRemocao, $respostaStatusRemocao['status']);
     }
 
 
@@ -117,12 +106,8 @@ class UsuarioController extends Controller
     {
         $payload = $request->all();
         $payload['usuario_id'] = $usuario_id;
-
-        $res = $this->usuarioModel->AtualizarUsuarios($payload);
-        if (!empty($res['status']) && $res['status'] === true) {
-            return response()->json($res, 200);
-        }
-        return response()->json($res, 400);
+        $respostaStatusUsuario = $this->usuarioModel->AtualizarUsuarios($payload);
+        return response()->json($respostaStatusUsuario, $respostaStatusUsuario['status']);
     }
 
     /**
@@ -133,14 +118,13 @@ class UsuarioController extends Controller
         $payload = $request->all();
         $payload['usuario_id'] = $usuario_id;
 
-        $res = $this->usuarioModel->DeletarUsuarios($payload);
+        $respostaStatusDeletar = $this->usuarioModel->DeletarUsuarios($payload);
 
-        // atualizar versão de permissões se alteração efetiva
-        if (!empty($res['status']) && $res['status'] === true) {
+        if($respostaStatusDeletar['status'] === 201) {
             Cache::put("Permissao_versao", time());
-            return response()->json($res, 200);
         }
 
-        return response()->json($res, 400);
+        return response()->json($respostaStatusDeletar, $respostaStatusDeletar['status']);
+
     }
 }

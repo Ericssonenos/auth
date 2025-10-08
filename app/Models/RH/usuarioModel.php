@@ -54,20 +54,19 @@ class usuarioModel extends Model
 
             if (empty($data)) {
                 return [
-                    'dados' => ['mensagem' => 'Nenhum usuário encontrado com os critérios fornecidos.'],
-                    'status' => false
+                    'dados' => [],
+                    'status' => 204,
+                    'mensagem' => 'Nenhum usuário encontrado com os critérios fornecidos.'
                 ];
             }
         } catch (\Exception $e) {
-            return [
-                'dados' => ['mensagem' => 'Erro ao executar consulta: ' . $e->getMessage()],
-                'status' => false
-            ];
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
 
         return [
             'dados' => $data,
-            'status' => true
+            'status' => 200,
+            'mensagem' => 'Dados do usuário recuperados.'
         ];
     }
 
@@ -117,21 +116,17 @@ class usuarioModel extends Model
 
             if (empty($data)) {
                 return [
-                    'status' => false,
+                    'status' => 204, // Sucesso porem sem dados
                     'mensagem' => 'Nenhum usuário encontrado com os critérios fornecidos.',
                     'data' => []
                 ];
             }
         } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => 'Erro ao executar consulta: ' . $e->getMessage(),
-                'data' => null
-            ];
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
 
         return [
-            'status' => true,
+            'status' => 200,
             'mensagem' => 'Dados do usuário recuperados.',
             'data' => $data
         ];
@@ -162,18 +157,22 @@ class usuarioModel extends Model
             $rows = $comando->rowCount();
             $comando->closeCursor();
 
-            return [
-                'status' => $rows > 0,
-                'mensagem' => $rows > 0 ? 'Permissão atribuída.' : 'Nenhuma linha inserida.',
-                'data' => ['affected' => $rows]
-            ];
+            if ($rows == 0) {
+                return [
+                    'status' => 204,
+                    'mensagem' => 'Nenhuma linha inserida.',
+                    'data' => ['afetadas' => $rows]
+                ];
+            }
         } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => $e->getMessage(),
-                'data' => null
-            ];
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
+
+        return [
+            'status' => 201,
+            'mensagem' => 'Permissão atribuída.',
+            'data' => ['afetadas' => $rows]
+        ];
     }
 
     public function AtribuirGrupo($params)
@@ -200,18 +199,22 @@ class usuarioModel extends Model
             $rows = $comando->rowCount();
             $comando->closeCursor();
 
-            return [
-                'status' => $rows > 0,
-                'mensagem' => $rows > 0 ? 'Grupo atribuído ao usuário.' : 'Nenhuma linha inserida.',
-                'data' => ['affected' => $rows]
-            ];
+            if ($rows == 0) {
+                return [
+                    'status' => 204,
+                    'mensagem' => 'Nenhuma linha inserida.',
+                    'data' => ['afetadas' => $rows]
+                ];
+            }
         } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => $e->getMessage(),
-                'data' => null
-            ];
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
+
+        return [
+            'status' => 201,
+            'mensagem' => 'Grupo atribuído.',
+            'data' => ['afetadas' => $rows]
+        ];
     }
 
     public function RemoverPermissoes($params)
@@ -236,18 +239,22 @@ class usuarioModel extends Model
             $rows = $comando->rowCount();
             $comando->closeCursor();
 
-            return [
-                'status' => $rows > 0,
-                'mensagem' => $rows > 0 ? 'Permissão removida (cancelada).' : 'Nenhuma linha atualizada.',
-                'data' => ['affected' => $rows]
-            ];
+            if ($rows == 0) {
+                return [
+                    'status' => 204,
+                    'mensagem' => 'Nenhuma linha atualizada.',
+                    'data' => ['affected' => $rows]
+                ];
+            }
         } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => $e->getMessage(),
-                'data' => null
-            ];
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
+
+        return [
+            'status' => 200,
+            'mensagem' => 'Vínculo de permissão cancelado.',
+            'data' => ['affected' => $rows]
+        ];
     }
 
     public function RemoverGrupo($params)
@@ -272,11 +279,13 @@ class usuarioModel extends Model
             $rows = $comando->rowCount();
             $comando->closeCursor();
 
-            return [
-                'status' => $rows > 0,
-                'mensagem' => $rows > 0 ? 'Vínculo de grupo cancelado.' : 'Nenhuma linha atualizada.',
-                'data' => ['affected' => $rows]
-            ];
+            if ($rows == 0) {
+                return [
+                    'status' => 204,
+                    'mensagem' => 'Nenhuma linha atualizada.',
+                    'data' => ['affected' => $rows]
+                ];
+            }
         } catch (\Exception $e) {
             return [
                 'status' => false,
@@ -284,6 +293,12 @@ class usuarioModel extends Model
                 'data' => null
             ];
         }
+
+        return [
+            'status' => 200,
+            'mensagem' => 'Vínculo de grupo cancelado.',
+            'data' => ['affected' => $rows]
+        ];
     }
 
     public function CadastrarUsuarios($params)
@@ -320,36 +335,21 @@ class usuarioModel extends Model
                 $lastId = null;
             }
 
-            return [
-                'status' => $rows > 0,
-                'mensagem' => $rows > 0 ? 'Usuário criado.' : 'Usuário não criado.',
-                'data' => ['affected' => $rows,'senha'=>$senhaGerada, 'id_Usuario' => $lastId]
-            ];
-        } catch (\PDOException $e) {
-            $errorInfo = $e->errorInfo ?? [];
-            $driverCode = $errorInfo[1] ?? null;
-
-            // SQL Server duplicate key codes: 2601, 2627
-            if ($e->getCode() === '23000' || in_array($driverCode, [2601, 2627], true)) {
+            if ($rows == 0) {
                 return [
-                    'status' => false,
-                    'mensagem' => 'Registro já existe (chave duplicada).',
-                    'data' => null
+                    'status' => 404,
+                    'mensagem' => 'Usuário não criado.',
+                    'data' => ['affected' => $rows, 'senha' => null, 'id_Usuario' => null]
                 ];
             }
-
-            return [
-                'status' => false,
-                'mensagem' => 'Erro ao cadastrar usuário: ' . $e->getMessage(),
-                'data' => null
-            ];
-        } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => 'Erro inesperado: ' . $e->getMessage(),
-                'data' => null
-            ];
+        } catch (\PDOException $e) {
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
+        return [
+            'status' => 201,
+            'mensagem' => 'Usuário criado.',
+            'data' => ['affected' => $rows, 'senha' => $senhaGerada, 'id_Usuario' => $lastId]
+        ];
     }
 
     /**
@@ -374,15 +374,21 @@ class usuarioModel extends Model
             $cmd2->execute([':nova_senha' => $nova_senha, ':id_Usuario' => $usuario_id]);
             $rows = $cmd2->rowCount();
 
-            return [
-                'status' => $rows > 0,
-                'mensagem' => $rows > 0 ? 'Senha atualizada.' : 'Nenhuma alteração realizada.'
-            ];
+            if ($rows == 0) {
+                return [
+                    'status' => 204,
+                    'mensagem' => 'Nenhuma alteração realizada.',
+                    'data' => ['affected' => $rows]
+                ];
+            }
         } catch (\PDOException $e) {
-            return ['status' => false, 'mensagem' => $e->getMessage()];
-        } catch (\Exception $e) {
-            return ['status' => false, 'mensagem' => $e->getMessage()];
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
+        return [
+            'status' => 200,
+            'mensagem' => 'Senha atualizada.',
+            'data' => ['affected' => $rows]
+        ];
     }
 
     /**
@@ -411,18 +417,21 @@ class usuarioModel extends Model
             $rows = $comando->rowCount();
             $comando->closeCursor();
 
-            return [
-                'status' => $rows > 0,
-                'mensagem' => $rows > 0 ? 'Senha temporária gerada.' : 'Nenhuma linha atualizada.',
-                'data' => $rows > 0 ? ['senha' => $senhaGerada] : null
-            ];
+            if ($rows == 0) {
+                return [
+                    'status' => 204,
+                    'mensagem' => 'Nenhuma linha atualizada.',
+                    'data' => ['affected' => $rows, 'senha' => null]
+                ];
+            }
         } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => 'Erro ao gerar senha: ' . $e->getMessage(),
-                'data' => null
-            ];
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
+        return [
+            'status' => 200,
+            'mensagem' => 'Senha temporária gerada.',
+            'data' => ['affected' => $rows, 'senha' => $senhaGerada]
+        ];
     }
 
     /**
@@ -434,19 +443,33 @@ class usuarioModel extends Model
             $usuario_id = $params['usuario_id'];
             $nome_Completo = $params['nome_Completo'] ?? null;
 
-            if ($nome_Completo === null) {
-                return ['status' => false, 'mensagem' => 'nome_Completo é obrigatório.'];
+            if (is_null($nome_Completo)) {
+                return [
+                    'status' => 400,
+                    'mensagem' => 'nome_Completo é obrigatório.',
+                    'data' => []
+                ];
             }
 
             $consultaSql = "UPDATE RH.Tbl_Usuarios SET nome_Completo = :nome_Completo WHERE id_Usuario = :id_Usuario";
             $cmd = $this->conexao->prepare($consultaSql);
             $cmd->execute([':nome_Completo' => $nome_Completo, ':id_Usuario' => $usuario_id]);
             $rows = $cmd->rowCount();
-
-            return ['status' => $rows > 0, 'mensagem' => $rows > 0 ? 'Nome atualizado.' : 'Nenhuma alteração realizada.'];
+            if ($rows == 0) {
+                return [
+                    'status' => 204,
+                    'mensagem' => 'Nenhuma alteração realizada.',
+                    'data' => ['affected' => $rows]
+                ];
+            }
         } catch (\Exception $e) {
-            return ['status' => false, 'mensagem' => $e->getMessage()];
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
+        return [
+            'status' => 200,
+            'mensagem' => 'Nome atualizado.',
+            'data' => ['affected' => $rows]
+        ];
     }
 
     /**
@@ -469,24 +492,21 @@ class usuarioModel extends Model
             $rows = $comando->rowCount();
             $comando->closeCursor();
 
-            if ($rows > 0) {
-                return [
-                    'status' => true,
-                    'mensagem' => 'Usuário excluído.',
-                    'data' => ['usuario_id' => $usuario_id]
-                ];
-            }
-
-            return [
-                'status' => false,
-                'mensagem' => 'Usuário não encontrado ou já excluído.'
-            ];
+           if ($rows == 0) {
+               return [
+                   'status' => 204,
+                   'mensagem' => 'Nenhuma alteração realizada.',
+                   'data' => ['affected' => $rows]
+               ];
+           }
         } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => $e->getMessage()
-            ];
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
+        return [
+            'status' => 200,
+            'mensagem' => 'Usuário excluído.',
+            'data' => ['affected' => $rows]
+        ];
     }
 
 

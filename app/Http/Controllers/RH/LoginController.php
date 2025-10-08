@@ -135,13 +135,12 @@ class LoginController extends Controller
     public function GerarNovaSenha(Request $request, $id)
     {
         // privilégio: este endpoint deve ser protegido por middleware/permissão
-        $res = $this->usuarioModel->GerarSenhaTemporaria(['usuario_id' => $id]);
+        $respostaStatusSenha = $this->usuarioModel->GerarSenhaTemporaria(['usuario_id' => $id]);
 
-        if (!empty($res['status']) && $res['status'] === true) {
+        if ($respostaStatusSenha['status'] == 200) {
             Cache::put("Permissao_versao", time());
-            return response()->json($res, 200);
         }
-        return response()->json($res, 400);
+        return response()->json($respostaStatusSenha, $respostaStatusSenha['status']);
     }
     /**
      * Exibir formulário de alteração de senha (quando for obrigatório alterar a senha ao logar)
@@ -181,7 +180,7 @@ class LoginController extends Controller
 
         // Se o status do usuário for inválido ou os dados estiverem vazios
         if (
-            $resultadoStatus_Usuario['status'] == false
+            $resultadoStatus_Usuario['status'] !== 200
             ||  empty($resultadoStatus_Usuario['data'])
         ) {
             // Apagar dados da sessão
@@ -208,7 +207,7 @@ class LoginController extends Controller
             'criado_Usuario_id' => $usuarioId,
         ]);
 
-        if (!empty($resultado['status']) && $resultado['status'] === true) {
+        if ($resultado['status'] === 200) {
             // atualizar sessão com novo flag
             Session::forget('dadosUsuarioSession');
             return redirect()->route('login')->with('status', 'Senha alterada com sucesso. Faça login novamente.');
