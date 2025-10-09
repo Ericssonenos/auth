@@ -6,6 +6,7 @@ use PDOException;
 use PDO;
 use PDOStatement;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 
 class Operacao
@@ -473,7 +474,7 @@ class Operacao
 
         foreach ($Params as $key => $val) {
             if (
-                    $val === null
+                $val === null
                 ||  $val === ''
                 ||  $key === '_'
                 ||  $key === 'dados_do_usuario_logado'
@@ -482,7 +483,7 @@ class Operacao
                 ||  str_ends_with($key, '_id')
                 ||  str_starts_with($key, 'id_')
                 ||  $key === 'fn'
-                ) continue;
+            ) continue;
 
             // plural -> IN (...) quando valor for array
             if (str_ends_with($key, 's') && is_array($val)) {
@@ -536,7 +537,6 @@ class Operacao
 
                     $optsParams[$key] = " $key  :$key";
                     $execParams[':' . $key] = $intVal;
-
                 } else { // order_by
                     // order_by deve ser uma string válida
                     if (is_numeric($val)) {
@@ -696,7 +696,7 @@ class Operacao
         $headers = self::gerarHeadersErro($requestId);
 
         return [
-            'dados' => $dadosErro,
+            'data' => $dadosErro,
             'status' => (int)$dadosErro['status'],
             'headers' => $headers
         ];
@@ -809,5 +809,118 @@ class Operacao
             return PDO::PARAM_BOOL;
         }
         return PDO::PARAM_STR;
+    }
+
+    /**
+     * Realiza requisição HTTP com autenticação NTLM
+     *
+     * @param string $url URL do endpoint a ser consumido
+     * @param string $method Método HTTP (GET, POST, PUT, DELETE, etc.)
+     * @param array $data Dados a serem enviados (para POST, PUT, etc.)
+     * @param string|null $usuario Usuário NTLM (formato: DOMINIO\\usuario)
+     * @param string|null $senha Senha do usuário
+     * @return array ['status' => int, 'body' => string, 'headers' => array]
+     */
+    public static function requisicaoComNTLM(
+        string $url,
+        string $method = 'GET',
+        array $data = [],
+        ?string $usuario = null,
+        ?string $senha = null
+    ): array {
+        // Usar credenciais do .env se não fornecidas
+        $usuario = $usuario ?? env('NTLM_USER');
+        $senha = $senha ?? env('NTLM_PASS');
+
+        $httpClient = Http::withOptions([
+            'curl' => [
+                // Força autenticação NTLM
+                CURLOPT_HTTPAUTH => CURLAUTH_NTLM,
+                // Credenciais no formato: DOMINIO\\usuario:senha
+                CURLOPT_USERPWD  => $usuario . ':' . $senha,
+            ],
+            // Desabilitar verificação SSL em desenvolvimento (remover em produção)
+            // 'verify' => false,
+        ]);
+
+        // Executar requisição baseada no método
+        $response = match (strtoupper($method)) {
+            'POST' => $httpClient->post($url, $data),
+            'PUT' => $httpClient->put($url, $data),
+            'PATCH' => $httpClient->patch($url, $data),
+            'DELETE' => $httpClient->delete($url, $data),
+            default => $httpClient->get($url, $data),
+        };
+
+        return [
+            'status' => $response->status(),
+            'body' => $response->body(),
+            'headers' => $response->headers(),
+            'json' => $response->json(),
+        ];
+    }
+
+    /**
+     * Realiza requisição HTTP através de proxy com autenticação NTLM no proxy
+     *
+     * @param string $url URL do endpoint a ser consumido
+     * @param string $method Método HTTP (GET, POST, PUT, DELETE, etc.)
+     * @param array $data Dados a serem enviados (para POST, PUT, etc.)
+     * @param string|null $proxyUrl URL do proxy (formato: host:port)
+     * @param string|null $proxyUsuario Usuário do proxy (formato: DOMINIO\\usuario)
+     * @param string|null $proxySenha Senha do proxy
+     * @return array ['status' => int, 'body' => string, 'headers' => array, 'json' => array|null]
+     */
+    public static function requisicaoComProxy(
+        string $url,
+        string $method = 'GET',
+        array $data = [],
+        ?string $proxyUrl = null,
+        ?string $proxyUsuario = null,
+        ?string $proxySenha = null
+    ): array {
+        // Usar configurações do .env se não fornecidas
+        $proxyUrl = $proxyUrl ?? env('PROXY_URL');
+        $proxyUsuario = $proxyUsuario ?? env('PROXY_USER');
+        $proxySenha = $proxySenha ?? env('PROXY_PASS');
+
+        $httpClient = Http::withOptions([
+            // Configuração do proxy (host:port)
+            'proxy' => $proxyUrl,
+
+            // Opções cURL para autenticação NTLM no proxy
+            'curl' => [
+                // Força autenticação NTLM para o PROXY
+                CURLOPT_PROXYAUTH => CURLAUTH_NTLM,
+                // Credenciais do proxy no formato: DOMINIO\\usuario:senha
+                CURLOPT_PROXYUSERPWD => $proxyUsuario . ':' . $proxySenha,
+
+                // (Opcional) Se o servidor de destino também precisar de NTLM, descomente:
+                // CURLOPT_HTTPAUTH => CURLAUTH_NTLM,
+                // CURLOPT_USERPWD  => env('NTLM_USER') . ':' . env('NTLM_PASS'),
+            ],
+
+            // Desabilitar verificação SSL em desenvolvimento (remover em produção)
+            // 'verify' => false,
+
+            // (Opcional) Habilitar debug para depuração
+            // 'debug' => true,
+        ]);
+
+        // Executar requisição baseada no método
+        $response = match (strtoupper($method)) {
+            'POST' => $httpClient->post($url, $data),
+            'PUT' => $httpClient->put($url, $data),
+            'PATCH' => $httpClient->patch($url, $data),
+            'DELETE' => $httpClient->delete($url, $data),
+            default => $httpClient->get($url, $data),
+        };
+
+        return [
+            'status' => $response->status(),
+            'body' => $response->body(),
+            'headers' => $response->headers(),
+            'json' => $response->json(),
+        ];
     }
 }

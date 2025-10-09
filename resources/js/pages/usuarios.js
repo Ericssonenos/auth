@@ -27,7 +27,7 @@ $(function () {
         new bootstrap.Modal(document.getElementById('modalUser')).show();
     });
 
-    const table = $('#dataTable_Usuarios').DataTable({
+    const dataTable_Usuario = $('#dataTable_Usuarios').DataTable({
         ajax: {
             method: 'POST',
             url: '/rh/api/usuarios/dados', // rota para buscar os dados (deve retornar JSON no formato DataTables)
@@ -76,7 +76,7 @@ $(function () {
         $('#modalUsuarioTitulo').text('Editar usuário');
 
         const $tr = $(this).closest('tr');
-        const rowData = table.row($tr).data();
+        const rowData = dataTable_Usuario.row($tr).data();
         usuarios_id_Selecionado = rowData.id_Usuario; // atualizar variável global
         $('#nome_Completo_Modal').val(rowData.nome_Completo);
         $('#email_Modal').val(rowData.email);
@@ -136,7 +136,7 @@ $(function () {
                     if (modal) modal.hide();
 
                     // recarregar tabela de usuários
-                    try { table.ajax.reload(null, false); } catch (e) { }
+                    try { dataTable_Usuario.ajax.reload(null, false); } catch (e) { }
 
                     window.alerta.sucesso?.(resp.mensagem);
                 } else {
@@ -154,7 +154,7 @@ $(function () {
 
     $('#dataTable_Usuarios').off('click', '.btn-atribuir-grupo').on('click', '.btn-atribuir-grupo', function () {
         const $tr = $(this).closest('tr');
-        const rowData = table.row($tr).data();
+        const rowData = dataTable_Usuario.row($tr).data();
         usuarios_id_Selecionado = rowData.id_Usuario;
 
         $('#modalGruposTitulo').text('Grupos do usuário: ' + (rowData?.email || '??'));
@@ -288,8 +288,6 @@ $(function () {
         }
     });
 
-
-
     // adicionar / remover grupo
     $('#dataTable_Grupos_Modal').off('click', '.btn-atribuir-grupo-toggle').on('click', '.btn-atribuir-grupo-toggle', function () {
 
@@ -371,7 +369,7 @@ $(function () {
 
     $('#dataTable_Usuarios').off('click', '.btn-permissoes').on('click', '.btn-permissoes', function () {
         const $tr = $(this).closest('tr');
-        const rowData = table.row($tr).data();
+        const rowData = dataTable_Usuario.row($tr).data();
         usuarios_id_Selecionado = rowData.id_Usuario;
         // abrir modal
         const modal = new bootstrap.Modal(document.getElementById('modalPermissoes'));
@@ -439,7 +437,7 @@ $(function () {
             // atualizar variável com o id atual e recarregar (ajax.data() lerá usuarios_id_Selecionado)
             // (não é necessário mudar a URL)
             //limpar a tabela de permissões
-            $('#dataTable_Permissoes_Modal').DataTable().clear().draw();
+            dataTable_Permissoes_Modal.clear().draw();
             dataTable_Permissoes_Modal.ajax.reload(null, false); // false mantém a página atual
             dataTable_Permissoes_Modal.columns.adjust().draw();
 
@@ -543,7 +541,7 @@ $(function () {
 
 
                     // refresca a tabela sem fechar o modal
-                    table.ajax.reload(null, false); // false para não resetar a paginação
+                    dataTable_Usuario.ajax.reload(null, false); // false para não resetar a paginação
                 } else {
                     window.alerta?.erro?.(resp.mensagem || 'Resposta inesperada ao gerar senha.');
                 }
@@ -562,9 +560,8 @@ $(function () {
         });
     });
     // onlclik para gera nova senha - chama API e preenche o campo senha_Modal com a senha retornada
+    $('#btnSalvarUsuario').on('click', function () {
 
-    $('#formUser').on('submit', function (e) {
-        e.preventDefault();
 
         if (!usuarios_id_Selecionado) {
 
@@ -609,7 +606,7 @@ $(function () {
                             $('#btnGerarNovaSenha').removeClass('d-none');
                         }
 
-                        table.ajax.reload();
+                        dataTable_Usuario.ajax.reload();
                     } else {
                         window.alerta?.erro?.(resp.mensagem || 'Resposta inesperada do servidor.');
                     }
@@ -622,6 +619,7 @@ $(function () {
                     } else {
                         window.alerta.erro('Erro: ' + (xhr.responseJSON?.mensagem || err), 'Erro', 7000);
                     }
+                    dataTable_Usuario.ajax.reload();
                 }
             });
         } else {
@@ -658,9 +656,9 @@ $(function () {
 
 
 
-                        // fecha modal e atualiza tabela
-                        $('#modalUser').modal('hide');
-                        table.ajax.reload();
+                        //  atualiza tabela
+
+                        dataTable_Usuario.ajax.reload();
                     } else {
                         window.alerta?.erro?.(resp.mensagem || 'Resposta inesperada do servidor.');
                     }
@@ -675,6 +673,8 @@ $(function () {
                 }
             });
         }
+
+        dataTable_Usuario.ajax.reload();
     });
 
     $('#btnMostrarSenha').off('click').on('click', function () {

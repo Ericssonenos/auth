@@ -43,7 +43,7 @@ class UsuarioMiddleware
 
                 // Verificar se a resposta contém permissões
                 if ($permissoesUsuario['status'] == 200) {
-                    $dados['permissoesUsuario'] = $permissoesUsuario['dados'];
+                    $dados['permissoesUsuario'] = $permissoesUsuario['data'];
                 } else {
                     $dados['permissoesUsuario'] = [];
                 }

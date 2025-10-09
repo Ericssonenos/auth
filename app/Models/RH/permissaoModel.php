@@ -45,19 +45,21 @@ class permissaoModel extends Model
             $comando = $this->conexao->prepare($SqlUnionPermissao);
             $comando->execute($execParams);
             $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
-            return [
-                'dados' => $data,
-                'status' => 200
-            ];
+            if (empty($data)) {
+                return [
+                    'status' => 204,
+                    'mensagem' => 'Nenhuma permissão encontrada para o usuário.',
+                    'data' => []
+                ];
+            }
         } catch (\Exception $e) {
-            return [
-                'dados' => [
-                    'mensagem' => 'Erro ao obter permissões: ' . $e->getMessage()
-                    //[ ] subistituir por log no banco de dados
-                ],
-                'status' => 500 // erro interno
-            ];
+            return Operacao::mapearExcecaoPDO($e,$params);
         }
+        return [
+            'status' => 200,
+            'mensagem' => 'Permissões do usuário carregadas.',
+            'data' => $data
+        ];
     }
 
     /**
@@ -152,23 +154,19 @@ class permissaoModel extends Model
 
             if (empty($data)) {
                 return [
-                    'status' => 200,
+                    'status' => 204,
                     'mensagem' => 'Nenhuma permissão encontrada com os critérios fornecidos.',
-                    'dados' => []
+                    'data' => []
                 ];
             }
         } catch (\Exception $e) {
-            return [
-                'status' => 500,
-                'mensagem' => $e->getMessage(),
-                'dados' => null
-            ];
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
 
         return [
             'status' => 200,
             'mensagem' => 'Permissões carregadas.',
-            'dados' => $data
+            'data' => $data
         ];
     }
 
@@ -194,18 +192,21 @@ class permissaoModel extends Model
             $rows = $comando->rowCount();
             $comando->closeCursor();
 
-            return [
-                'status' => $rows > 0,
-                'mensagem' => $rows > 0 ? 'Permissao criada.' : 'Nenhuma linha inserida.',
-                'data' => ['affected' => $rows]
-            ];
+            if( $rows == 0){
+                return [
+                    'status' => 400,
+                    'mensagem' => 'Nenhuma permissão criada.',
+                    'data' => ['affected' => $rows]
+                ];
+            }
         } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => $e->getMessage(),
-                'data' => null
-            ];
+            return Operacao::mapearExcecaoPDO($e,$params);
         }
+        return [
+            'status' => 201,
+            'mensagem' => 'Permissão criada com sucesso.',
+            'data' => ['affected' => $rows]
+        ];
     }
 
     public function AtualizarPermissao($params)
@@ -235,18 +236,21 @@ class permissaoModel extends Model
             $rows = $comando->rowCount();
             $comando->closeCursor();
 
-            return [
-                'status' => $rows > 0,
-                'mensagem' => $rows > 0 ? 'Permissao atualizada.' : 'Nenhuma linha atualizada.',
-                'data' => ['affected' => $rows]
-            ];
+            if( $rows == 0){
+                return [
+                    'status' => 400,
+                    'mensagem' => 'Nenhuma permissão atualizada.',
+                    'data' => ['affected' => $rows]
+                ];
+            }
         } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => $e->getMessage(),
-                'data' => null
-            ];
+            return Operacao::mapearExcecaoPDO($e,$params);
         }
+        return [
+            'status' => 200,
+            'mensagem' => 'Permissão atualizada com sucesso.',
+            'data' => ['affected' => $rows]
+        ];
     }
 
     public function RemoverPermissao($params)
@@ -270,18 +274,21 @@ class permissaoModel extends Model
             $rows = $comando->rowCount();
             $comando->closeCursor();
 
-            return [
-                'status' => $rows > 0,
-                'mensagem' => $rows > 0 ? 'Permissao removida (cancelada).' : 'Nenhuma linha atualizada.',
-                'data' => ['affected' => $rows]
-            ];
+            if( $rows == 0){
+                return [
+                    'status' => 400,
+                    'mensagem' => 'Nenhuma permissão removida.',
+                    'data' => ['affected' => $rows]
+                ];
+            }
         } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => $e->getMessage(),
-                'data' => null
-            ];
+            return Operacao::mapearExcecaoPDO($e,$params);
         }
+        return [
+            'status' => 200,
+            'mensagem' => 'Permissão removida com sucesso.',
+            'data' => ['affected' => $rows]
+        ];
     }
 
     public function __destruct()

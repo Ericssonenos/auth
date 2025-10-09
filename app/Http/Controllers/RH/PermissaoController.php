@@ -21,6 +21,6 @@ class PermissaoController extends Controller
     public function ObterRHPermissoes(Request $request)
     {
         $respostaDadosPermissao = $this->permissaoModel->ObterRHPermissoes($request->all());
-        return response()->json($respostaDadosPermissao['dados'], $respostaDadosPermissao['status']);
+        return response()->json($respostaDadosPermissao, $respostaDadosPermissao['status']);
     }
 }

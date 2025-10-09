@@ -67,7 +67,7 @@ class LoginController extends Controller
         }
 
         // Verificar se a conta do usuário está bloqueada
-        if ($resultadoStatus_Usuario['dados']['senha_bloqueada'] == 1) {
+        if ($resultadoStatus_Usuario['data']['senha_bloqueada'] == 1) {
             // Apagar dados da sessão
             Session::forget('dadosUsuarioSession');
 
@@ -80,7 +80,7 @@ class LoginController extends Controller
         }
 
         // Verificar se o usuário retorna senha, se sim forçar alteração
-        if ($resultadoStatus_Usuario['dados']['senha'] != null) {
+        if ($resultadoStatus_Usuario['data']['senha'] != null) {
             // Apagar dados da sessão
             Session::forget('dadosUsuarioSession');
             // Redirecionar para a página de alteração de senha
@@ -88,7 +88,7 @@ class LoginController extends Controller
         }
 
         // Se o login for bem-sucedido
-        $dadosUsuario = $resultadoStatus_Usuario['dados'];
+        $dadosUsuario = $resultadoStatus_Usuario['data'];
 
 
         $modelPermissao = new permissaoModel();
@@ -98,7 +98,7 @@ class LoginController extends Controller
 
         // Verificar se a resposta contém permissões
         if ($permissoesUsuario['status'] == 200) {
-            $dadosUsuario['permissoesUsuario'] = $permissoesUsuario['dados'];
+            $dadosUsuario['permissoesUsuario'] = $permissoesUsuario['data'];
         } else {
             $dadosUsuario['permissoesUsuario'] = [];
         }

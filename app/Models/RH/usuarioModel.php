@@ -54,7 +54,7 @@ class usuarioModel extends Model
 
             if (empty($data)) {
                 return [
-                    'dados' => [],
+                    'data' => [],
                     'status' => 204,
                     'mensagem' => 'Nenhum usuário encontrado com os critérios fornecidos.'
                 ];
@@ -64,7 +64,7 @@ class usuarioModel extends Model
         }
 
         return [
-            'dados' => $data,
+            'data' => $data,
             'status' => 200,
             'mensagem' => 'Dados do usuário recuperados.'
         ];
