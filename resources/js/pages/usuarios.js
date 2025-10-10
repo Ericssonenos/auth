@@ -2,29 +2,146 @@
 // Este arquivo é importado pelo bundle principal (resources/js/app.js)
 import $ from 'jquery';
 
-$(function () {
+/**
+ * Classe responsável por gerenciar a lógica de negócio dos usuários
+ * Segue os princípios SOLID e Clean Code
+ */
+class GerenciadorUsuarios {
+    constructor() {
+        this.usuarios_id_Selecionado = null;
+    }
 
-    // abrir modal de permissões
-    let dataTable_Permissoes_Modal = null;
-    let usuarios_id_Selecionado = null;
+    /**
+     * Gerencia o estado e visibilidade dos campos de senha no modal
+     * @param {boolean} mostrar - Se true, mostra os campos de senha
+     * @param {string|null} valorSenha - Valor da senha para preencher (opcional)
+     */
+    gerenciarCamposSenha(mostrar, valorSenha = null) {
+        if (mostrar) {
+            $('#divSenhaModal').removeClass('d-none');
+            $('#btnMostrarSenha').removeClass('d-none');
+            if (valorSenha) {
+                $('#senha_Modal').val(valorSenha);
+            }
+        } else {
+            $('#divSenhaModal').addClass('d-none');
+            $('#btnMostrarSenha').addClass('d-none');
+            $('#senha_Modal').val('');
+        }
+    }
 
-    // gerenciamento de grupos: inicializa DataTable de grupos + subtabelas de permissões por grupo
-    let dataTable_Grupos_Modal = null;
-    const dataTable_SubPermissoes = {}; // cache de DataTables por id_Grupo
-
-    // se a tabela não existir nesta página, aborta
-    if (!document.querySelector('#dataTable_Usuarios')) return;
-
-    $('#btnNovo').off('click').on('click', function () {
-        usuarios_id_Selecionado = null; // resetar variável global
+    /**
+     * Reseta o formulário e estado do modal para criação de novo usuário
+     */
+    resetarModalParaNovoUsuario() {
+        this.usuarios_id_Selecionado = null;
         $('#modalUsuarioTitulo').text('Novo usuário');
         $('#formUser')[0].reset();
         $('#btnGerarNovaSenha').addClass('d-none');
         $('#email_Modal').prop('disabled', false);
-        $('#divSenhaModal').addClass('d-none');
-        // ocultar botão de mostrar senha ao criar novo usuário
-        $('#btnMostrarSenha').addClass('d-none');
+        this.gerenciarCamposSenha(false);
+    }
+
+    /**
+     * Configura o modal para edição de usuário existente
+     * @param {Object} usuario - Dados do usuário
+     */
+    configurarModalParaEdicao(usuario) {
+        this.usuarios_id_Selecionado = usuario.id_Usuario;
+        $('#modalUsuarioTitulo').text('Editar usuário');
+        $('#nome_Completo_Modal').val(usuario.nome_Completo);
+        $('#email_Modal').val(usuario.email);
+        $('#email_Modal').prop('disabled', true);
+        $('#btnGerarNovaSenha').removeClass('d-none');
+
+        if (usuario?.senha) {
+            this.gerenciarCamposSenha(true, usuario.senha);
+        } else {
+            this.gerenciarCamposSenha(false);
+        }
+    }
+
+    /**
+     * Abre o modal de usuário (Bootstrap 5)
+     */
+    abrirModalUsuario() {
         new bootstrap.Modal(document.getElementById('modalUser')).show();
+    }
+
+    /**
+     * Fecha o modal de usuário
+     */
+    fecharModalUsuario() {
+        const modalEl = document.getElementById('modalUser');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+    }
+
+    /**
+     * Mostra a senha temporariamente no campo
+     * @param {number} duracao - Duração em milissegundos
+     */
+    mostrarSenhaTemporariamente(duracao = 8000) {
+        const $senhaInput = $('#senha_Modal');
+        $senhaInput.attr('type', 'text');
+        setTimeout(() => {
+            $senhaInput.attr('type', 'password');
+        }, duracao);
+    }
+
+    /**
+     * Atualiza o estado do usuário após criação
+     * @param {number} idUsuario - ID do usuário criado
+     */
+    atualizarEstadoAposCriacao(idUsuario) {
+        this.usuarios_id_Selecionado = idUsuario;
+        $('#email_Modal').prop('disabled', true);
+        $('#btnGerarNovaSenha').removeClass('d-none');
+    }
+
+    /**
+     * Obtém o ID do usuário selecionado
+     * @returns {number|null}
+     */
+    obterUsuarioSelecionado() {
+        return this.usuarios_id_Selecionado;
+    }
+
+    /**
+     * Define o ID do usuário selecionado
+     * @param {number|null} id
+     */
+    setUsuarioSelecionado(id) {
+        this.usuarios_id_Selecionado = id;
+    }
+
+    /**
+     * Reseta o ID do usuário selecionado
+     */
+    resetarUsuarioSelecionado() {
+        this.usuarios_id_Selecionado = null;
+    }
+}
+
+// ========== INICIALIZAÇÃO E EVENT HANDLERS ==========
+
+$(function () {
+    // se a tabela não existir nesta página, aborta
+    if (!document.querySelector('#dataTable_Usuarios')) return;
+
+    // Instancia o gerenciador de usuários
+    const gerenciador = new GerenciadorUsuarios();
+
+    // DataTables e estados
+    let dataTable_Permissoes_Modal = null;
+    let dataTable_Grupos_Modal = null;
+    const dataTable_SubPermissoes = {}; // cache de DataTables por id_Grupo
+
+    // ========== EVENT HANDLERS ==========
+
+    $('#btnNovo').off('click').on('click', function () {
+        gerenciador.resetarModalParaNovoUsuario();
+        gerenciador.abrirModalUsuario();
     });
 
     const dataTable_Usuario = $('#dataTable_Usuarios').DataTable({
@@ -72,49 +189,17 @@ $(function () {
     });
 
     $('#dataTable_Usuarios').off('click', '.btn-edit').on('click', '.btn-edit', function () {
-
-        $('#modalUsuarioTitulo').text('Editar usuário');
-
         const $tr = $(this).closest('tr');
         const rowData = dataTable_Usuario.row($tr).data();
-        usuarios_id_Selecionado = rowData.id_Usuario; // atualizar variável global
-        $('#nome_Completo_Modal').val(rowData.nome_Completo);
-        $('#email_Modal').val(rowData.email);
-        $('#email_Modal').prop('disabled', true);
-        $('#btnGerarNovaSenha').removeClass('d-none');
 
-
-        if (rowData?.senha) {
-            $('#senha_Modal').val(rowData.senha);
-            $('#divSenhaModal').removeClass('d-none');
-
-            // mostrar botão de visualizar senha
-            $('#btnMostrarSenha').removeClass('d-none');
-
-            // retirar typeo password por 5 segundos
-            $('#modalUser').off('click', '#btnMostrarSenha').on('click', '#btnMostrarSenha', function () {
-                const $senhaInput = $('#senha_Modal');
-                $senhaInput.attr('type', 'text');
-                setTimeout(() => {
-                    $senhaInput.attr('type', 'password');
-                }, 5000);
-            });
-
-        } else {
-            $('#divSenhaModal').addClass('d-none');
-            // ocultar botão quando não há senha
-            $('#btnMostrarSenha').addClass('d-none');
-
-        }
-
-        new bootstrap.Modal(document.getElementById('modalUser')).show();
-
+        gerenciador.configurarModalParaEdicao(rowData);
+        gerenciador.abrirModalUsuario();
     });
 
     // habilitar botão Excluir no modal e adicionar handler
     $('#btnExcluirUsuario').off('click').on('click', function (e) {
         e.preventDefault();
-        if (!usuarios_id_Selecionado) {
+        if (!gerenciador.obterUsuarioSelecionado()) {
             window.alerta?.erroPermissoes?.({ mensagem: 'Nenhum usuário selecionado para exclusão.' });
             return;
         }
@@ -125,15 +210,12 @@ $(function () {
         $btn.prop('disabled', true).text('Excluindo...');
 
         $.ajax({
-            url: '/rh/api/usuario/deletar/' + encodeURIComponent(usuarios_id_Selecionado),
+            url: '/rh/api/usuario/deletar/' + encodeURIComponent(gerenciador.obterUsuarioSelecionado()),
             method: 'DELETE',
             dataType: 'json',
             success: function (resp) {
-                if (resp && resp.status) {
-                    // fechar modal
-                    const modalEl = document.getElementById('modalUser');
-                    const modal = bootstrap.Modal.getInstance(modalEl);
-                    if (modal) modal.hide();
+                if (resp && resp.status == 200) {
+                    gerenciador.fecharModalUsuario();
 
                     // recarregar tabela de usuários
                     try { dataTable_Usuario.ajax.reload(null, false); } catch (e) { }
@@ -155,7 +237,7 @@ $(function () {
     $('#dataTable_Usuarios').off('click', '.btn-atribuir-grupo').on('click', '.btn-atribuir-grupo', function () {
         const $tr = $(this).closest('tr');
         const rowData = dataTable_Usuario.row($tr).data();
-        usuarios_id_Selecionado = rowData.id_Usuario;
+        gerenciador.setUsuarioSelecionado(rowData.id_Usuario);
 
         $('#modalGruposTitulo').text('Grupos do usuário: ' + (rowData?.email || '??'));
         const modalEl = document.getElementById('modalGrupos');
@@ -169,7 +251,7 @@ $(function () {
                     method: 'POST',
                     url: '/rh/api/grupos/dados',
                     data: function (d) {
-                        d.usuario_id = usuarios_id_Selecionado;
+                        d.usuario_id = gerenciador.obterUsuarioSelecionado();
                         d.fn = 'btn-atribuir-grupo';
                         d.order_by = 'CASE WHEN rug.id_rel_usuario_grupo IS NOT NULL THEN 1 ELSE 0 END, g.nome_Grupo';
                         return d;
@@ -282,9 +364,7 @@ $(function () {
                 delete dataTable_SubPermissoes[k];
             });
 
-            $('#dataTable_Grupos_Modal').DataTable().clear().draw();
             dataTable_Grupos_Modal.ajax.reload(null, false);
-            dataTable_Grupos_Modal.columns.adjust().draw();
         }
     });
 
@@ -295,7 +375,7 @@ $(function () {
         const rowData = dataTable_Grupos_Modal.row(tr).data();
         const grupo_id = rowData.id_Grupo; // id do grupo
         const id_rel_usuario_grupo = rowData.id_rel_usuario_grupo; // id do relacionamento (se existir)
-        const usuario_id = usuarios_id_Selecionado;
+        const usuario_id = gerenciador.obterUsuarioSelecionado();
 
         const $btn = $(this);
         $btn.prop('disabled', true).text('...');
@@ -310,7 +390,7 @@ $(function () {
                 },
                 dataType: 'json',
                 success: function (resp) {
-                    if (resp && resp.status) {
+                    if (resp && resp.status === 201) {
                         window.alerta.sucesso?.(resp.mensagem || 'Grupo adicionado.');
                         dataTable_Grupos_Modal.ajax.reload(null, false);
                     } else {
@@ -328,7 +408,7 @@ $(function () {
                 method: 'DELETE',
                 dataType: 'json',
                 success: function (resp) {
-                    if (resp && resp.status) {
+                    if (resp && resp.status === 204) {
                         window.alerta.sucesso?.(resp.mensagem || 'Grupo removido.');
                         dataTable_Grupos_Modal.ajax.reload(null, false);
                     } else {
@@ -345,7 +425,7 @@ $(function () {
 
     // resetar usuarios_id_Selecionado para 0 quando qualquer modal relevante for fechado
     $('#modalUser, #modalGrupos, #modalPermissoes').on('hidden.bs.modal', function () {
-        usuarios_id_Selecionado = 0;
+        gerenciador.resetarUsuarioSelecionado();
 
         // cleanup: destruir DataTable de grupos e subtabelas para evitar sobreposição ao reabrir
         try {
@@ -370,7 +450,7 @@ $(function () {
     $('#dataTable_Usuarios').off('click', '.btn-permissoes').on('click', '.btn-permissoes', function () {
         const $tr = $(this).closest('tr');
         const rowData = dataTable_Usuario.row($tr).data();
-        usuarios_id_Selecionado = rowData.id_Usuario;
+        gerenciador.setUsuarioSelecionado(rowData.id_Usuario);
         // abrir modal
         const modal = new bootstrap.Modal(document.getElementById('modalPermissoes'));
         modal.show();
@@ -387,7 +467,7 @@ $(function () {
                     url: '/rh/api/permissoes/dados',
                     // enviar parametros dinamicamente a cada requisição
                     data: function (requestData) {
-                        requestData.usuario_id = usuarios_id_Selecionado; // variável atualizada antes do reload
+                        requestData.usuario_id = gerenciador.obterUsuarioSelecionado(); // variável atualizada antes do reload
                         requestData.fn = 'btn-permissoes';
                         requestData.order_by = 'CASE WHEN rup.id_rel_usuario_permissao IS NOT NULL THEN 1 ELSE 0 END, p.cod_permissao';
                         return requestData;
@@ -436,11 +516,7 @@ $(function () {
         } else {
             // atualizar variável com o id atual e recarregar (ajax.data() lerá usuarios_id_Selecionado)
             // (não é necessário mudar a URL)
-            //limpar a tabela de permissões
-            dataTable_Permissoes_Modal.clear().draw();
             dataTable_Permissoes_Modal.ajax.reload(null, false); // false mantém a página atual
-            dataTable_Permissoes_Modal.columns.adjust().draw();
-
         }
     });
 
@@ -449,7 +525,7 @@ $(function () {
 
         const tr = $(this).closest('tr');
         const rowData = dataTable_Permissoes_Modal.row(tr).data();
-        const usuario_id = usuarios_id_Selecionado;
+        const usuario_id = gerenciador.obterUsuarioSelecionado();
         const id_rel_usuario_permissao = rowData.id_rel_usuario_permissao;
         const permissao_id = rowData.id_permissao;
 
@@ -466,7 +542,7 @@ $(function () {
                 },
                 dataType: 'json',
                 success: function (resp) {
-                    if (resp && resp.status) {
+                    if (resp && resp.status === 201) {
                         window.alerta?.sucesso?.(resp.mensagem || 'Permissão adicionada.');
                         dataTable_Permissoes_Modal.ajax.reload(null, false);
                     } else {
@@ -490,7 +566,7 @@ $(function () {
                 method: 'DELETE',
                 dataType: 'json',
                 success: function (resp) {
-                    if (resp && resp.status) {
+                    if (resp && resp.status === 204) {
                         window.alerta?.sucesso?.(resp.mensagem || 'Permissão removida.');
                         dataTable_Permissoes_Modal.ajax.reload(null, false);
                     } else {
@@ -518,30 +594,22 @@ $(function () {
         $btn.prop('disabled', true).text('Gerando...');
 
         $.ajax({
-            url: '/rh/usuario/' + encodeURIComponent(usuarios_id_Selecionado) + '/gerar-senha',
+            url: '/rh/usuario/' + encodeURIComponent(gerenciador.obterUsuarioSelecionado()) + '/gerar-senha',
             method: 'POST',
             dataType: 'json',
             success: function (resp) {
-                if (resp && resp.status && resp.data && resp.data.senha) {
+                if (resp && resp.status === 201 && resp.data && resp.data.senha) {
                     // preencher e mostrar campo de senha
-                    $('#senha_Modal').val(resp.data.senha);
+                    gerenciador.gerenciarCamposSenha(true, resp.data.senha);
 
-                    // mostrar botão de visualizar senha
-                    $('#btnMostrarSenha').removeClass('d-none');
-
-                    // mostrar senha em texto por 8s (comportamento automático existente)
-                    const $senhaInput = $('#senha_Modal');
-                    $senhaInput.attr('type', 'text');
-                    setTimeout(() => {
-                        $senhaInput.attr('type', 'password');
-                    }, 8000);
+                    // mostrar senha temporariamente
+                    gerenciador.mostrarSenhaTemporariamente(8000);
 
                     // feedback curto ao usuário
                     window.alerta?.sucesso?.('Senha temporária gerada com sucesso. Senha temporária: 10 minutos');
 
-
                     // refresca a tabela sem fechar o modal
-                    dataTable_Usuario.ajax.reload(null, false); // false para não resetar a paginação
+                    dataTable_Usuario.ajax.reload(null, false); // false mantém a página atual
                 } else {
                     window.alerta?.erro?.(resp.mensagem || 'Resposta inesperada ao gerar senha.');
                 }
@@ -563,7 +631,7 @@ $(function () {
     $('#btnSalvarUsuario').on('click', function () {
 
 
-        if (!usuarios_id_Selecionado) {
+        if (!gerenciador.obterUsuarioSelecionado()) {
 
             const payload = {
                 nome_Completo: $('#nome_Completo_Modal').val(),
@@ -577,36 +645,22 @@ $(function () {
                 data: payload,
                 dataType: 'json',
                 success: function (resp) {
-                    if (resp && resp.status) {
+                    if (resp && resp.status === 201) {
                         // se a API retornar senha (resp.data.senha) preenche e mostra como no fluxo gerar-senha
                         if (resp.data && resp.data.senha) {
-                            $('#senha_Modal').val(resp.data.senha);
-                            $('#divSenhaModal').removeClass('d-none');
-
-                            // mostrar botão de visualizar senha
-                            $('#btnMostrarSenha').removeClass('d-none');
-
-                            // mostrar senha em texto por 8s
-                            const $senhaInput = $('#senha_Modal');
-                            $senhaInput.attr('type', 'text');
-                            setTimeout(() => {
-                                $senhaInput.attr('type', 'password');
-                            }, 8000);
-
+                            gerenciador.gerenciarCamposSenha(true, resp.data.senha);
+                            gerenciador.mostrarSenhaTemporariamente(8000);
                             window.alerta?.sucesso?.('Usuário criado. Senha temporária: 10 minutos');
                         } else {
                             window.alerta?.sucesso?.('Usuário criado com sucesso.');
                         }
-                        // retirar botão de gerar senha para evitar múltiplos cliques rápidos
 
                         // se a API retornar lastId, preencher o id no modal para permitir gerar nova senha / edição
                         if (resp.data && resp.data.lastId) {
-                            usuarios_id_Selecionado = resp.data.lastId;
-                            $('#email_Modal').prop('disabled', true);
-                            $('#btnGerarNovaSenha').removeClass('d-none');
+                            gerenciador.atualizarEstadoAposCriacao(resp.data.lastId);
                         }
 
-                        dataTable_Usuario.ajax.reload();
+                        dataTable_Usuario.ajax.reload(null, false); // false mantém a página atual
                     } else {
                         window.alerta?.erro?.(resp.mensagem || 'Resposta inesperada do servidor.');
                     }
@@ -628,33 +682,20 @@ $(function () {
             };
             // atualizar (usa mesmo molde de retorno/erros que o POST de cadastro)
             $.ajax({
-                url: '/rh/api/usuario/atualizar/' + encodeURIComponent(usuarios_id_Selecionado),
+                url: '/rh/api/usuario/atualizar/' + encodeURIComponent(gerenciador.obterUsuarioSelecionado()),
                 method: 'PUT',
                 data: payload,
                 dataType: 'json',
                 success: function (resp) {
-                    if (resp && resp.status) {
+                    if (resp && resp.status == 200) {
                         // se a API retornar senha (resp.data.senha) preenche e mostra como no fluxo gerar-senha
                         if (resp.data && resp.data.senha) {
-                            $('#senha_Modal').val(resp.data.senha);
-                            $('#divSenhaModal').removeClass('d-none');
-
-                            // mostrar botão de visualizar senha
-                            $('#btnMostrarSenha').removeClass('d-none');
-
-                            // mostrar senha em texto por 8s
-                            const $senhaInput = $('#senha_Modal');
-                            $senhaInput.attr('type', 'text');
-                            setTimeout(() => {
-                                $senhaInput.attr('type', 'password');
-                            }, 8000);
-
+                            gerenciador.gerenciarCamposSenha(true, resp.data.senha);
+                            gerenciador.mostrarSenhaTemporariamente(8000);
                             window.alerta?.sucesso?.('Usuário atualizado. Senha temporária: 10 minutos');
                         } else {
                             window.alerta?.sucesso?.('Usuário atualizado com sucesso.');
                         }
-
-
 
                         //  atualiza tabela
 
@@ -673,15 +714,9 @@ $(function () {
                 }
             });
         }
-
-        dataTable_Usuario.ajax.reload();
     });
 
     $('#btnMostrarSenha').off('click').on('click', function () {
-        const $senhaInput = $('#senha_Modal');
-        $senhaInput.attr('type', 'text');
-        setTimeout(() => {
-            $senhaInput.attr('type', 'password');
-        }, 15000);
+        gerenciador.mostrarSenhaTemporariamente(15000);
     });
 });
