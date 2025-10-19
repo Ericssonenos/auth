@@ -10,7 +10,7 @@ $(function () {
     // se a tabela não existir nesta página, aborta
     if (!document.querySelector('#dataTable_Grupos')) return;
 
-    $('#btnNovo').off('click').on('click', function () {
+    $('#btnNovoGrupo').off('click').on('click', function () {
         grupos_id_Selecionado = null; // resetar variável global
         $('#modalGrupoTitulo').text('Novo grupo');
         $('#formGrupo')[0].reset();

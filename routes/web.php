@@ -6,10 +6,17 @@ use App\Http\Controllers\RH\UsuarioController;
 use App\Http\Controllers\RH\PermissaoController;
 use App\Http\Controllers\RH\GrupoController;
 use App\Http\Controllers\RH\CategoriaController;
+use App\Http\Controllers\ExemploController;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home.view');
+
+// Rotas para página de exemplo com tabs dinâmicas
+Route::get('/exemplo', [ExemploController::class, 'index'])->name('exemplo.index');
+Route::get('/exemplo/tab/usuarios', [ExemploController::class, 'tabUsuarios'])->name('exemplo.tab.usuarios');
+Route::get('/exemplo/tab/permissoes', [ExemploController::class, 'tabPermissoes'])->name('exemplo.tab.permissoes');
+Route::get('/exemplo/tab/estatisticas', [ExemploController::class, 'tabEstatisticas'])->name('exemplo.tab.estatisticas');
 
 
 
@@ -42,7 +49,9 @@ Route::prefix('rh')->group(function () {
     Route::post('api/usuario/grupo/adicionar', [UsuarioController::class, 'AtribuirGrupo'])->name('usuario.grupo.adicionar')->middleware('usuarioMiddleware');
     Route::delete('api/usuario/grupo/remover/{id_rel_usuario_grupo}', [UsuarioController::class, 'RemoverGrupo'])->name('usuario.grupo.remover')->middleware('usuarioMiddleware');
 
-    Route::get('grupos', [GrupoController::class, 'index'])->name('grupos.view')->middleware('usuarioMiddleware');
+    Route::get('grupos', [GrupoController::class, 'index'])
+    ->name('grupos.view')
+    ->middleware('usuarioMiddleware');
 
     // Grupos: CRUD básico
     Route::post('api/grupo/cadastrar', [GrupoController::class, 'CadastrarGrupo'])->name('grupo.cadastrar')->middleware('usuarioMiddleware');

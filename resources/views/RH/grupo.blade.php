@@ -1,13 +1,12 @@
-@extends('layout.main')
 
 @section('title', 'Grupos')
 
-@section('content')
+
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h1>Grupos</h1>
             <div>
-                <button id="btnNovo" class="btn btn-success">Novo grupo</button>
+                <button id="btnNovoGrupo" class="btn btn-success">Novo grupo</button>
             </div>
         </div>
 
@@ -80,4 +79,4 @@
         </div>
     </div>
 
-@endsection
+
