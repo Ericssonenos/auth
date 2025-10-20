@@ -12,11 +12,7 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home.view');
 
-// Rotas para página de exemplo com tabs dinâmicas
-Route::get('/exemplo', [ExemploController::class, 'index'])->name('exemplo.index');
-Route::get('/exemplo/tab/usuarios', [ExemploController::class, 'tabUsuarios'])->name('exemplo.tab.usuarios');
-Route::get('/exemplo/tab/permissoes', [ExemploController::class, 'tabPermissoes'])->name('exemplo.tab.permissoes');
-Route::get('/exemplo/tab/estatisticas', [ExemploController::class, 'tabEstatisticas'])->name('exemplo.tab.estatisticas');
+
 
 
 

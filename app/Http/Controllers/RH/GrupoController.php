@@ -24,7 +24,7 @@ class GrupoController extends Controller
     public function index()
     {
         // só acessa quem tiver a permissão GESTAO_GRUPOS
-        return view('RH.grupo');
+       return view('RH.rh');
     }
 
 

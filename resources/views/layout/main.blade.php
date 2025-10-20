@@ -11,11 +11,11 @@
         window.AppErro = @json(session('erro', (object) []));
     </script>
     @stack('styles')
-  <!-- Carregamento tradicional de jQuery/DataTables (local, sem CDN) -->
-  <link rel="stylesheet" href="{{ asset('css/jquery.dataTables.min.css') }}">
-  <script src="{{ asset('js/vendor/jquery.min.js') }}"></script>
-  <script src="{{ asset('js/vendor/setup-csrf.js') }}"></script>
-  <script src="{{ asset('js/vendor/jquery.dataTables.min.js') }}"></script>
+
+
+
+  <script src="{{ asset('js/layout/setup-csrf.js') }}"></script>
+  <script src="{{ asset('js/bibliotecas/jquery/dist/jquery.min.js') }}"></script>
 
   @vite(['resources/css/app.css', 'resources/css/main.css', 'resources/js/app.js'])
 

@@ -23,7 +23,7 @@ class LoginController extends Controller
      */
     public function exibirFormularioLogin()
     {
-        return view('RH.login');
+        return view('auth.login');
     }
 
     /**
@@ -147,7 +147,7 @@ class LoginController extends Controller
      */
     public function exibirAlterarSenha()
     {
-        return view('RH.alterar_senha');
+        return view('auth.alterar_senha');
     }
 
     /**

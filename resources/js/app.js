@@ -28,7 +28,7 @@ try {
 }
 
 // Importar scripts específicos por página
-import './pages/usuarios';
+// [ ] lugar errado :import './pages/usuarios';
 import './pages/grupos';
 
 

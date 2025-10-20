@@ -11,17 +11,18 @@
             </div>
         </div>
 
-        <div class="card shadow-sm">
+        <div class=" shadow-sm">
+
             <div class="card-header bg-white">
                 <ul class="nav nav-tabs card-header-pills mb-0">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#tab-usuarios" data-bs-toggle="pill" data-tab="usuarios">
+                        <a id="aba_usuario" class="nav-link active" href="#tab-usuarios" data-bs-toggle="pill" data-tab="usuarios">
                             👥 Usuários
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#tab-permissoes" data-bs-toggle="pill" data-tab="permissoes">
-                            🔐 Permissões
+                        <a class="nav-link" href="#tab-grupo" data-bs-toggle="pill" data-tab="grupo">
+                            🔐 Grupo
                         </a>
                     </li>
                     <li class="nav-item">
@@ -35,11 +36,11 @@
             <div class="card-body">
                 <div class="tab-content" style="min-height: 400px;">
                     <div class="tab-pane fade show active" id="tab-usuarios" role="tabpanel">
-                        @include('rh.usuario')
+                        @include('rh.abas.usuario')
                     </div>
 
-                    <div class="tab-pane fade" id="tab-permissoes" role="tabpanel">
-                        @include('rh.grupo')
+                    <div class="tab-pane fade" id="tab-grupo" role="tabpanel">
+                        {{-- @include('rh.abas.grupo') --}}
                     </div>
 
                     <div class="tab-pane fade" id="tab-estatisticas" role="tabpanel">
@@ -50,6 +51,4 @@
         </div>
     </div>
 @endsection
-@push('scripts')
-    <script src="{{ asset('/js/RH/usuarios.js') }}"></script>
-@endpush
+

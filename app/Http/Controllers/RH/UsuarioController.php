@@ -22,7 +22,7 @@ class UsuarioController extends Controller
     public function index()
     {
         // [x] validar uso
-        return view('RH.usuario');
+        return view('RH.rh');
     }
     // corresponde a usuario->CadastrarUsuarios($dados)
     public function CadastrarUsuarios(Request $request)

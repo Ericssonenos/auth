@@ -2,7 +2,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Usuários</h1>
         <div>
-            <button id="btnNovoUsuario" class="btn btn-success">Novo usuário</button>
+            <button id="btn_abrir_modal_novo_usuario" class="btn btn-success">Novo usuário</button>
         </div>
     </div>
 
@@ -101,3 +101,6 @@
 </div>
 
 
+@push('scripts')
+    <script src="{{ asset('/js/RH/usuarios.js') }}"></script>
+@endpush

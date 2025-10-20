@@ -164,6 +164,7 @@ $(function () {
             $.ajax({
                 url: '/rh/api/grupo/permissao/adicionar',
                 method: 'POST',
+                type: 'POST',
                 dataType: 'json',
                 data: {
                     grupo_id: grupo_id,
@@ -189,6 +190,7 @@ $(function () {
             $.ajax({
                 url: '/rh/api/grupo/permissao/remover/' + encodeURIComponent(id_rel_grupo_permissao),
                 method: 'DELETE',
+                type: 'POST',
                 dataType: 'json',
                 success: function (resp) {
                     if (resp.status) {
@@ -226,6 +228,7 @@ $(function () {
         $.ajax({
             url: '/rh/api/grupo/deletar/' + encodeURIComponent(grupos_id_Selecionado),
             method: 'DELETE',
+            type: 'POST',
             dataType: 'json',
             success: function (resp) {
                 if (resp.status) {
@@ -258,6 +261,7 @@ $(function () {
         const isEdit = grupos_id_Selecionado !== null;
         const url = isEdit ? '/rh/api/grupo/atualizar/' + encodeURIComponent(grupos_id_Selecionado) : '/rh/api/grupo/cadastrar';
         const method = isEdit ? 'PUT' : 'POST';
+        const type = isEdit ? 'PUT' : 'POST';
 
         $.ajax({
             url: url,
