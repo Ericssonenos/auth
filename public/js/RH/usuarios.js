@@ -1,5 +1,3 @@
-
-
 $(function () {
 
     // se a tabela não existir nesta página, aborta
@@ -14,56 +12,141 @@ $(function () {
     const dataTable_SubPermissoes = {}; // cache de DataTables por id_Grupo
     let dataTable_Usuario = null;
 
+    // inicializa/destrói redimensionador de colunas (usando plugin colResizable)
+    function initColumnResizer() {
+        // plugin não disponível -> nada a fazer
+        if (typeof $.fn.colResizable !== 'function') return;
+
+        try {
+            // se já inicializado, desativa antes de reinicializar
+            if (window.__colResizableUsersInit) {
+                try { $('#dataTable_Usuarios').colResizable({ disable: true }); } catch (e) { /* ignore */ }
+                window.__colResizableUsersInit = false;
+            }
+
+            // inicializa colResizable (opções ajustáveis)
+            $('#dataTable_Usuarios').colResizable({
+                liveDrag: true,          // ajuste visual em tempo real
+                gripInnerHtml: "<div class='grip'></div>",
+                draggingClass: "JCLRgripDrag",
+                resizeMode: 'flex',      // mantém layout flexível (ou 'overflow' se preferir)
+                minWidth: 40,
+                headerOnly: true         // só permite redimensionar via th
+            });
+            window.__colResizableUsersInit = true;
+        } catch (e) {
+            console.warn('colResizable init falhou', e);
+        }
+    }
+
     const CarregarTabelaUsuarios = function () {
 
         if (!dataTable_Usuario) {
             dataTable_Usuario = $('#dataTable_Usuarios').DataTable({
+                // LAYOUT / CONTROLES (DOM)
+                // 'B' = Buttons, 'l' = length, 'f' = filter, 't' = table, 'i' = info, 'p' = pagination
+             dom: "<'d-flex justify-content-between'<''f><''B>>" +
+                 "<''<''t>>" +
+                 "<'d-flex justify-content-between'<''l><''i><''p>>",
+
+                // EXTENSÕES / PLUGINS
+                buttons: [
+                    { extend: 'copy', text: 'Copiar' },
+                    { extend: 'csv',  text: 'CSV' },
+                    { extend: 'excel', text: 'Excel' },
+                    { extend: 'pdf',  text: 'PDF' },
+                    { extend: 'print', text: 'Imprimir' },
+
+                ],
+
+                responsive: true,      // adapta colunas para telas pequenas
+                colReorder: true,      // arrastar e reordenar colunas
+
+                select: true,          // seleção de linhas/colunas
+                //scroller: true,        // virtual scroll para grandes datasets
+                stateSave: true,       // salva estado (página, order, coluna visível)
+                processing: true,      // mostra indicador de processamento
+
+                // PAGINAÇÃO / TAMANHO / ORDENAÇÃO
+                serverSide: false,     // true se a paginação/filtragem for no servidor
+                autoWidth: true,
+                lengthMenu: [10, 25, 50, 100, -1],
+                pageLength: 10,
+                pagingType: 'simple_numbers',
+                order: [[0, 'asc']],
+
+                // AJAX (note usar 'type' para compatibilidade com DataTables)
                 ajax: {
-                    method: 'POST',
-                    url: '/rh/api/usuarios/dados', // rota para buscar os dados (deve retornar JSON no formato DataTables)
-                    // dataSrc como função para validar e lidar com respostas inesperadas
+                    type: 'POST',
+                    url: '/rh/api/usuarios/dados',
+                    data: function (d) {
+                        // d.fn = 'listar-usuarios'; // se precisar enviar algo extra
+                        return d;
+                    },
                     dataSrc: function (json) {
                         try {
-                            if (!json) {
-                                // resposta vazia
-                                window.alerta.erroPermissoes(mensagem = 'Acesso negado');
-                                return [];
-                            }
-                            // se a propriedade data estiver presente e for um array, devolve-a
+                            if (!json) { window.alerta.erroPermissoes('Acesso negado'); return []; }
                             if (Array.isArray(json.data)) return json.data;
-
-                            // se a própria resposta já for um array (endpoint simples), devolve-a
                             if (Array.isArray(json)) return json;
-
+                            return [];
                         } catch (e) {
-                            window.alerta.erroPermissoes({ mensagem: String(e) });
+                            window.alerta.erroPermissoes(String(e));
                             return [];
                         }
                     },
-                    error: function (xhr, status, error) {
-                        window.alerta.erroPermissoes(xhr.responseJSON.mensagem, xhr.responseJSON.cod_permissoesNecessarias);
+                    error: function (xhr) {
+                        window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
                     }
                 },
+
+                // COLUNAS / DEFINIÇÕES
                 columns: [
-                    { data: 'nome_Completo', title: 'Nome' },
-                    { data: 'email', title: 'Email' },
+                    { data: 'nome_Completo', title: 'Nome',searchable: false ,width: '20%',orderable: true , className: 'text-start'  },
+                    { data: 'email', title: 'Email',searchable: false ,width: '20%',orderable: true  },
                     {
                         data: null,
                         orderable: false,
                         render: function (row) {
                             return `
-                        <button class="btn btn-sm btn-primary btn-abrir-modal-editar-usuario" data-id="${row.id_Usuario}">Editar</button>
-                        <button class="btn btn-sm btn-secondary btn-abrir-modal-tabela-grupo" data-id="${row.id_Usuario}">Atribuir grupo</button>
-                        <button class="btn btn-sm btn-info btn-abrir-modal-tabela-permissoes" data-id="${row.id_Usuario}">Permissões</button>
-                    `;
+                                <button class="btn btn-sm btn-primary btn-abrir-modal-editar-usuario" data-id="${row.id_Usuario}">Editar</button>
+                                <button class="btn btn-sm btn-secondary btn-abrir-modal-tabela-grupo" data-id="${row.id_Usuario}">Atribuir grupo</button>
+                                <button class="btn btn-sm btn-info btn-abrir-modal-tabela-permissoes" data-id="${row.id_Usuario}">Permissões</button>
+                            `;
                         }
                     }
-                ]
+                ],
+
+
+                // HOOKS / CALLBACKS
+                createdRow: function (row, data, dataIndex) {
+                    // chamado quando cada linha é criada -> bom p/ custom attributes
+                    // $(row).attr('data-user-id', data.id_Usuario);
+                },
+                initComplete: function (settings, json) {
+                    // quando a tabela terminou de inicializar
+                    // ex: ativar tooltips, mover botões, etc.
+                    initColumnResizer();
+                },
+                drawCallback: function (settings) {
+                    // chamado a cada redraw -> rebinds de handlers dinâmicos
+                    initColumnResizer();
+                },
+
+                // TRADUÇÃO (pode apontar para um JSON ou definir inline)
+                language: {
+                    emptyTable: "Nenhum registro encontrado",
+                    loadingRecords: "Carregando...",
+                    processing: "Processando...",
+                    lengthMenu: "Mostrar _MENU_ registros",
+                    search: "Pesquisar:",
+                    paginate: { first: "Primeiro", last: "Último", next: "Próximo", previous: "Anterior" },
+                    info: "Mostrando _START_ até _END_ de _TOTAL_ registros",
+                    infoEmpty: "Mostrando 0 até 0 de 0 registros"
+                }
             });
         } else {
             dataTable_Usuario.clear().draw();
             dataTable_Usuario.ajax.reload(null, false);
-
         }
     }
 
