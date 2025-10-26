@@ -1,6 +1,6 @@
 // JS específico para a página de Grupos
 // Este arquivo é importado pelo bundle principal (resources/js/app.js)
-import $ from 'jquery';
+
 $(function () {
 
     // variáveis globais para controle de modais e DataTables

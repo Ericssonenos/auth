@@ -15,9 +15,8 @@
 
 
   <script src="{{ asset('js/layout/setup-csrf.js') }}"></script>
-  <script src="{{ asset('js/bibliotecas/jquery/dist/jquery.min.js') }}"></script>
-  <script src="{{ asset('js/bibliotecas/datatables/datatables.min.js') }}"></script>
-  <link href="{{ asset('js/bibliotecas/datatables/datatables.min.css') }}" rel="stylesheet">
+  <script src="{{ asset('js/bibliotecas/datatables/datatables.js') }}"></script>
+  <link href="{{ asset('js/bibliotecas/datatables/datatables.css') }}" rel="stylesheet">
 
 
   @vite(['resources/css/app.css', 'resources/css/main.css', 'resources/js/app.js'])

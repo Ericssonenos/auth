@@ -20,7 +20,7 @@ class grupoModel extends Model
     {
         $parametrizacao = Operacao::Parametrizar($params);
         // Verifica se houve erro na parametrização
-        if ($parametrizacao['status'] === false) {
+        if ($parametrizacao['status'] === 422) {
             return [
                 'status' => $parametrizacao['status'],
                 'mensagem' => $parametrizacao['mensagem'],

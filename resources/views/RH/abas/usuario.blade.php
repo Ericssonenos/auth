@@ -53,10 +53,11 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="btnExcluirUsuario" class="btn btn-danger">Excluir</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" id="btnSalvarUsuario" class="btn btn-primary">Salvar</button>
-                    <button type="button" id="btnGerarNovaSenha" class="btn btn-warning">Gerar Nova Senha</button>
+                    <button type="button" id="btnExcluirUsuario" class="btn btn-danger d-print-none">Excluir</button>
+                    <button type="button" class="btn btn-secondary d-print-none" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnImprimirUsuario" class="btn btn-outline-secondary d-print-none">Imprimir</button>
+                    <button type="button" id="btnSalvarUsuario" class="btn btn-primary d-print-none">Salvar</button>
+                    <button type="button" id="btnGerarNovaSenha" class="btn btn-warning d-print-none">Gerar Nova Senha</button>
                 </div>
             </form>
         </div>

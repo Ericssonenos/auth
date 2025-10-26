@@ -54,7 +54,7 @@ class LoginController extends Controller
         );
 
         // Se o status do usuário for inválido ou os dados estiverem vazios
-        if ($resultadoStatus_Usuario['status'] == false) {
+        if ($resultadoStatus_Usuario['status'] == 204) {
             // Apagar dados da sessão
             Session::forget('dadosUsuarioSession');
 

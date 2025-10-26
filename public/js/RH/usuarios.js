@@ -12,32 +12,11 @@ $(function () {
     const dataTable_SubPermissoes = {}; // cache de DataTables por id_Grupo
     let dataTable_Usuario = null;
 
-    // inicializa/destrói redimensionador de colunas (usando plugin colResizable)
-    function initColumnResizer() {
-        // plugin não disponível -> nada a fazer
-        if (typeof $.fn.colResizable !== 'function') return;
 
-        try {
-            // se já inicializado, desativa antes de reinicializar
-            if (window.__colResizableUsersInit) {
-                try { $('#dataTable_Usuarios').colResizable({ disable: true }); } catch (e) { /* ignore */ }
-                window.__colResizableUsersInit = false;
-            }
 
-            // inicializa colResizable (opções ajustáveis)
-            $('#dataTable_Usuarios').colResizable({
-                liveDrag: true,          // ajuste visual em tempo real
-                gripInnerHtml: "<div class='grip'></div>",
-                draggingClass: "JCLRgripDrag",
-                resizeMode: 'flex',      // mantém layout flexível (ou 'overflow' se preferir)
-                minWidth: 40,
-                headerOnly: true         // só permite redimensionar via th
-            });
-            window.__colResizableUsersInit = true;
-        } catch (e) {
-            console.warn('colResizable init falhou', e);
-        }
-    }
+    const imprimirConteudoModal = window.impressao?.imprimirConteudoModal;
+
+
 
     const CarregarTabelaUsuarios = function () {
 
@@ -45,35 +24,58 @@ $(function () {
             dataTable_Usuario = $('#dataTable_Usuarios').DataTable({
                 // LAYOUT / CONTROLES (DOM)
                 // 'B' = Buttons, 'l' = length, 'f' = filter, 't' = table, 'i' = info, 'p' = pagination
-             dom: "<'d-flex justify-content-between'<''f><''B>>" +
-                 "<''<''t>>" +
-                 "<'d-flex justify-content-between'<''l><''i><''p>>",
+                dom: "<''<'d-flex justify-content-between'P>>" +
+                    "<'d-flex justify-content-between'<''f><''B>>" +
+                    "<''<''t>>" +
+                    "<'d-flex justify-content-between'<''l><''i><''p>>",
 
                 // EXTENSÕES / PLUGINS
                 buttons: [
-                    { extend: 'copy', text: 'Copiar' },
-                    { extend: 'csv',  text: 'CSV' },
-                    { extend: 'excel', text: 'Excel' },
-                    { extend: 'pdf',  text: 'PDF' },
-                    { extend: 'print', text: 'Imprimir' },
+                    { extend: 'copyHtml5', titleAttr: 'Copiar', text: '<i class="bi bi-copy" style="color: black; border-color: black;"></i>', exportOptions: { columns: ':visible' } },
+                    { extend: 'excelHtml5', titleAttr: 'Exportar para Excel', text: '<i class="bi bi-filetype-xls" style="color: green; border-color: green;"></i>', exportOptions: { columns: ':visible' } },
+                    { extend: 'csvHtml5', titleAttr: 'Exportar para CSV', text: '<i class="bi bi-filetype-csv" style="color: orange; border-color: orange;"></i>', exportOptions: { columns: ':visible' } },
+                    { extend: 'pdfHtml5', titleAttr: 'Exportar para PDF', text: '<i class="bi bi-file-earmark-pdf" style="color: red; border-color: red;"></i>', exportOptions: { columns: ':visible' } },
+                    { extend: 'print', titleAttr: 'Imprimir', text: '<i class="bi bi-printer" style="color: blue; border-color: blue;"></i>', exportOptions: { columns: ':visible' } },
+                    { extend: 'spacer', style: 'bar' },
+                    { extend: 'colvis', titleAttr: 'Visibilidade de colunas', text: '<i class="bi bi-eye"></i><i class="bi bi-layout-three-columns"></i>' },
+                    { extend: 'pageLength', titleAttr: 'Linhas', text: '<i class="bi bi-list-ol"></i>' },
+                    // criar um botão para atualizar o painel
+                    {
+                        text: 'Atualizar <i class="bi bi-arrow-clockwise"></i>', titleAttr: 'Atualizar Filtros', action: function () {
+                            dataTable_Usuario.ajax.reload(() => {
+                                dataTable_Usuario.searchPanes.clearSelections();
+                                dataTable_Usuario.searchPanes.rebuildPane();
+                            }, false);
+                        }
+                    }
 
                 ],
 
-                responsive: true,      // adapta colunas para telas pequenas
+                //responsive: true,      // adapta colunas para telas pequenas
+                //fixedHeader: true,
                 colReorder: true,      // arrastar e reordenar colunas
 
                 select: true,          // seleção de linhas/colunas
-                //scroller: true,        // virtual scroll para grandes datasets
+                scroller: true,        // virtual scroll para grandes datasets
                 stateSave: true,       // salva estado (página, order, coluna visível)
                 processing: true,      // mostra indicador de processamento
 
                 // PAGINAÇÃO / TAMANHO / ORDENAÇÃO
                 serverSide: false,     // true se a paginação/filtragem for no servidor
-                autoWidth: true,
-                lengthMenu: [10, 25, 50, 100, -1],
+                //autoWidth: true,
+                lengthMenu: [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "Todos"]],
                 pageLength: 10,
                 pagingType: 'simple_numbers',
-                order: [[0, 'asc']],
+
+
+
+                searchPanes: {
+                    cascadePanes: true,       // panes “dependem” uns dos outros
+                    viewTotal: true,          // mostra contadores
+                    initCollapsed: true,     // abre visível
+                    emptyMessage: 'Sem opções',
+                    controls: true,           // botões limpar/colapsar
+                },
 
                 // AJAX (note usar 'type' para compatibilidade com DataTables)
                 ajax: {
@@ -101,8 +103,11 @@ $(function () {
 
                 // COLUNAS / DEFINIÇÕES
                 columns: [
-                    { data: 'nome_Completo', title: 'Nome',searchable: false ,width: '20%',orderable: true , className: 'text-start'  },
-                    { data: 'email', title: 'Email',searchable: false ,width: '20%',orderable: true  },
+
+                    { data: 'nome_Completo', title: 'Nome', width: '20%', orderable: true, className: 'text-start', searchPanes: { show: true } },
+                    { data: 'dat_criado_em', title: 'Data de Criação', width: '20%', orderable: true, className: 'text-start', searchPanes: { show: true } },
+                    { data: 'email', title: 'Email', width: '20%', orderable: true, searchPanes: { show: true } },
+
                     {
                         data: null,
                         orderable: false,
@@ -113,7 +118,8 @@ $(function () {
                                 <button class="btn btn-sm btn-info btn-abrir-modal-tabela-permissoes" data-id="${row.id_Usuario}">Permissões</button>
                             `;
                         }
-                    }
+                    },
+
                 ],
 
 
@@ -122,14 +128,10 @@ $(function () {
                     // chamado quando cada linha é criada -> bom p/ custom attributes
                     // $(row).attr('data-user-id', data.id_Usuario);
                 },
-                initComplete: function (settings, json) {
-                    // quando a tabela terminou de inicializar
-                    // ex: ativar tooltips, mover botões, etc.
-                    initColumnResizer();
-                },
+
                 drawCallback: function (settings) {
                     // chamado a cada redraw -> rebinds de handlers dinâmicos
-                    initColumnResizer();
+
                 },
 
                 // TRADUÇÃO (pode apontar para um JSON ou definir inline)
@@ -144,11 +146,9 @@ $(function () {
                     infoEmpty: "Mostrando 0 até 0 de 0 registros"
                 }
             });
-        } else {
-            dataTable_Usuario.clear().draw();
-            dataTable_Usuario.ajax.reload(null, false);
         }
     }
+
 
 
 
@@ -205,6 +205,15 @@ $(function () {
             new bootstrap.Modal(document.getElementById('modalUser')).show();
 
         });
+
+    $('#modalUser').off('click', '#btnImprimirUsuario').on('click', '#btnImprimirUsuario', function () {
+        const modalEl = document.getElementById('modalUser');
+        if (typeof imprimirConteudoModal !== 'function') {
+            console.warn('Função global de impressão não disponível.');
+            return;
+        }
+        imprimirConteudoModal(modalEl);
+    });
 
     // Crud - Delete
     $('#btnExcluirUsuario').off('click').on('click', function (e) {
