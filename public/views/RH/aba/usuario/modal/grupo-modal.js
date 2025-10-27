@@ -5,15 +5,18 @@ let tb_modal_usuario_permissao = null;
 let tb_modal_usuario_grupo_permissoes = {}; // cache de DataTables por id_Grupo
 
 // abrir Tabelas - de grupos no modal
-$('#tb_usuario').off('click', '.btn-abrir-modal-tabela-grupo').on('click', '.btn-abrir-modal-tabela-grupo', function () {
+$('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abrir-modal-tb-grupo', function () {
+
+    // obter dados da linha selecionada
     const $tr = $(this).closest('tr');
     const rowData = tb_usuario.row($tr).data();
 
-
+    // atualizar título do modal com o email do usuário
     $('#modalGruposTitulo').text('Grupos do usuário: ' + (rowData?.email || '??'));
-    const modalEl = document.getElementById('modalGrupos');
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
+
+    // atualizar variável global
+    id_usuario_selecionado = rowData.id_Usuario;
+
 
     // inicializar ou recarregar DataTable de grupos
     if (!tb_modal_usuario_permissao) {
@@ -23,7 +26,7 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tabela-grupo').on('click', '.btn
                 url: '/rh/api/grupos/dados',
                 data: function (d) {
                     d.usuario_id = rowData.id_Usuario;
-                    d.fn = 'btn-abrir-modal-tabela-grupo';
+                    d.fn = 'btn-abrir-modal-tb-grupo';
                     d.order_by = 'CASE WHEN rug.id_rel_usuario_grupo IS NOT NULL THEN 1 ELSE 0 END, g.nome_Grupo';
                     return d;
                 },
@@ -50,20 +53,89 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tabela-grupo').on('click', '.btn
                     render: function (row) {
                         const assigned = row.id_rel_usuario_grupo;
                         const toggleBtn = assigned
-                            ? `<button class="btn btn-sm btn-danger btn-toggle-modal-tabela-grupo" data-id="${row.id_rel_usuario_grupo}" data-action="remover">Remover</button>`
-                            : `<button class="btn btn-sm btn-success btn-toggle-modal-tabela-grupo" data-id="${row.id_Grupo}" data-action="adicionar">Adicionar</button>`;
-                        const expandBtn = `<button class="btn btn-sm btn-light btn-expand-grupo" data-grupo="${row.id_Grupo}">Permissões</button>`;
+                            ? `<button class="btn btn-sm btn-danger btn-modal-grupo-toggle"  data-action="remover">Remover</button>`
+                            : `<button class="btn btn-sm btn-success btn-modal-grupo-toggle"  data-action="adicionar">Adicionar</button>`;
+                        const expandBtn = `<button class="btn btn-sm btn-light btn-expand-grupo" >Permissões</button>`;
                         return expandBtn + ' ' + toggleBtn;
                     }
                 },
                 // coluna oculta para armazenar as permissões em XML usado no filtro
                 { data: 'permissoes_Grupo', title: 'Permissões (XML)', visible: false }
 
-            ]
+            ],
+            dom: "<'row'<'col-sm-12 col-md-5'f><'col-sm-12 col-md-7'B>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'d-flex justify-content-between'<l><i><p>>",
+            buttons: [
+                {
+                    extend: 'copy',
+                    titleAttr: 'Copiar para área de transferência',
+                    text: '<i class="bi bi-copy"></i>',
+                    className: 'btn btn-outline-dark',
+                    exportOptions: { columns: ':visible' }//exclui a última coluna (geralmente a de ações como botões)
+                },
+                {
+                    extend: 'excel',
+                    titleAttr: 'Exportar para Excel',
+                    text: '<i class="bi bi-filetype-xls"></i>',
+                    className: 'btn btn-outline-success',
+                    exportOptions: { columns: ':visible' }//exclui a última coluna (geralmente a de ações como botões)
+                },
+                {
+                    extend: 'csv',
+                    titleAttr: 'Exportar para CSV',
+                    text: '<i class="bi bi-filetype-csv"></i>',
+                    className: 'btn btn-outline-secondary',
+                    exportOptions: { columns: ':visible' } //exclui a última coluna (geralmente a de ações como botões)
+                },
+                {
+                    extend: 'pdf',
+                    titleAttr: 'Exportar para PDF',
+                    text: '<i class="bi bi-file-earmark-pdf"></i>',
+                    className: 'btn btn-outline-danger',
+                    exportOptions: { columns: ':visible' } //exclui a última coluna (geralmente a de ações como botões)
+                },
+                {
+                    extend: 'print',
+                    titleAttr: 'Imprimir',
+                    text: '<i class="bi bi-printer"></i>',
+                    className: 'btn btn-outline-warning',
+                    exportOptions: { columns: ':visible' } //exclui a última coluna (geralmente a de ações como botões)
+                },
+                {
+                    extend: 'spacer',
+                    style: 'bar'
+                },
+                // criar um botão para atualizar o painel
+                {
+                    text: '<i class="bi bi-arrow-clockwise"></i>',
+                    titleAttr: 'Atualizar Filtros',
+                    className: 'btn btn-warning',
+                    action: function () {
+                        tb_modal_usuario_permissoes.clear().draw();
+                        tb_modal_usuario_permissoes.ajax.reload(null, false); // false mantém a página atual
+                        tb_modal_usuario_permissoes.columns.adjust().draw();
+                    }
+                },
+                {
+                    extend: 'colvis',
+                    titleAttr: 'Visibilidade de colunas',
+                    text: '<i class="bi bi-eye"></i>',
+                    className: 'btn btn-primary',
+
+                }
+
+
+            ],
+            select: true,          // seleção de linhas/colunas
+            colReorder: true,      // arrastar e reordenar colunas
+            responsive: true,     // adapta colunas para telas pequenas
         });
 
         // expandir/mostrar subtabela de permissões do grupo
         $('#tb_modal_usuario_permissao tbody').off('click', '.btn-expand-grupo').on('click', '.btn-expand-grupo', function () {
+
+            // obter dados da linha selecionada
             const $btn = $(this);
             const tr = $btn.closest('tr');
             const row = tb_modal_usuario_permissao.row(tr);
@@ -139,29 +211,36 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tabela-grupo').on('click', '.btn
         tb_modal_usuario_permissao.ajax.reload(null, false);
         tb_modal_usuario_permissao.columns.adjust().draw();
     }
+
+    const modalEl = document.getElementById('modalGrupos');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
 });
 
 
 
 
 //toggle atribuir ou remover grupo
-$('#tb_modal_usuario_permissao').off('click', '.btn-toggle-modal-tabela-grupo').on('click', '.btn-toggle-modal-tabela-grupo', function () {
+$('#tb_modal_usuario_permissao').off('click', '.btn-modal-grupo-toggle').on('click', '.btn-modal-grupo-toggle', function () {
 
+    // obter dados da linha selecionada
     const tr = $(this).closest('tr');
     const rowData = tb_modal_usuario_permissao.row(tr).data();
     const grupo_id = rowData.id_Grupo; // id do grupo
     const id_rel_usuario_grupo = rowData.id_rel_usuario_grupo; // id do relacionamento (se existir)
 
-
+    // desabilitar botão e mostrar spinner
     const $btn = $(this);
-    $btn.prop('disabled', true).text('...');
+    $btn
+        .prop('disabled', true)
+        .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
 
     if (!id_rel_usuario_grupo) {
         $.ajax({
             url: '/rh/api/usuario/grupo/adicionar',
             method: 'POST',
             data: {
-                usuario_id: usuario_id,
+                usuario_id: id_usuario_selecionado,
                 grupo_id: grupo_id
             },
             dataType: 'json',
@@ -189,11 +268,15 @@ $('#tb_modal_usuario_permissao').off('click', '.btn-toggle-modal-tabela-grupo').
                     tb_modal_usuario_permissao.ajax.reload(null, false);
                 } else {
                     window.alerta.erroPermissoes(resp?.mensagem || 'Erro ao remover grupo');
-                    $btn.prop('disabled', false).text('Remover');
                 }
+
             },
             error: function (xhr) {
                 window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoes_necessarias);
+
+            },
+            complete: function () {
+                $btn.prop('disabled', false).text('Remover');
             }
         });
     }

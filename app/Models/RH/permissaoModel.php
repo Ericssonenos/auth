@@ -84,7 +84,7 @@ class permissaoModel extends Model
         $execParams = $parametrizacao['execParams'];
 
 
-        if($params['fn'] == 'btn-abrir-modal-tabela-permissao'){
+        if($params['fn'] == 'btn-abrir-modal-tb-permissao'){
             $execParams[':usuario_id'] = $params['usuario_id'];
             $execParams[':usuario_id_Sub'] = $params['usuario_id'];
             $consultaSql = "SELECT

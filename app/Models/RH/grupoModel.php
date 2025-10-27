@@ -49,7 +49,7 @@ class grupoModel extends Model
                 . ($optsParams['order_by'] ?? ' ORDER BY g.nome_Grupo')
                 . ($optsParams['limit'] ?? '')
                 . ($optsParams['offset'] ?? '');
-        } else if (isset($params['fn']) && $params['fn'] === 'btn-atribuir-grupo') {
+        } else if (isset($params['fn']) && $params['fn'] === 'btn-abrir-modal-tb-grupo') {
 
             $execParams[':usuario_id'] = $params['usuario_id'];
             $consultaSql = "SELECT
