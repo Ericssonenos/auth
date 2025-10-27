@@ -74,19 +74,19 @@ import '../../css/mensagens_alerta.css';
     }
 
     // Consumidor de sessões para alertas (usa window.alerta)
-    function erroPermissoes(mensagem = null, cod_permissoesNecessarias = null) {
+    function erroPermissoes(mensagem = null, cod_permissoes_necessarias = null) {
         try {
             if(!mensagem){
                 mensagem = window.AppErro.mensagem ? window.AppErro.mensagem : null;
             }
-            if(!cod_permissoesNecessarias){
-                cod_permissoesNecessarias = window.AppErro.cod_permissoesNecessarias ? window.AppErro.cod_permissoesNecessarias : null;
+            if(!cod_permissoes_necessarias){
+                cod_permissoes_necessarias = window.AppErro.cod_permissoes_necessarias ? window.AppErro.cod_permissoes_necessarias : null;
             }
 
             if (mensagem) {
                 let body = mensagem + '<br>';
-                if (Array.isArray(cod_permissoesNecessarias) && cod_permissoesNecessarias.length) {
-                    body += '<br><small><strong>Permissões necessárias:</strong> ' + cod_permissoesNecessarias.join(', ') + '</small>';
+                if (Array.isArray(cod_permissoes_necessarias) && cod_permissoes_necessarias.length) {
+                    body += '<br><small><strong>Permissões necessárias:</strong> ' + cod_permissoes_necessarias.join(', ') + '</small>';
                 }
                 window.alerta.erro(body, 'Acesso negado', 30000);
             }
@@ -98,7 +98,7 @@ import '../../css/mensagens_alerta.css';
     }
     // Expõe API em português sem usar $ ou jQuery
     window.alerta = {
-        erroPermissoes(mensagem = null, cod_permissoesNecessarias = null) { return erroPermissoes(mensagem, cod_permissoesNecessarias); },
+        erroPermissoes(mensagem = null, cod_permissoes_necessarias = null) { return erroPermissoes(mensagem, cod_permissoes_necessarias); },
         mostrar(opts) { return mostrar(opts); },
         sucesso(text, heading = 'Sucesso', hideAfter = 5000) { return mostrar({ heading, text, icon: 'success', hideAfter }); },
         erro(text, heading = 'Erro', hideAfter = 7000) { return mostrar({ heading, text, icon: 'error', hideAfter }); }

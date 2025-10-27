@@ -73,11 +73,15 @@ body {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10), var(--st-shadow-1);
 }
 
+main{
+    margin-top: 60px;
+}
 /* Metal escovado com leve relevo (engrenagem “3D” discreto) - atualizado */
 .st-metal {
-    position: relative;
+
+    position: fixed !important;
+    width: 100%;
     color: #fff;
-    padding: 8px 16px;
     /* base metálica + micro-striations para efeito "escovado" */
     background-image:
         linear-gradient(180deg, var(--st-gray-hi), var(--st-gray) 45%, var(--st-gray-lo) 55%, var(--st-gray-hi) 100%),
@@ -262,9 +266,16 @@ body {
 }
 
 /* ajuste fino nos itens para legibilidade sobre metal */
-.nav a {
+.st-metal .nav a {
     color: #f4f7fb;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.nav-tabs .nav-link {
+    color: #787d85e1;
+    text-shadow: 0 1px 0 rgba(48, 45, 45, 0.342);
     text-decoration: none;
     cursor: pointer;
 }
@@ -317,12 +328,12 @@ body {
     align-items: center;
     gap: 8px;
     padding: 10px 12px;
-    color: #3e4398;
+    color: #3e4398 !important;
     text-decoration: none;
 }
 
 .dropdown-menu a:hover {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.18));
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.18)) ;
 }
 
 
@@ -333,7 +344,7 @@ body {
 
 .dropdown-menu a.nao-autorizado:hover {
     /* sem destaque ao passar o mouse */
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.788), rgba(224, 2, 2, 0.205))!important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.788), rgba(224, 2, 2, 0.205)) !important;
     color: rgba(226, 12, 12, 0.45);
 }
 
@@ -426,6 +437,7 @@ body {
     transform: translateY(-1px);
     box-shadow: 0 8px 22px rgba(38, 176, 229, .18);
 }
+
 .btn-primary:focus {
     outline: none;
     box-shadow: 0 0 0 4px rgba(38, 176, 229, .12), 0 8px 22px rgba(38, 176, 229, .18);
@@ -436,6 +448,7 @@ body {
     transform: translateY(-1px);
     box-shadow: 0 8px 22px rgba(214, 150, 32, .18);
 }
+
 .btn-warning:focus {
     outline: none;
     box-shadow: 0 0 0 4px rgba(214, 150, 32, .10), 0 8px 22px rgba(214, 150, 32, .18);
@@ -446,6 +459,7 @@ body {
     transform: translateY(-1px);
     box-shadow: 0 8px 22px rgba(226, 76, 76, .18);
 }
+
 .btn-danger:focus {
     outline: none;
     box-shadow: 0 0 0 4px rgba(226, 76, 76, .10), 0 8px 22px rgba(226, 76, 76, .18);
@@ -456,6 +470,7 @@ body {
     transform: translateY(-1px);
     box-shadow: 0 8px 22px rgba(46, 204, 113, .18);
 }
+
 .btn-success:focus {
     outline: none;
     box-shadow: 0 0 0 4px rgba(46, 204, 113, .10), 0 8px 22px rgba(46, 204, 113, .18);
@@ -466,6 +481,7 @@ body {
     transform: translateY(-1px);
     box-shadow: 0 8px 22px rgba(45, 212, 191, .18);
 }
+
 .btn-info:focus {
     outline: none;
     box-shadow: 0 0 0 4px rgba(45, 212, 191, .10), 0 8px 22px rgba(45, 212, 191, .18);
@@ -476,6 +492,7 @@ body {
     transform: translateY(-1px);
     box-shadow: 0 8px 22px rgba(0, 0, 0, .20);
 }
+
 .btn-secondary:focus {
     outline: none;
     box-shadow: 0 0 0 4px rgba(120, 125, 128, .12), 0 8px 22px rgba(0, 0, 0, .20);

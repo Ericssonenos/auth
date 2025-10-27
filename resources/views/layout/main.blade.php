@@ -16,6 +16,7 @@
 
   <script src="{{ asset('js/layout/setup-csrf.js') }}"></script>
   <script src="{{ asset('js/bibliotecas/datatables/datatables.js') }}"></script>
+  <script src="{{ asset('js/bibliotecas/datatables/default.js') }}"></script>
   <link href="{{ asset('js/bibliotecas/datatables/datatables.css') }}" rel="stylesheet">
 
 

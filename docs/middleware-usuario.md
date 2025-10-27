@@ -58,7 +58,7 @@ Route::post('/api/usuarios/{id}/ativar', [UserController::class, 'activate'])
 ```json
 {
     "mensagem": "Você não possui permissão para acessar estes dados da API: /api/usuarios/123/ativar",
-    "cod_permissoesNecessarias": ["N_USUARIOS.LISTA", "R_GET_USUARIOS"]
+    "cod_permissoes_necessarias": ["N_USUARIOS.LISTA", "R_GET_USUARIOS"]
 }    
 status code = 403
 ```
@@ -70,7 +70,7 @@ redirect()->back()
     ->with('dadosUsuario', 
         {
         "mensagem": "Você não possui permissão para acessar esta página.",
-        "cod_permissoesNecessarias": ["N_USUARIOS.LISTA", "R_GET_USUARIOS"],
+        "cod_permissoes_necessarias": ["N_USUARIOS.LISTA", "R_GET_USUARIOS"],
         }
     )
 ```

@@ -10,7 +10,7 @@ use App\Models\RH\permissaoModel;
 class UsuarioMiddleware
 {
 
-    public function handle(Request $request, Closure $next, ...$cod_permissoesNecessarias)
+    public function handle(Request $request, Closure $next, ...$cod_permissoes_necessarias)
     {
         $dados = session('dadosUsuarioSession', null);
         // Verifica se o usuário está devidamente autenticado no sistema
@@ -61,16 +61,16 @@ class UsuarioMiddleware
 
 
         // Se nenhuma permissão foi passada, tenta detectar automaticamente
-        if (!$cod_permissoesNecessarias) {
+        if (!$cod_permissoes_necessarias) {
             // Obter as permissões necessárias
-            $cod_permissoesNecessarias = $this->detectarcod_permissoesNecessariasPelaRota($request);
+            $cod_permissoes_necessarias = $this->detectarcod_permissoesNecessariasPelaRota($request);
         }
 
         $permissoesUsuario = $dados['permissoesUsuario'] ?? [];
 
         // verrificar se o array servicoDoUsuario comtem alguma permssiao de permissaoNecessaria
         foreach ($permissoesUsuario as $permissao) {
-            if (in_array($permissao['cod_permissao'], $cod_permissoesNecessarias)) {
+            if (in_array($permissao['cod_permissao'], $cod_permissoes_necessarias)) {
                 return $next($request);
             }
         }
@@ -86,7 +86,7 @@ class UsuarioMiddleware
                     // retirar os dados sensíveis do path
                     [
                         'mensagem' => "Você não possui permissão para acessar API: " . str_replace('_', '/', $this->formatarUriDaRequisicao($request->path())),
-                        'cod_permissoesNecessarias' => $cod_permissoesNecessarias
+                        'cod_permissoes_necessarias' => $cod_permissoes_necessarias
                     ],
                     403
                 );
@@ -96,7 +96,7 @@ class UsuarioMiddleware
         return redirect()->back()
             ->with('erro', [
                 'mensagem' => "Você não possui permissão para acessar esta página.",
-                'cod_permissoesNecessarias' => $cod_permissoesNecessarias
+                'cod_permissoes_necessarias' => $cod_permissoes_necessarias
             ]);
     }
 

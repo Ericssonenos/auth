@@ -50,9 +50,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Blade directive para verificar se usuário possui qualquer uma das permissões listadas
-        Blade::if('possuiQualquerUmaDasPermissoes', function (...$cod_permissoesNecessarias) {
+        Blade::if('possuiQualquerUmaDasPermissoes', function (...$cod_permissoes_necessarias) {
             $servicoDoUsuario = app(usuarioServices::class);
-            foreach ($cod_permissoesNecessarias as $permissaoNecessaria) {
+            foreach ($cod_permissoes_necessarias as $permissaoNecessaria) {
                 if ($servicoDoUsuario->temPermissao($permissaoNecessaria)) {
                     return true;
                 }

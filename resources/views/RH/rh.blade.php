@@ -5,19 +5,17 @@
 @section('content')
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1>🎯 Sistema de Gerenciamento RH</h1>
-                <p class="text-muted">Exemplo de interface com tabs dinâmicas e carregamento AJAX</p>
-            </div>
+            <h1> Sistema de Gerenciamento de Permissões</h1>
         </div>
 
         <div class=" shadow-sm">
 
             <div class="card-header bg-white">
                 <ul class="nav nav-tabs card-header-pills mb-0">
-                    <li class="nav-item">
-                        <a id="aba_usuario" class="nav-link active" href="#tab-usuarios" data-bs-toggle="pill" data-tab="usuarios">
-                            👥 Usuários
+                    <li class="nav-item ">
+                        <a id="aba_usuario" class="nav-link  active" href="#tab-usuarios" data-bs-toggle="pill"
+                            data-tab="usuarios">
+                            <i class="bi bi-people-fill success"></i> Usuários
                         </a>
                     </li>
                     <li class="nav-item">
@@ -36,19 +34,18 @@
             <div class="card-body">
                 <div class="tab-content" style="min-height: 400px;">
                     <div class="tab-pane fade show active" id="tab-usuarios" role="tabpanel">
-                        @include('rh.abas.usuario')
+                        @include('rh.aba.usuario.usuario')
                     </div>
 
                     <div class="tab-pane fade" id="tab-grupo" role="tabpanel">
-                        {{-- @include('rh.abas.grupo') --}}
+                        {{-- @include('rh.aba.grupo.grupo') --}}
                     </div>
 
                     <div class="tab-pane fade" id="tab-estatisticas" role="tabpanel">
-                        {{-- @include('rh.login') --}}
+                        {{-- @include('rh.aba.estatisticas.estatisticas') --}}
                     </div>
                 </div>
             </div>
         </div>
     </div>
 @endsection
-

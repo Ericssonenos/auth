@@ -43,7 +43,7 @@ $(function () {
                 }
             },
             error: function (xhr, status, error) {
-                window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
+                window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoes_necessarias);
             }
         },
         columns: [
@@ -121,7 +121,7 @@ $(function () {
                         }
                     },
                     error: function (xhr, status, error) {
-                        window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
+                        window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoes_necessarias);
                     }
                 },
                 columns: [
@@ -181,7 +181,7 @@ $(function () {
                     }
                 },
                 error: function (xhr) {
-                    window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
+                    window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoes_necessarias);
                     $btn.prop('disabled', false).text('Adicionar');
                 }
             });
@@ -203,7 +203,7 @@ $(function () {
                     }
                 },
                 error: function (xhr) {
-                    window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
+                    window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoes_necessarias);
                     $btn.prop('disabled', false).text('Remover');
                 }
             });
@@ -240,7 +240,7 @@ $(function () {
                 }
             },
             error: function (xhr) {
-                window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
+                window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoes_necessarias);
             },
             complete: function () {
                 $btn.prop('disabled', false).text('Excluir');
@@ -278,7 +278,7 @@ $(function () {
                 }
             },
             error: function (xhr) {
-                window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
+                window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoes_necessarias);
             }
         });
     });
@@ -314,7 +314,7 @@ $(function () {
                 }
             },
             error: function (xhr, status, error) {
-                window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoesNecessarias);
+                window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoes_necessarias);
             }
         });
     }
