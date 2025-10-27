@@ -1,8 +1,22 @@
 
 
 // gerenciamento de grupos: inicializa DataTable de grupos + subtabelas de permissões por grupo
-let tb_modal_usuario_permissao = null;
+let tb_modal_usuario_grupo = null;
 let tb_modal_usuario_grupo_permissoes = {}; // cache de DataTables por id_Grupo
+
+// reaplica o termo pesquisado na tabela principal para todas as subtabelas abertas
+const sincronizarBuscaSubtabelas = () => {
+    if (!tb_modal_usuario_grupo) return;
+    const termoAtual = tb_modal_usuario_grupo.search();
+    Object.values(tb_modal_usuario_grupo_permissoes).forEach((tabela) => {
+        if (!tabela) return;
+        try {
+            tabela.search(termoAtual).draw();
+        } catch (e) {
+            // ignora tabelas que foram destruídas durante o ciclo
+        }
+    });
+};
 
 // abrir Tabelas - de grupos no modal
 $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abrir-modal-tb-grupo', function () {
@@ -19,8 +33,8 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
 
 
     // inicializar ou recarregar DataTable de grupos
-    if (!tb_modal_usuario_permissao) {
-        tb_modal_usuario_permissao = $('#tb_modal_usuario_permissao').DataTable({
+    if (!tb_modal_usuario_grupo) {
+        tb_modal_usuario_grupo = $('#tb_modal_usuario_grupo').DataTable({
             ajax: {
                 method: 'POST',
                 url: '/rh/api/grupos/dados',
@@ -112,9 +126,9 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
                     titleAttr: 'Atualizar Filtros',
                     className: 'btn btn-warning',
                     action: function () {
-                        tb_modal_usuario_permissoes.clear().draw();
-                        tb_modal_usuario_permissoes.ajax.reload(null, false); // false mantém a página atual
-                        tb_modal_usuario_permissoes.columns.adjust().draw();
+                        tb_modal_usuario_grupo.clear().draw();
+                        tb_modal_usuario_grupo.ajax.reload(null, false); // false mantém a página atual
+                        tb_modal_usuario_grupo.columns.adjust().draw();
                     }
                 },
                 {
@@ -132,13 +146,15 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
             responsive: true,     // adapta colunas para telas pequenas
         });
 
+        $('#tb_modal_usuario_grupo').on('search.dt', sincronizarBuscaSubtabelas);
+
         // expandir/mostrar subtabela de permissões do grupo
-        $('#tb_modal_usuario_permissao tbody').off('click', '.btn-expand-grupo').on('click', '.btn-expand-grupo', function () {
+        $('#tb_modal_usuario_grupo tbody').off('click', '.btn-expand-grupo').on('click', '.btn-expand-grupo', function () {
 
             // obter dados da linha selecionada
             const $btn = $(this);
             const tr = $btn.closest('tr');
-            const row = tb_modal_usuario_permissao.row(tr);
+            const row = tb_modal_usuario_grupo.row(tr);
             const rowData = row.data();
             const grupo_id = rowData.id_Grupo;
 
@@ -180,23 +196,31 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
                         window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoes_necessarias);
                     }
                 },
-                // ocultar tb_modal_usuario_permissao_length
+                // ocultar tb_modal_usuario_grupo_length
                 lengthChange: false,
                 pageLength: 3,
                 paging: true,
-                searching: false,
+                searching: true,
                 info: false,
+                dom: "<''<''t>>" +
+                    "<'d-flex justify-content-between'<''l><''i><''p>>",
                 columns: [
                     { data: 'cod_permissao', title: 'Código' },
                     { data: 'descricao_permissao', title: 'Descrição' }
-                ]
+                ],
+                initComplete: function () {
+                    const api = this.api();
+                    const termoAtual = tb_modal_usuario_grupo?.search?.() || '';
+                    api.search(termoAtual).draw();
+                }
             });
+            sincronizarBuscaSubtabelas();
         });
 
     } else {
         // recarregar existente, antes fechar child rows e destruir subtabelas para evitar sobreposição
         // fechar todos child rows abertos
-        tb_modal_usuario_permissao.rows().every(function () {
+        tb_modal_usuario_grupo.rows().every(function () {
             if (this.child.isShown()) {
                 this.child.hide();
             }
@@ -207,12 +231,12 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
             delete tb_modal_usuario_grupo_permissoes[k];
         });
 
-        $('#tb_modal_usuario_permissao').DataTable().clear().draw();
-        tb_modal_usuario_permissao.ajax.reload(null, false);
-        tb_modal_usuario_permissao.columns.adjust().draw();
+        $('#tb_modal_usuario_grupo').DataTable().clear().draw();
+        tb_modal_usuario_grupo.ajax.reload(null, false);
+        tb_modal_usuario_grupo.columns.adjust().draw();
     }
 
-    const modalEl = document.getElementById('modalGrupos');
+    const modalEl = document.getElementById('modal_usuario_grupo');
     const modal = new bootstrap.Modal(modalEl);
     modal.show();
 });
@@ -221,11 +245,11 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
 
 
 //toggle atribuir ou remover grupo
-$('#tb_modal_usuario_permissao').off('click', '.btn-modal-grupo-toggle').on('click', '.btn-modal-grupo-toggle', function () {
+$('#tb_modal_usuario_grupo').off('click', '.btn-modal-grupo-toggle').on('click', '.btn-modal-grupo-toggle', function () {
 
     // obter dados da linha selecionada
     const tr = $(this).closest('tr');
-    const rowData = tb_modal_usuario_permissao.row(tr).data();
+    const rowData = tb_modal_usuario_grupo.row(tr).data();
     const grupo_id = rowData.id_Grupo; // id do grupo
     const id_rel_usuario_grupo = rowData.id_rel_usuario_grupo; // id do relacionamento (se existir)
 
@@ -247,7 +271,7 @@ $('#tb_modal_usuario_permissao').off('click', '.btn-modal-grupo-toggle').on('cli
             success: function (resp) {
                 if (resp && resp.status) {
                     window.alerta.sucesso?.(resp.mensagem || 'Grupo adicionado.');
-                    tb_modal_usuario_permissao.ajax.reload(null, false);
+                    tb_modal_usuario_grupo.ajax.reload(null, false);
                 } else {
                     window.alerta.erroPermissoes(resp?.mensagem || 'Erro ao adicionar grupo');
                     $btn.prop('disabled', false).text('Adicionar');
@@ -265,7 +289,7 @@ $('#tb_modal_usuario_permissao').off('click', '.btn-modal-grupo-toggle').on('cli
             success: function (resp) {
                 if (resp && resp.status) {
                     window.alerta.sucesso?.(resp.mensagem || 'Grupo removido.');
-                    tb_modal_usuario_permissao.ajax.reload(null, false);
+                    tb_modal_usuario_grupo.ajax.reload(null, false);
                 } else {
                     window.alerta.erroPermissoes(resp?.mensagem || 'Erro ao remover grupo');
                 }

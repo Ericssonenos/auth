@@ -1,6 +1,5 @@
 @extends('layout.main')
 
-@section('title', 'Exemplo - Tabs Dinâmicas')
 
 @section('content')
     <div class="container py-4">
@@ -13,14 +12,13 @@
             <div class="card-header bg-white">
                 <ul class="nav nav-tabs card-header-pills mb-0">
                     <li class="nav-item ">
-                        <a id="aba_usuario" class="nav-link  active" href="#tab-usuarios" data-bs-toggle="pill"
-                            data-tab="usuarios">
+                        <a  class="nav-link  active" href="#tab-usuarios" data-bs-toggle="pill" data-tab="usuarios" style="color: blue">
                             <i class="bi bi-people-fill success"></i> Usuários
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#tab-grupo" data-bs-toggle="pill" data-tab="grupo">
-                            🔐 Grupo
+                        <a class="nav-link" href="#tab-grupo" data-bs-toggle="pill" data-tab="grupo" style="color: green">
+                           <i class="bi bi-people"></i> Grupos
                         </a>
                     </li>
                     <li class="nav-item">
@@ -38,7 +36,7 @@
                     </div>
 
                     <div class="tab-pane fade" id="tab-grupo" role="tabpanel">
-                        {{-- @include('rh.aba.grupo.grupo') --}}
+                         @include('rh.aba.grupo.grupo')
                     </div>
 
                     <div class="tab-pane fade" id="tab-estatisticas" role="tabpanel">

@@ -7,7 +7,7 @@ Abrir_Modal_Novo_Usuario = function () {
     id_usuario_selecionado = null;
 
     // atualizar título do modal
-    $('#modal_usuario_titulo').text('Novo usuário');
+    $('#titulo_modal_usuario').text('Novo usuário');
 
     // resetar formulário
     $('#fm_modal_usuario')[0].reset();
@@ -35,7 +35,7 @@ $('#tb_usuario')
         const rowData = tb_usuario.row($tr).data();
 
         // atualizar título do modal
-        $('#modal_usuario_titulo').text('Editar usuário');
+        $('#titulo_modal_usuario').text('Editar usuário');
 
         // atualizar variável global
         id_usuario_selecionado = rowData.id_Usuario;
@@ -81,8 +81,7 @@ $('#tb_usuario')
     });
 
 // imprimir modal
-$('#modal_usuario')
-    .on('click', '#btn_modal_usuario_imprimir', function () {
+$('#btn_modal_usuario_imprimir').on('click', function () {
         const modal_usuario = document.getElementById('modal_usuario');
         // função de impressão de modais (se disponível)
         window.impressao?.imprimirConteudoModal(modal_usuario);
@@ -90,7 +89,7 @@ $('#modal_usuario')
     });
 
 // Delete
-$('#btn_modal_usuario_excluir').off('click').on('click', function () {
+$('#btn_modal_usuario_excluir').on('click', function () {
     // verificar se há usuário selecionado
     if (!id_usuario_selecionado) {
         window.alerta?.erroPermissoes?.({ mensagem: 'Nenhum usuário selecionado para exclusão.' });
@@ -144,7 +143,7 @@ $('#btn_modal_usuario_excluir').off('click').on('click', function () {
 
 
 //  gera nova senha
-$('#btn_modal_usuario_gerar_senha').off('click').on('click', function () {
+$('#btn_modal_usuario_gerar_senha').on('click', function () {
 
     // desabilitar o botão para evitar múltiplos cliques rápidos
     const $btn = $(this);
@@ -323,7 +322,7 @@ $('#btn_modal_usuario_salvar').on('click', function () {
 });
 
 // mostrar senha por 15 segundos ao clicar no botão
-$('#btn_modal_usuario_mostrar_senha').off('click').on('click', function () {
+$('#btn_modal_usuario_mostrar_senha').on('click', function () {
     const $senhaInput = $('#senha_modal_usuario');
     $senhaInput.attr('type', 'text');
     setTimeout(() => {

@@ -1,6 +1,6 @@
 
 // abrir modal de permissões
-let tb_modal_usuario_permissoes = null;
+let tb_modal_usuario_permissao = null;
 
 // abrir Tabelas - de permissões no modal
 $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
@@ -10,15 +10,15 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
     const rowData = tb_usuario.row($tr).data();
 
     // atualizar título do modal com o email do usuário
-    $('#modalPermissoesTitulo').text('Permissões do usuário: ' + (rowData?.email || '??'));
+    $('#titulo_modal_usuario_permissao').text('Permissões do usuário: ' + (rowData?.email || '??'));
 
     // atualizar variável global
     id_usuario_selecionado = rowData.id_Usuario;
 
     // inicializar ou recarregar DataTable de permissões
     // passar o id_Usuario pelo body da requisição POST
-    if (!tb_modal_usuario_permissoes) {
-        tb_modal_usuario_permissoes = $('#tb_modal_usuario_permissoes').DataTable({
+    if (!tb_modal_usuario_permissao) {
+        tb_modal_usuario_permissao = $('#tb_modal_usuario_permissao').DataTable({
             ajax: {
                 method: 'POST',
                 type: 'POST',
@@ -120,9 +120,9 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
                     titleAttr: 'Atualizar Filtros',
                     className: 'btn btn-warning',
                     action: function () {
-                        tb_modal_usuario_permissoes.clear().draw();
-                        tb_modal_usuario_permissoes.ajax.reload(null, false); // false mantém a página atual
-                        tb_modal_usuario_permissoes.columns.adjust().draw();
+                        tb_modal_usuario_permissao.clear().draw();
+                        tb_modal_usuario_permissao.ajax.reload(null, false); // false mantém a página atual
+                        tb_modal_usuario_permissao.columns.adjust().draw();
                     }
                 },
                 {
@@ -142,14 +142,14 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
 
         // (não é necessário mudar a URL)
         //limpar a tabela de permissões
-        tb_modal_usuario_permissoes.clear().draw();
-        tb_modal_usuario_permissoes.ajax.reload(null, false); // false mantém a página atual
-        tb_modal_usuario_permissoes.columns.adjust().draw();
+        tb_modal_usuario_permissao.clear().draw();
+        tb_modal_usuario_permissao.ajax.reload(null, false); // false mantém a página atual
+        tb_modal_usuario_permissao.columns.adjust().draw();
 
     }
 
     // abrir modal
-    const modal = new bootstrap.Modal(document.getElementById('modalPermissoes'));
+    const modal = new bootstrap.Modal(document.getElementById('modal_usuario_permissao'));
     modal.show();
 
 
@@ -157,11 +157,11 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
 
 
 // toggle atribuir ou remover permissão
-$('#tb_modal_usuario_permissoes').off('click', '.btn-modal-permissao-toggle').on('click', '.btn-modal-permissao-toggle', function () {
+$('#tb_modal_usuario_permissao').off('click', '.btn-modal-permissao-toggle').on('click', '.btn-modal-permissao-toggle', function () {
 
     // obter dados da linha selecionada
     const tr = $(this).closest('tr');
-    const rowData = tb_modal_usuario_permissoes.row(tr).data();
+    const rowData = tb_modal_usuario_permissao.row(tr).data();
 
 
     // desabilitar botão e mostrar spinner
@@ -187,7 +187,7 @@ $('#tb_modal_usuario_permissoes').off('click', '.btn-modal-permissao-toggle').on
             success: function (resp) {
                 if (resp?.status == 201) {
                     window.alerta?.sucesso?.(resp.mensagem);
-                    tb_modal_usuario_permissoes.ajax.reload(null, false);
+                    tb_modal_usuario_permissao.ajax.reload(null, false);
                 } else {
                     window.alerta?.erro?.(resp.mensagem);
                     $btn.prop('disabled', false).text('Adicionar');
@@ -211,7 +211,7 @@ $('#tb_modal_usuario_permissoes').off('click', '.btn-modal-permissao-toggle').on
             success: function (resp) {
                 if (resp?.status == 200) {
                     window.alerta?.sucesso?.(resp.mensagem || 'Permissão removida.');
-                    tb_modal_usuario_permissoes.ajax.reload(null, false);
+                    tb_modal_usuario_permissao.ajax.reload(null, false);
                 } else {
                     window.alerta?.erro?.(resp.mensagem || 'Erro ao remover permissão.');
 

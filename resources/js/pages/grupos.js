@@ -12,10 +12,10 @@ $(function () {
 
     $('#btnNovoGrupo').off('click').on('click', function () {
         grupos_id_Selecionado = null; // resetar variável global
-        $('#modalGrupoTitulo').text('Novo grupo');
-        $('#formGrupo')[0].reset();
-        $('#btnExcluirGrupo').addClass('d-none');
-        new bootstrap.Modal(document.getElementById('modalGrupo')).show();
+        $('#titulo_modal_usuario').text('Novo grupo');
+        $('#fm_modal_grupo')[0].reset();
+        $('#btn_modal_grupo_excluir').addClass('d-none');
+        new bootstrap.Modal(document.getElementById('modal_grupo')).show();
         carregarCategorias(); // carregar categorias no select
     });
 
@@ -67,18 +67,18 @@ $(function () {
 
     // handler para editar grupo
     $('#dataTable_Grupos').off('click', '.btn-edit').on('click', '.btn-edit', function () {
-        $('#modalGrupoTitulo').text('Editar grupo');
+        $('#titulo_modal_usuario').text('Editar grupo');
 
         const $tr = $(this).closest('tr');
         const rowData = table.row($tr).data();
         grupos_id_Selecionado = rowData.id_Grupo;
 
-        $('#nome_Grupo_Modal').val(rowData.nome_Grupo);
-        $('#descricao_Grupo_Modal').val(rowData.descricao_Grupo);
-        $('#categoria_id_Modal').val(rowData.categoria_id);
-        $('#btnExcluirGrupo').removeClass('d-none');
+        $('#nome_modal_grupo').val(rowData.nome_Grupo);
+        $('#descricao_modal_grupo').val(rowData.descricao_Grupo);
+        $('#categoria_id_modal_grupo').val(rowData.categoria_id);
+        $('#btn_modal_grupo_excluir').removeClass('d-none');
 
-        new bootstrap.Modal(document.getElementById('modalGrupo')).show();
+        new bootstrap.Modal(document.getElementById('modal_grupo')).show();
         carregarCategorias(); // carregar categorias no select
     });
 
@@ -89,10 +89,10 @@ $(function () {
         grupos_id_Selecionado = rowData.id_Grupo;
 
         // abrir modal
-        const modal = new bootstrap.Modal(document.getElementById('modalPermissoes'));
+        const modal = new bootstrap.Modal(document.getElementById('modal_permissao'));
         modal.show();
 
-        $('#modalPermissoesTitulo').text('Permissões do grupo: ' + (rowData?.nome_Grupo || '??'));
+        $('#modal_permissao_titulo').text('Permissões do grupo: ' + (rowData?.nome_Grupo || '??'));
 
         // inicializar ou recarregar DataTable de permissões
         if (!dataTable_Permissoes_Modal) {
@@ -211,7 +211,7 @@ $(function () {
     });
 
     // handler para excluir grupo
-    $('#btnExcluirGrupo').off('click').on('click', function (e) {
+    $('#btn_modal_grupo_excluir').off('click').on('click', function (e) {
         e.preventDefault();
         if (!grupos_id_Selecionado) {
             window.alerta.erro('Nenhum grupo selecionado');
@@ -234,7 +234,7 @@ $(function () {
                 if (resp.status) {
                     window.alerta.sucesso(resp.mensagem || 'Grupo excluído com sucesso!');
                     table.ajax.reload(null, false);
-                    bootstrap.Modal.getInstance(document.getElementById('modalGrupo')).hide();
+                    bootstrap.Modal.getInstance(document.getElementById('modal_grupo')).hide();
                 } else {
                     window.alerta.erro(resp.mensagem || 'Erro ao excluir grupo');
                 }
@@ -249,13 +249,13 @@ $(function () {
     });
 
     // handler para salvar grupo (criar/editar)
-    $('#formGrupo').on('submit', function (e) {
+    $('#fm_modal_grupo').on('submit', function (e) {
         e.preventDefault();
 
         const formData = {
-            nome_Grupo: $('#nome_Grupo_Modal').val(),
-            descricao_Grupo: $('#descricao_Grupo_Modal').val(),
-            categoria_id: $('#categoria_id_Modal').val() || null
+            nome_Grupo: $('#nome_modal_grupo').val(),
+            descricao_Grupo: $('#descricao_modal_grupo').val(),
+            categoria_id: $('#categoria_id_modal_grupo').val() || null
         };
 
         const isEdit = grupos_id_Selecionado !== null;
@@ -272,7 +272,7 @@ $(function () {
                 if (resp.status) {
                     window.alerta.sucesso(resp.mensagem || 'Grupo salvo com sucesso!');
                     table.ajax.reload(null, false);
-                    bootstrap.Modal.getInstance(document.getElementById('modalGrupo')).hide();
+                    bootstrap.Modal.getInstance(document.getElementById('modal_grupo')).hide();
                 } else {
                     window.alerta.erro(resp.mensagem || 'Erro ao salvar grupo');
                 }
@@ -284,7 +284,7 @@ $(function () {
     });
 
     // resetar grupos_id_Selecionado quando modais fecharem
-    $('#modalGrupo, #modalPermissoes').on('hidden.bs.modal', function () {
+    $('#modal_grupo, #modal_permissao').on('hidden.bs.modal', function () {
         grupos_id_Selecionado = null;
 
         // cleanup: destruir DataTable de permissões para evitar sobreposição
@@ -304,7 +304,7 @@ $(function () {
             method: 'POST',
             dataType: 'json',
             success: function (resp) {
-                const $select = $('#categoria_id_Modal');
+                const $select = $('#categoria_id_modal_grupo');
                 $select.empty().append('<option value="">Selecione uma categoria</option>');
 
                 if (resp.data && Array.isArray(resp.data)) {

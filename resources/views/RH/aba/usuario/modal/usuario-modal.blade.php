@@ -8,12 +8,13 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="fm_modal_usuario">
+
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modal_usuario_titulo">Novo usuário</h5>
+                    <h5 class="modal-title" id="titulo_modal_usuario"></h5> <!-- Título será definido dinamicamente -->
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
-                <div class="modal-body">
 
+                <div class="modal-body">
 
                     <div class="mb-3">
 
@@ -49,7 +50,7 @@
                     <button type="button" id="btn_modal_usuario_excluir"
                         class="btn btn-outline-danger d-print-none">Excluir</button>
                     <button type="button" data-bs-dismiss="modal"
-                        class="btn btn-outline-secondary d-print-none">Cancelar</button>
+                        class="btn btn-outline-dark d-print-none">Cancelar</button>
                     <button type="button" id="btn_modal_usuario_imprimir"
                         class="btn btn-outline-warning d-print-none">Imprimir</button>
                     <button type="button" id="btn_modal_usuario_gerar_senha"

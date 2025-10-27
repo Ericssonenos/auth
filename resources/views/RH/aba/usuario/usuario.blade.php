@@ -1,3 +1,4 @@
+@section('title','Usuários')
 @push('scripts')
     <script src="{{ asset('/views/RH/aba/usuario/usuario.js') }}"></script>
 @endpush
