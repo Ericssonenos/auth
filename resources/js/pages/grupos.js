@@ -23,7 +23,7 @@ $(function () {
     const table = $('#dataTable_Grupos').DataTable({
         ajax: {
             method: 'POST',
-            url: '/rh/api/grupos/dados', // rota para buscar os dados
+            url: '/api/rh/grupos/dados', // rota para buscar os dados
             data: function (requestData) {
                 requestData.fn = 'listar-grupos';
                 return requestData;
@@ -99,7 +99,7 @@ $(function () {
             dataTable_Permissoes_Modal = $('#dataTable_Permissoes_Modal').DataTable({
                 ajax: {
                     method: 'POST',
-                    url: '/rh/api/permissoes/dados',
+                    url: '/api/rh/permissoes/dados',
                     data: function (requestData) {
                         requestData.grupo_id = grupos_id_Selecionado; // enviar grupo_id ao invés de usuario_id
                         requestData.fn = 'btn-permissoes-grupo';
@@ -162,7 +162,7 @@ $(function () {
         if (action === 'adicionar') {
             // adicionar permissão ao grupo
             $.ajax({
-                url: '/rh/api/grupo/permissao/adicionar',
+                url: '/api/rh/grupo/permissao/adicionar',
                 method: 'POST',
                 type: 'POST',
                 dataType: 'json',
@@ -188,7 +188,7 @@ $(function () {
         } else if (action === 'remover') {
             // remover permissão do grupo
             $.ajax({
-                url: '/rh/api/grupo/permissao/remover/' + encodeURIComponent(id_rel_grupo_permissao),
+                url: '/api/rh/grupo/permissao/remover/' + encodeURIComponent(id_rel_grupo_permissao),
                 method: 'DELETE',
                 type: 'POST',
                 dataType: 'json',
@@ -226,7 +226,7 @@ $(function () {
         $btn.prop('disabled', true).text('Excluindo...');
 
         $.ajax({
-            url: '/rh/api/grupo/deletar/' + encodeURIComponent(grupos_id_Selecionado),
+            url: '/api/rh/grupo/deletar/' + encodeURIComponent(grupos_id_Selecionado),
             method: 'DELETE',
             type: 'POST',
             dataType: 'json',
@@ -259,7 +259,7 @@ $(function () {
         };
 
         const isEdit = grupos_id_Selecionado !== null;
-        const url = isEdit ? '/rh/api/grupo/atualizar/' + encodeURIComponent(grupos_id_Selecionado) : '/rh/api/grupo/cadastrar';
+        const url = isEdit ? '/api/rh/grupo/atualizar/' + encodeURIComponent(grupos_id_Selecionado) : '/api/rh/grupo/cadastrar';
         const method = isEdit ? 'PUT' : 'POST';
         const type = isEdit ? 'PUT' : 'POST';
 
@@ -300,7 +300,7 @@ $(function () {
     // função auxiliar para carregar categorias no select
     function carregarCategorias() {
         $.ajax({
-            url: '/rh/api/categorias/dados',
+            url: '/api/rh/categorias/dados',
             method: 'POST',
             dataType: 'json',
             success: function (resp) {

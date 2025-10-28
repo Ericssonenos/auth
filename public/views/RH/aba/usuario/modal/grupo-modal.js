@@ -37,9 +37,9 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
         tb_modal_usuario_grupo = $('#tb_modal_usuario_grupo').DataTable({
             ajax: {
                 method: 'POST',
-                url: '/rh/api/grupos/dados',
+                url: '/api/rh/grupos/dados',
                 data: function (d) {
-                    d.usuario_id = rowData.id_Usuario;
+                    d.usuario_id = id_usuario_selecionado;
                     d.fn = 'btn-abrir-modal-tb-grupo';
                     d.order_by = 'CASE WHEN rug.id_rel_usuario_grupo IS NOT NULL THEN 1 ELSE 0 END, g.nome_Grupo';
                     return d;
@@ -79,7 +79,8 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
             ],
             dom: "<'row'<'col-sm-12 col-md-5'f><'col-sm-12 col-md-7'B>>" +
                 "<'row'<'col-sm-12'tr>>" +
-                "<'d-flex justify-content-between'<l><i><p>>",
+                "<'d-flex justify-content-between'<p>>" +
+                "<'d-flex justify-content-between'<i>>",
             buttons: [
                 {
                     extend: 'copy',
@@ -120,7 +121,7 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
                     extend: 'spacer',
                     style: 'bar'
                 },
-                // criar um botão para atualizar o painel
+
                 {
                     text: '<i class="bi bi-arrow-clockwise"></i>',
                     titleAttr: 'Atualizar Filtros',
@@ -132,6 +133,12 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
                     }
                 },
                 {
+                    extend: 'pageLength',
+                    titleAttr: 'Linhas',
+                    text: '<i class="bi bi-list-ol"></i>',
+                    className: 'btn btn-info',
+                },
+                {
                     extend: 'colvis',
                     titleAttr: 'Visibilidade de colunas',
                     text: '<i class="bi bi-eye"></i>',
@@ -141,9 +148,11 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
 
 
             ],
+            lengthMenu: [[5,10, 25, 50, 100, -1], [5,10, 25, 50, 100, "Todos" ]],
             select: true,          // seleção de linhas/colunas
             colReorder: true,      // arrastar e reordenar colunas
-            responsive: true,     // adapta colunas para telas pequenas
+            responsive: true,      // responsivo
+            processing: true,     // mostrar "processando" durante carregamento
         });
 
         $('#tb_modal_usuario_grupo').on('search.dt', sincronizarBuscaSubtabelas);
@@ -180,7 +189,7 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
             tb_modal_usuario_grupo_permissoes[grupo_id] = $('#' + childId).DataTable({
                 ajax: {
                     method: 'POST',
-                    url: '/rh/api/permissoes/dados',
+                    url: '/api/rh/permissoes/dados',
                     data: function (requestData) {
                         requestData.grupo_id = grupo_id;
                         requestData.fn = 'btn-expand-grupo';
@@ -261,7 +270,7 @@ $('#tb_modal_usuario_grupo').off('click', '.btn-modal-grupo-toggle').on('click',
 
     if (!id_rel_usuario_grupo) {
         $.ajax({
-            url: '/rh/api/usuario/grupo/adicionar',
+            url: '/api/rh/usuario/grupo/adicionar',
             method: 'POST',
             data: {
                 usuario_id: id_usuario_selecionado,
@@ -283,7 +292,7 @@ $('#tb_modal_usuario_grupo').off('click', '.btn-modal-grupo-toggle').on('click',
         });
     } else {
         $.ajax({
-            url: '/rh/api/usuario/grupo/remover/' + encodeURIComponent(id_rel_usuario_grupo),
+            url: '/api/rh/usuario/grupo/remover/' + encodeURIComponent(id_rel_usuario_grupo),
             method: 'DELETE',
             dataType: 'json',
             success: function (resp) {
@@ -292,15 +301,16 @@ $('#tb_modal_usuario_grupo').off('click', '.btn-modal-grupo-toggle').on('click',
                     tb_modal_usuario_grupo.ajax.reload(null, false);
                 } else {
                     window.alerta.erroPermissoes(resp?.mensagem || 'Erro ao remover grupo');
+                    $btn.prop('disabled', false).text('Remover');
                 }
 
             },
             error: function (xhr) {
                 window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoes_necessarias);
-
+                 $btn.prop('disabled', false).text('Remover');
             },
             complete: function () {
-                $btn.prop('disabled', false).text('Remover');
+
             }
         });
     }
