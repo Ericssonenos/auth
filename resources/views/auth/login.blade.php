@@ -9,6 +9,11 @@
             <img src="{{ asset('favicon.png') }}" alt="Logo" class="logo-img" onerror="this.style.display='none'" />
         </div>
     </header>
+    <style>
+        main {
+           margin-top: 0px !important;
+        }
+    </style>
 @endsection
 
 @push('styles')
@@ -19,13 +24,13 @@
 
 @section('content')
     <div class="min-vh-100 d-flex align-items-center justify-content-center py-5 bg-login">
-        <div class="card shadow-sm w-100" style="max-width:420px;">
+        <div class="shadow-sm w-100 login-page card" style="max-width:420px;">
             <div class="card-body">
                 <div class="d-flex align-items-center mb-3">
                     <img src="{{ asset('images/apresentacao/logo.png') }}" alt="Logo" class="logo-img me-3"
                         onerror="this.style.display='none'" />
                     <div>
-                        <h5 id="login-title" class="text-white text-center card-title mb-0">Suplay Teck</h5>
+                        <h3 id="login-title" class="text-h1-login text-center card-title mb-0">Suplay Teck</h3>
                     </div>
                 </div>
 
@@ -44,7 +49,7 @@
                 @endif
 
 
-                <form method="POST" action="{{ route('login') }}" class="mt-3">
+                <form method="POST" action="{{ route('api.login') }}" class="mt-3">
                     @csrf
 
                     <div class="mb-3">
@@ -64,7 +69,7 @@
                         Sistema</button>
                 </form>
 
-                <div class="text-center mt-3 small">Precisa de ajuda? <a
+                <div class="text-center text-white mt-3 small">Precisa de ajuda? <a
                         href="mailto:suporte@empresa.com">suporte@empresa.com</a></div>
             </div>
         </div>

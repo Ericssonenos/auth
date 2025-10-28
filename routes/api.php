@@ -5,7 +5,7 @@ use App\Http\Controllers\RH\UsuarioController;
 use App\Http\Controllers\RH\GrupoController;
 use App\Http\Controllers\RH\PermissaoController;
 use App\Http\Controllers\RH\CategoriaController;
-
+use App\Http\Controllers\RH\LoginController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -15,6 +15,13 @@ use App\Http\Controllers\RH\CategoriaController;
 | Prefix automático: /api
 |
 */
+
+Route::middleware('web')->group(function () {
+    Route::post('login', [LoginController::class, 'processarLogin'])->name('api.login');
+    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+    Route::post('alterar-senha', [LoginController::class, 'processarAlterarSenha'])->name('alterar.senha');
+});
+
 
 Route::middleware(['web', 'usuarioMiddleware'])->prefix('rh')->group(function () {
     // Usuários

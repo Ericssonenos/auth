@@ -3,6 +3,10 @@
 .bg-login {
     background: linear-gradient(135deg, #0f172a 0%, #0b1220 35%, #0ea5e9 100%);
 }
+.text-h1-login{
+    /* Text gradient for login title */
+    color: #c1c2c3 !important;
+}
 
 /* small spacing helpers not provided by Bootstrap utilities */
 .login-top {
@@ -15,6 +19,9 @@
     display: flex;
     justify-content: center;
     z-index: 1000;
+}
+.login-page {
+   background: linear-gradient(135deg, #024666 0%, #0b1220 80%, #0f172a 100%);
 }
 
 
