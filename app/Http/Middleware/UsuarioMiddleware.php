@@ -20,7 +20,7 @@ class UsuarioMiddleware
             // Se a requisição espera JSON (API), retorna resposta JSON
             // ou se na rota contem api/
             // e estiver no modo debug
-            if ((request()->expectsJson() || str_contains($request->path(), '/api/')) && env('APP_DEBUG', true)) {
+            if ( str_starts_with($request->path(), 'api/') && env('APP_DEBUG', true)) {
                  return $next($request);
             }
 

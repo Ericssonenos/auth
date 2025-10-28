@@ -16,6 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'usuarioMiddleware' => \App\Http\Middleware\UsuarioMiddleware::class, //[ ] excluir
         ]);
+
+        // Em modo debug, ignora CSRF para rotas de API
+        if (env('APP_DEBUG', true)) {
+            $middleware->validateCsrfTokens(except: [
+                'api/*',
+            ]);
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
