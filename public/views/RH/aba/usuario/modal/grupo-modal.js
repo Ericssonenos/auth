@@ -37,7 +37,7 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
         tb_modal_usuario_grupo = $('#tb_modal_usuario_grupo').DataTable({
             ajax: {
                 method: 'POST',
-                url: '/api/rh/grupos/dados',
+                url: '/api/rh/grupo/dados',
                 data: function (d) {
                     d.usuario_id = id_usuario_selecionado;
                     d.fn = 'btn-abrir-modal-tb-grupo';
@@ -189,7 +189,7 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
             tb_modal_usuario_grupo_permissoes[grupo_id] = $('#' + childId).DataTable({
                 ajax: {
                     method: 'POST',
-                    url: '/api/rh/permissoes/dados',
+                    url: '/api/rh/permissao/dados',
                     data: function (requestData) {
                         requestData.grupo_id = grupo_id;
                         requestData.fn = 'btn-expand-grupo';

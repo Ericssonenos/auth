@@ -17,7 +17,7 @@ class usuarioServices
             return;
         }
 
-        foreach ($dadosDoUsuario['permissoesUsuario'] as $cod_permissao) {
+        foreach ($dadosDoUsuario['permissoes_usuario'] as $cod_permissao) {
             if (is_array($cod_permissao) && array_key_exists('cod_permissao', $cod_permissao)) {
                 $this->cod_permissoes[] = $cod_permissao['cod_permissao'];
             } elseif (is_string($cod_permissao)) {

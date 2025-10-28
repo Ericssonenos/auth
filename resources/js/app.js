@@ -22,10 +22,6 @@ try {
     // ambiente onde document não está disponível (ex: SSR) - ignore
 }
 
-// Importar scripts específicos por página
-// [ ] lugar errado :import './pages/usuarios';
-import './pages/grupos';
-
 
 
 // chamar ao carregar a página

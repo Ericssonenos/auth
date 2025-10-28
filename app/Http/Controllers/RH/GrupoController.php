@@ -64,7 +64,7 @@ class GrupoController extends Controller
 
         // atualizar versão de permissões se alteração efetiva
         if (!empty($res['status']) && $res['status'] === true) {
-            Cache::put("Permissao_versao", time());
+            Cache::put("versao_permissao_global", time());
             return response()->json($res, 200);
         }
 
@@ -113,7 +113,7 @@ class GrupoController extends Controller
 
         // Atualizar versão de permissões se alteração efetiva
         if (!empty($respostaStatusAtribuicao['status']) && $respostaStatusAtribuicao['status'] === true) {
-            Cache::put("Permissao_versao", time());
+            Cache::put("versao_permissao_global", time());
         }
 
         return response()->json($respostaStatusAtribuicao);
@@ -128,7 +128,7 @@ class GrupoController extends Controller
 
         // Atualizar versão de permissões se alteração efetiva
         if (!empty($respostaStatusRemocao['status']) && $respostaStatusRemocao['status'] === true) {
-            Cache::put("Permissao_versao", time());
+            Cache::put("versao_permissao_global", time());
         }
 
         return response()->json($respostaStatusRemocao);

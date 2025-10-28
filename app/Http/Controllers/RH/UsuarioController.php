@@ -48,7 +48,7 @@ class UsuarioController extends Controller
         // [x] validar uso
         // Se atribuição foi bem sucedida, atualiza versão de permissões para o usuário afetado
         if ($respostaStatusAtribuicao['status']==201) {
-            Cache::put("Permissao_versao", time());
+            Cache::put("versao_permissao_global", time());
         }
 
         return response()->json($respostaStatusAtribuicao, $respostaStatusAtribuicao['status']);
@@ -61,7 +61,7 @@ class UsuarioController extends Controller
 
         // [ ] validar uso
         if ($respostaStatusAtribuicao['status'] == 201) {
-            Cache::put("Permissao_versao", time());
+            Cache::put("versao_permissao_global", time());
         }
 
         return response()->json($respostaStatusAtribuicao, $respostaStatusAtribuicao['status']);
@@ -76,7 +76,7 @@ class UsuarioController extends Controller
 
         // [x] validar uso
         if ($respostaStatusRemocao['status'] === 201) {
-            Cache::put("Permissao_versao", time());
+            Cache::put("versao_permissao_global", time());
         }
 
         return response()->json($respostaStatusRemocao, $respostaStatusRemocao['status']);
@@ -91,7 +91,7 @@ class UsuarioController extends Controller
 
         // [ ] validar uso
         if ($respostaStatusRemocao['status'] === 201) {
-            Cache::put("Permissao_versao", time());
+            Cache::put("versao_permissao_global", time());
         }
 
         return response()->json($respostaStatusRemocao, $respostaStatusRemocao['status']);
@@ -121,7 +121,7 @@ class UsuarioController extends Controller
         $respostaStatusDeletar = $this->usuarioModel->DeletarUsuarios($payload);
 
         if($respostaStatusDeletar['status'] === 201) {
-            Cache::put("Permissao_versao", time());
+            Cache::put("versao_permissao_global", time());
         }
 
         return response()->json($respostaStatusDeletar, $respostaStatusDeletar['status']);

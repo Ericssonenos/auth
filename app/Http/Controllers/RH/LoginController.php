@@ -56,7 +56,7 @@ class LoginController extends Controller
         // Se o status do usuário for inválido ou os dados estiverem vazios
         if ($resultadoStatus_Usuario['status'] == 204) {
             // Apagar dados da sessão
-            Session::forget('dadosUsuarioSession');
+            Session::forget('dados_usuario_sessao');
 
             // Redirecionar com mensagem de erro
             return redirect()->back()->withErrors(
@@ -69,7 +69,7 @@ class LoginController extends Controller
         // Verificar se a conta do usuário está bloqueada
         if ($resultadoStatus_Usuario['data']['senha_bloqueada'] == 1) {
             // Apagar dados da sessão
-            Session::forget('dadosUsuarioSession');
+            Session::forget('dados_usuario_sessao');
 
             // Redirecionar com mensagem de erro
             return redirect()->back()->withErrors(
@@ -82,7 +82,7 @@ class LoginController extends Controller
         // Verificar se o usuário retorna senha, se sim forçar alteração
         if ($resultadoStatus_Usuario['data']['senha'] != null) {
             // Apagar dados da sessão
-            Session::forget('dadosUsuarioSession');
+            Session::forget('dados_usuario_sessao');
             // Redirecionar para a página de alteração de senha
             return redirect()->route('alterar.senha.view')->with('info', 'Você precisa alterar sua senha antes de continuar.');
         }
@@ -94,26 +94,26 @@ class LoginController extends Controller
         $modelPermissao = new permissaoModel();
         // id_Usuario traz as permissões ativas
         // usuario_id traz todas as permissões com flag (possui ou não)
-        $permissoesUsuario = $modelPermissao->ObterLoginPermissoes(['id_Usuario' => $dadosUsuario['id_Usuario']]);
+        $permissoes_usuario = $modelPermissao->ObterLoginPermissoes(['id_Usuario' => $dadosUsuario['id_Usuario']]);
 
         // Verificar se a resposta contém permissões
-        if ($permissoesUsuario['status'] == 200) {
-            $dadosUsuario['permissoesUsuario'] = $permissoesUsuario['data'];
+        if ($permissoes_usuario['status'] == 200) {
+            $dadosUsuario['permissoes_usuario'] = $permissoes_usuario['data'];
         } else {
-            $dadosUsuario['permissoesUsuario'] = [];
+            $dadosUsuario['permissoes_usuario'] = [];
         }
 
         // Armazenar uma versão geral
-        $cacheKey = "Permissao_versao";
+        $cacheKey = "versao_permissao_global";
         // Sincroniza versão de permissões: se existir uma versão global, usa-a;
-        $globalVersion = Cache::get($cacheKey, null);
-        if ($globalVersion === null) {
-            $globalVersion = time();
-            Cache::put($cacheKey, $globalVersion);
+        $versao_permissao_global = Cache::get($cacheKey, null);
+        if ($versao_permissao_global === null) {
+            $versao_permissao_global = time();
+            Cache::put($cacheKey, $versao_permissao_global);
         }
-        $dadosUsuario['perms_version'] = $globalVersion;
+        $dadosUsuario['versao_permissao_sessao'] = $versao_permissao_global;
 
-        Session::put('dadosUsuarioSession', $dadosUsuario);
+        Session::put('dados_usuario_sessao', $dadosUsuario);
 
         // Redirecionar para a URL que o usuário tentou acessar antes do login, ou para a home se não houver
         $urlIntentada = session('url_intentada', route('home.view'));
@@ -126,7 +126,7 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
-        Session::forget('dadosUsuarioSession');
+        Session::forget('dados_usuario_sessao');
         return redirect()->route('login');
     }
       /**
@@ -138,7 +138,7 @@ class LoginController extends Controller
         $respostaStatusSenha = $this->usuarioModel->GerarSenhaTemporaria(['usuario_id' => $id]);
 
         if ($respostaStatusSenha['status'] == 200) {
-            Cache::put("Permissao_versao", time());
+            Cache::put("versao_permissao_global", time());
         }
         return response()->json($respostaStatusSenha, $respostaStatusSenha['status']);
     }
@@ -184,7 +184,7 @@ class LoginController extends Controller
             ||  empty($resultadoStatus_Usuario['data'])
         ) {
             // Apagar dados da sessão
-            Session::forget('dadosUsuarioSession');
+            Session::forget('dados_usuario_sessao');
 
             // Redirecionar com mensagem de erro
             return redirect()->back()->withErrors(
@@ -209,7 +209,7 @@ class LoginController extends Controller
 
         if ($resultado['status'] === 200) {
             // atualizar sessão com novo flag
-            Session::forget('dadosUsuarioSession');
+            Session::forget('dados_usuario_sessao');
             return redirect()->route('login')->with('status', 'Senha alterada com sucesso. Faça login novamente.');
         }
 

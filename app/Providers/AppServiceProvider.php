@@ -34,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
         // Registra singleton que encapsula dados do usuário logado na sessão
         $this->app->singleton(usuarioServices::class, function ($app) {
             return new usuarioServices(
-                session("dadosUsuarioSession", []),
+                session("dados_usuario_sessao", []),
             );
         });
 

@@ -13,7 +13,7 @@ $(function () {
                 // AJAX (note usar 'type' para compatibilidade com DataTables)
                 ajax: {
                     type: 'POST',
-                    url: '/api/rh/usuarios/dados',
+                    url: '/api/rh/usuario/dados',
                     contentType: 'application/json',
                     data: function (d) {
                         // d.fn = 'listar-usuarios'; // se precisar enviar algo extra

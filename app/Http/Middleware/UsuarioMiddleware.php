@@ -12,13 +12,17 @@ class UsuarioMiddleware
 
     public function handle(Request $request, Closure $next, ...$cod_permissoes_necessarias)
     {
-        $dados = session('dadosUsuarioSession', null);
+        $dados = session('dados_usuario_sessao', null);
         // Verifica se o usuário está devidamente autenticado no sistema
         //[ ] testar acesso dia api ajax sem estar logado
         if (empty($dados['id_Usuario'])) {
 
-            // Atribuir a Session a rota que o usuário tentou acessar
-            session(['url_intentada' => $request->fullUrl()]);
+            // Se a requisição espera JSON (API), retorna resposta JSON
+            // ou se na rota contem api/
+            // e estiver no modo debug
+            if ((request()->expectsJson() || str_contains($request->path(), '/api/')) && env('APP_DEBUG', true)) {
+                 return $next($request);
+            }
 
             // redirecionar para o login
             return redirect()->route('login')
@@ -30,32 +34,32 @@ class UsuarioMiddleware
         // Verifica se existe uma versão de permissões global para este usuário
         // se existir e for diferente da versão armazenada na sessão, recarrega as permissões
 
-        $globalVersion = Cache::get("Permissao_versao", null);
-        $sessionVersion = $dados['perms_version'] ?? null;
+        $versao_permissao_global = Cache::get("versao_permissao_global", null);
+        $versao_permissao_sessao = $dados['versao_permissao_sessao'] ?? null;
 
-        if ($globalVersion !== null && $globalVersion !== $sessionVersion) {
+        if ($versao_permissao_global !== null && $versao_permissao_global !== $versao_permissao_sessao) {
             // Recarregar permissões do usuário via model (mesma lógica do LoginController)
             try {
                 $permissaoModel = new permissaoModel();
                 // id_Usuario traz as permissões ativas
                 // usuario_id traz todas as permissões com flag (possui ou não)
-                $permissoesUsuario = $permissaoModel->ObterLoginPermissoes(['id_Usuario' => $dados['id_Usuario']]);
+                $permissoes_usuario = $permissaoModel->ObterLoginPermissoes(['id_Usuario' => $dados['id_Usuario']]);
 
                 // Verificar se a resposta contém permissões
-                if ($permissoesUsuario['status'] == 200) {
-                    $dados['permissoesUsuario'] = $permissoesUsuario['data'];
+                if ($permissoes_usuario['status'] == 200) {
+                    $dados['permissoes_usuario'] = $permissoes_usuario['data'];
                 } else {
-                    $dados['permissoesUsuario'] = [];
+                    $dados['permissoes_usuario'] = [];
                 }
 
                 // Atualiza a versão na sessão para marcar que já sincronizamos
-                $dados['perms_version'] = $globalVersion;
-                session(['dadosUsuarioSession' => $dados]);
+                $dados['versao_permissao_sessao'] = $versao_permissao_global;
+                session(['dados_usuario_sessao' => $dados]);
             } catch (\Throwable $e) {
                 // Em caso de erro, limpa as permissões do usuário para evitar inconsistências
-                $dados['permissoesUsuario'] = [];
-                $dados['perms_version'] = null;
-                session(['dadosUsuarioSession' => $dados]);
+                $dados['permissoes_usuario'] = [];
+                $dados['versao_permissao_sessao'] = null;
+                session(['dados_usuario_sessao' => $dados]);
             }
         }
 
@@ -63,13 +67,13 @@ class UsuarioMiddleware
         // Se nenhuma permissão foi passada, tenta detectar automaticamente
         if (!$cod_permissoes_necessarias) {
             // Obter as permissões necessárias
-            $cod_permissoes_necessarias = $this->detectarcod_permissoesNecessariasPelaRota($request);
+            $cod_permissoes_necessarias = $this->DetectarCodPermissoesNecessariasPelaRota($request);
         }
 
-        $permissoesUsuario = $dados['permissoesUsuario'] ?? [];
+        $permissoes_usuario = $dados['permissoes_usuario'] ?? [];
 
         // verrificar se o array servicoDoUsuario comtem alguma permssiao de permissaoNecessaria
-        foreach ($permissoesUsuario as $permissao) {
+        foreach ($permissoes_usuario as $permissao) {
             if (in_array($permissao['cod_permissao'], $cod_permissoes_necessarias)) {
                 return $next($request);
             }
@@ -130,7 +134,7 @@ class UsuarioMiddleware
     /**
      * Detecta automaticamente as permissões necessárias baseado na rota atual
      */
-    private function detectarcod_permissoesNecessariasPelaRota(Request $request): array
+    private function DetectarCodPermissoesNecessariasPelaRota(Request $request): array
     {
         $rotaAtual = $request->route();
         $permissoesPossiveis = [];

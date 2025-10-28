@@ -300,7 +300,7 @@ $(function () {
     // função auxiliar para carregar categorias no select
     function carregarCategorias() {
         $.ajax({
-            url: '/api/rh/categorias/dados',
+            url: '/api/rh/categoria/dados',
             method: 'POST',
             dataType: 'json',
             success: function (resp) {

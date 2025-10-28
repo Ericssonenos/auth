@@ -22,7 +22,7 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
             ajax: {
                 method: 'POST',
                 type: 'POST',
-                url: '/api/rh/permissoes/dados',
+                url: '/api/rh/permissao/dados',
                 // enviar parametros dinamicamente a cada requisição
                 data: function (requestData) {
                     requestData.usuario_id = id_usuario_selecionado; // variável atualizada antes do reload

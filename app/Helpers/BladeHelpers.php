@@ -28,7 +28,7 @@ class BladeHelpers
         }
 
         // detecta permissões possíveis para esta rota
-        $permissoesPossiveis = self::detectarcod_permissoesNecessariasPelaRota($nomeRota);
+        $permissoesPossiveis = self::DetectarCodPermissoesNecessariasPelaRota($nomeRota);
 
         // verifica se o usuário possui qualquer uma das permissões detectadas
         $autorizado = false;
@@ -57,7 +57,7 @@ class BladeHelpers
      * Retorna lista de códigos de permissão possíveis para a rota nomeada.
      * Segue a lógica: N_<nome_da_rota> e R_<METODO>_<URI_FORMATADA> (se a rota existir).
      */
-    public static function detectarcod_permissoesNecessariasPelaRota(string $nomeRota): array
+    public static function DetectarCodPermissoesNecessariasPelaRota(string $nomeRota): array
     {
         $permissoesPossiveis = [];
 
