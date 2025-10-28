@@ -13,9 +13,9 @@
             <div class="modal-body">
                 <table id="tb_modal_usuario_permissao" class="table table-sm table-striped" style="width:100%"></table>
             </div>
-            <div class="modal-footer">
+            {{-- <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-            </div>
+            </div> --}}
         </div>
     </div>
 </div>

@@ -74,12 +74,39 @@ class UsuarioMiddleware
                 return $next($request);
             }
         }
+        // se estiver no modo debug e não tiver permissão, cadastrar no banco automaticamente
+        if (env('APP_DEBUG', true)) {
+            try {
+                $permissaoModel = new permissaoModel();
+                foreach ($cod_permissoes_necessarias as $cod_permissao) {
+                    // Verifica se a permissão já existe
+                    $permissaoExistente = $permissaoModel->ObterRHPermissoes([
+                        'cod_permissao' => $cod_permissao,
+                        'fn' => 'middleware-se-existe'
+                    ])['data'] ?? null;
+                    if (!$permissaoExistente) {
+                        // Cria a permissão automaticamente
+                        $params = [
+                            'cod_permissao' => $cod_permissao,
+                            'descricao_permissao' => 'Permissão criada automaticamente em modo debug.',
+                            'criado_Usuario_id' => 1 // $dados['id_Usuario'] ??
+
+                        ];
+                        $permissaoModel->CriarPermissao($params);
+                    }
+                }
+            } catch (\Throwable $e) {
+                // Ignorar erros na criação automática de permissões
+                dd($e);
+            }
+        }
 
 
         // Retorna resposta de acesso negado
 
         // Se a requisição espera JSON (API), retorna resposta JSON
-        if (request()->expectsJson()) {
+        // ou se na rota contem api/
+        if (request()->expectsJson() || str_contains($request->path(), '/api/')) {
 
             return response()
                 ->json(

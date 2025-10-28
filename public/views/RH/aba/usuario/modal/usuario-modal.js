@@ -107,7 +107,7 @@ $('#btn_modal_usuario_excluir').on('click', function () {
 
     // chamar API de delete
     $.ajax({
-        url: '/rh/api/usuario/deletar/' + encodeURIComponent(id_usuario_selecionado),
+        url: '/api/rh/usuario/deletar/' + encodeURIComponent(id_usuario_selecionado),
         method: 'DELETE',
         dataType: 'json',
         success: function (resp) {
@@ -215,7 +215,7 @@ $('#btn_modal_usuario_salvar').on('click', function () {
 
         // criar
         $.ajax({
-            url: '/rh/api/usuario/cadastrar',
+            url: '/api/rh/usuario/cadastrar',
             method: 'POST',
             data: payload,
             dataType: 'json',
@@ -274,7 +274,7 @@ $('#btn_modal_usuario_salvar').on('click', function () {
         };
         // atualizar (usa mesmo molde de retorno/erros que o POST de cadastro)
         $.ajax({
-            url: '/rh/api/usuario/atualizar/' + encodeURIComponent(id_usuario_selecionado),
+            url: '/api/rh/usuario/atualizar/' + encodeURIComponent(id_usuario_selecionado),
             method: 'PUT',
             data: payload,
             dataType: 'json',

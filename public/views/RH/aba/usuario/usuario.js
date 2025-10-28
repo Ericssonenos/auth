@@ -6,17 +6,18 @@ let id_usuario_selecionado = null; // variável global para armazenar o ID do us
 // inicializar DataTable de usuários ao carregar a aba
 $(function () {
 
-    const Carregar_Tabela_Usuarios = function () {
+    const Carregar_Tb_Usuarios = function () {
 
         if (!tb_usuario) {
             tb_usuario = $('#tb_usuario').DataTable({
                 // AJAX (note usar 'type' para compatibilidade com DataTables)
                 ajax: {
                     type: 'POST',
-                    url: '/rh/api/usuarios/dados',
+                    url: '/api/rh/usuarios/dados',
+                    contentType: 'application/json',
                     data: function (d) {
                         // d.fn = 'listar-usuarios'; // se precisar enviar algo extra
-                        return d;
+                        return JSON.stringify(d);
                     },
                     dataSrc: function (json) {
                         try {
@@ -204,10 +205,10 @@ $(function () {
     }
 
     // carregar usuários ao abrir a aba
-    $('a[data-tab="usuarios"]').on('shown.bs.tab', Carregar_Tabela_Usuarios);
+    $('a[data-tab="usuarios"]').on('shown.bs.tab', Carregar_Tb_Usuarios);
     // carregar usuários se a aba já estiver ativa ao carregar a página
     if ($('a[data-tab="usuarios"]').hasClass('active')) {
-        Carregar_Tabela_Usuarios();
+        Carregar_Tb_Usuarios();
     }
 
 

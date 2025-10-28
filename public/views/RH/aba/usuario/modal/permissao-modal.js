@@ -22,10 +22,10 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
             ajax: {
                 method: 'POST',
                 type: 'POST',
-                url: '/rh/api/permissoes/dados',
+                url: '/api/rh/permissoes/dados',
                 // enviar parametros dinamicamente a cada requisição
                 data: function (requestData) {
-                    requestData.usuario_id = rowData.id_Usuario; // variável atualizada antes do reload
+                    requestData.usuario_id = id_usuario_selecionado; // variável atualizada antes do reload
                     requestData.fn = 'btn-abrir-modal-tb-permissao';
                     requestData.order_by = 'CASE WHEN rup.id_rel_usuario_permissao IS NOT NULL THEN 1 ELSE 0 END, p.cod_permissao';
                     return requestData;
@@ -73,7 +73,8 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
             ],
             dom: "<'row'<'col-sm-12 col-md-5'f><'col-sm-12 col-md-7'B>>" +
                 "<'row'<'col-sm-12'tr>>" +
-                "<'d-flex justify-content-between'<l><i><p>>",
+                "<'d-flex justify-content-between'<p>>" +
+                "<'d-flex justify-content-between'<i>>",
             buttons: [
                 {
                     extend: 'copy',
@@ -114,7 +115,6 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
                     extend: 'spacer',
                     style: 'bar'
                 },
-                // criar um botão para atualizar o painel
                 {
                     text: '<i class="bi bi-arrow-clockwise"></i>',
                     titleAttr: 'Atualizar Filtros',
@@ -126,6 +126,12 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
                     }
                 },
                 {
+                    extend: 'pageLength',
+                    titleAttr: 'Linhas',
+                    text: '<i class="bi bi-list-ol"></i>',
+                    className: 'btn btn-info',
+                },
+                {
                     extend: 'colvis',
                     titleAttr: 'Visibilidade de colunas',
                     text: '<i class="bi bi-eye"></i>',
@@ -135,8 +141,11 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
 
 
             ],
+            lengthMenu: [[5,10, 25, 50, 100, -1], [5,10, 25, 50, 100, "Todos" ]],
             select: true,          // seleção de linhas/colunas
             colReorder: true,      // arrastar e reordenar colunas
+            responsive: true,      // responsivo
+            processing: true,     // mostrar "processando" durante carregamento
         });
     } else {
 
@@ -177,7 +186,7 @@ $('#tb_modal_usuario_permissao').off('click', '.btn-modal-permissao-toggle').on(
     // se não existir id_rel_usuario_permissao é porque o usuário não tem a permissão, então adicionar
     if (!id_rel_usuario_permissao) {
         $.ajax({
-            url: '/rh/api/usuario/permissao/adicionar',
+            url: '/api/rh/usuario/permissao/adicionar',
             type: 'POST',
             data: {
                 usuario_id: id_usuario_selecionado,
@@ -205,7 +214,7 @@ $('#tb_modal_usuario_permissao').off('click', '.btn-modal-permissao-toggle').on(
     } else {
         // remover usa id_rel_usuario_permissao
         $.ajax({
-            url: '/rh/api/usuario/permissao/remover/' + encodeURIComponent(id_rel_usuario_permissao),
+            url: '/api/rh/usuario/permissao/remover/' + encodeURIComponent(id_rel_usuario_permissao),
             method: 'DELETE',
             dataType: 'json',
             success: function (resp) {

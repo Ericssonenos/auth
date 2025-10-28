@@ -481,7 +481,6 @@ class Operacao
                 ||  $key === 'permissoes_do_usuario_logado'
                 ||  $key === 'token'
                 ||  str_ends_with($key, '_id')
-                ||  str_starts_with($key, 'id_')
                 ||  $key === 'fn'
             ) continue;
 

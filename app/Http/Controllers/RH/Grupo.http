@@ -1,0 +1,10 @@
+
+@baseUrl = http://localhost:8080
+
+### POST para API (sem CSRF) - prefix /api é automático
+POST {{baseUrl}}/api/rh/usuarios/dados
+Content-Type: application/json
+
+{
+
+}

@@ -53,7 +53,7 @@ class permissaoModel extends Model
                 ];
             }
         } catch (\Exception $e) {
-            return Operacao::mapearExcecaoPDO($e,$params);
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
         return [
             'status' => 200,
@@ -68,6 +68,7 @@ class permissaoModel extends Model
     public function ObterRHPermissoes($params)
     {
 
+        $fn = $params['fn'] ?? null;
 
         $parametrizacao = Operacao::Parametrizar($params);
         // Verifica se houve erro na parametrização
@@ -79,12 +80,13 @@ class permissaoModel extends Model
             ];
         }
 
+
         $whereParams = $parametrizacao['whereParams'];
         $optsParams = $parametrizacao['optsParams'];
         $execParams = $parametrizacao['execParams'];
 
 
-        if($params['fn'] == 'btn-abrir-modal-tb-permissao'){
+        if ($fn == 'btn-abrir-modal-tb-permissao') {
             $execParams[':usuario_id'] = $params['usuario_id'];
             $execParams[':usuario_id_Sub'] = $params['usuario_id'];
             $consultaSql = "SELECT
@@ -110,8 +112,7 @@ class permissaoModel extends Model
                 . ($optsParams['order_by'] ?? "  ")
                 . ($optsParams['limit'] ?? "  ")
                 . ($optsParams['offset'] ?? "  ");
-
-        }else if($params['fn'] == 'btn-permissoes-grupo'){
+        } else if ($fn == 'btn-permissoes-grupo') {
             $execParams[':grupo_id'] = $params['grupo_id'];
             $consultaSql = "SELECT
                                 p.id_permissao
@@ -128,8 +129,7 @@ class permissaoModel extends Model
                 . ($optsParams['order_by'] ?? "  ")
                 . ($optsParams['limit'] ?? "  ")
                 . ($optsParams['offset'] ?? "  ");
-
-        }else if($params['fn'] == 'btn-expand-grupo'){
+        } else if ($fn == 'btn-expand-grupo') {
             $execParams[':grupo_id'] = $params['grupo_id'];
             $consultaSql = "SELECT
                                 p.id_permissao
@@ -141,6 +141,30 @@ class permissaoModel extends Model
                                 AND rgp.dat_cancelamento_em IS NULL
                             WHERE p.dat_cancelamento_em IS NULL
                             AND rgp.grupo_id = :grupo_id"
+                . implode(' ', $whereParams)
+                . ($optsParams['order_by'] ?? "  ")
+                . ($optsParams['limit'] ?? "  ")
+                . ($optsParams['offset'] ?? "  ");
+        } else if ($fn == 'middleware-se-existe') {
+            // Deixar execParams apenas com o cod_permissao
+            $execParams = [];
+            // Adicionar apenas o cod_permissao
+            $execParams[':cod_permissao'] = $params['cod_permissao'];
+            $consultaSql = "SELECT
+                                p.id_permissao
+                            ,   p.cod_permissao
+                            ,   p.descricao_permissao
+                            FROM RH.Tbl_Permissoes p
+                            WHERE p.dat_cancelamento_em IS NULL
+                            AND p.cod_permissao = :cod_permissao";
+        } else {
+            // Consulta padrão para obter todas as permissões
+            $consultaSql = "SELECT
+                                p.id_permissao
+                            ,   p.cod_permissao
+                            ,   p.descricao_permissao
+                            FROM RH.Tbl_Permissoes p
+                            WHERE p.dat_cancelamento_em IS NULL"
                 . implode(' ', $whereParams)
                 . ($optsParams['order_by'] ?? "  ")
                 . ($optsParams['limit'] ?? "  ")
@@ -192,7 +216,7 @@ class permissaoModel extends Model
             $rows = $comando->rowCount();
             $comando->closeCursor();
 
-            if( $rows == 0){
+            if ($rows == 0) {
                 return [
                     'status' => 400,
                     'mensagem' => 'Nenhuma permissão criada.',
@@ -200,7 +224,7 @@ class permissaoModel extends Model
                 ];
             }
         } catch (\Exception $e) {
-            return Operacao::mapearExcecaoPDO($e,$params);
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
         return [
             'status' => 201,
@@ -236,7 +260,7 @@ class permissaoModel extends Model
             $rows = $comando->rowCount();
             $comando->closeCursor();
 
-            if( $rows == 0){
+            if ($rows == 0) {
                 return [
                     'status' => 400,
                     'mensagem' => 'Nenhuma permissão atualizada.',
@@ -244,7 +268,7 @@ class permissaoModel extends Model
                 ];
             }
         } catch (\Exception $e) {
-            return Operacao::mapearExcecaoPDO($e,$params);
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
         return [
             'status' => 200,
@@ -274,7 +298,7 @@ class permissaoModel extends Model
             $rows = $comando->rowCount();
             $comando->closeCursor();
 
-            if( $rows == 0){
+            if ($rows == 0) {
                 return [
                     'status' => 400,
                     'mensagem' => 'Nenhuma permissão removida.',
@@ -282,7 +306,7 @@ class permissaoModel extends Model
                 ];
             }
         } catch (\Exception $e) {
-            return Operacao::mapearExcecaoPDO($e,$params);
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
         return [
             'status' => 200,
