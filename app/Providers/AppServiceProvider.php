@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\View;
 use App\Services\RH\usuarioServices;
 use Illuminate\Support\Facades\Blade;
 use App\Helpers\BladeHelpers;
-use Illuminate\Http\JsonResponse;
-
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,8 +24,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
-        // Configura o JsonResponse para não escapar caracteres Unicode
-        JsonResponse::defaultEncodingOptions(JSON_UNESCAPED_UNICODE);
+        // JSON_UNESCAPED_UNICODE aplicado pelo middleware JsonUnicodeMiddleware
 
         // Registra singleton que encapsula dados do usuário logado na sessão
         $this->app->singleton(usuarioServices::class, function ($app) {

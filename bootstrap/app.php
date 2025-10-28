@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'usuarioMiddleware' => \App\Http\Middleware\UsuarioMiddleware::class, //[ ] excluir
         ]);
 
+        $middleware->append([
+            \App\Http\Middleware\JsonUnicodeMiddleware::class,
+        ]);
+
         // Em modo debug, ignora CSRF para rotas de API
         if (env('APP_DEBUG', true)) {
             $middleware->validateCsrfTokens(except: [
