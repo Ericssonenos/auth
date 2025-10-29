@@ -27,7 +27,7 @@ Carregar_Categorias_No_Select = function ( id_Categoria_ativo = null) {
     $.ajax({
         type: 'POST',
         url: '/api/rh/categoria/dados',
-        success: function (resp) {
+        success: function (resposta) {
             // Adicionar uma opção padrão
             const select = $('#categoria_id_modal_grupo');
 
@@ -36,7 +36,7 @@ Carregar_Categorias_No_Select = function ( id_Categoria_ativo = null) {
             select.empty().append(new Option('Selecione uma categoria', ''));
 
             // Iterar sobre os dados e adicionar opções ao select
-            resp.data.forEach(function (categoria) {
+            resposta.data.forEach(function (categoria) {
                 const option = new Option(categoria.nome_Categoria, categoria.id_Categoria);
                 if (categoria.id_Categoria === id_Categoria_ativo) {
                     option.selected = true;
@@ -100,8 +100,8 @@ Salvar_Grupo = function () {
         url: url,
         contentType: 'application/json',
         data: JSON.stringify(dados_grupo),
-        success: function (resp) {
-            window.alerta.sucesso(resp.mensagem);
+        success: function (resposta) {
+            window.alerta.sucesso(resposta.mensagem);
             tb_grupo.ajax.reload( () => {
                 tb_grupo.searchPanes.clearSelections();
                 tb_grupo.searchPanes.rebuildPane();
@@ -129,7 +129,7 @@ Excluir_Grupo = function (id_Grupo) {
         type: 'delete',
         url: '/api/rh/grupo/deletar/' + encodeURIComponent(id_Grupo),
         contentType: 'application/json',
-        success: function (resp) {
+        success: function (resposta) {
             window.alerta.sucesso('Grupo excluído com sucesso.');
             tb_grupo.ajax.reload();
         },

@@ -110,8 +110,8 @@ $('#btn_modal_usuario_excluir').on('click', function () {
         url: '/api/rh/usuario/deletar/' + encodeURIComponent(id_usuario_selecionado),
         method: 'DELETE',
         dataType: 'json',
-        success: function (resp) {
-            if (resp?.status == 200) {
+        success: function (resposta) {
+            if (resposta?.status == 200) {
                 // fechar modal
                 const elemento_modal = document.getElementById('modal_usuario');
                 const modal = bootstrap.Modal.getInstance(elemento_modal);
@@ -124,7 +124,7 @@ $('#btn_modal_usuario_excluir').on('click', function () {
                 });
 
                 // mostrar mensagem de sucesso
-                window.alerta.sucesso?.(resp.mensagem);
+                window.alerta.sucesso?.(resposta.mensagem);
             } else {
                 // mostrar mensagem de erro
                 window.alerta.erroPermissoes?.(xhr.responseJSON.mensagem, xhr.responseJSON.cod_permissoes_necessarias);
@@ -155,10 +155,10 @@ $('#btn_modal_usuario_gerar_senha').on('click', function () {
         url: '/rh/usuario/' + encodeURIComponent(id_usuario_selecionado) + '/gerar-senha',
         method: 'POST',
         dataType: 'json',
-        success: function (resp) {
-            if (resp.status == 200 && resp.data?.senha) {
+        success: function (resposta) {
+            if (resposta.status == 200 && resposta.data?.senha) {
                 // preencher e mostrar campo de senha
-                $('#senha_modal_usuario').val(resp.data.senha);
+                $('#senha_modal_usuario').val(resposta.data.senha);
 
                 // mostrar botão de visualizar senha
                 $('#btn_modal_usuario_mostrar_senha').removeClass('d-none');
@@ -183,7 +183,7 @@ $('#btn_modal_usuario_gerar_senha').on('click', function () {
 
             } else {
                 // resposta inesperada
-                window.alerta?.erro?.(resp.mensagem || 'Resposta inesperada ao gerar senha.');
+                window.alerta?.erro?.(resposta.mensagem || 'Resposta inesperada ao gerar senha.');
             }
         },
         error: function (xhr) {
@@ -219,11 +219,11 @@ $('#btn_modal_usuario_salvar').on('click', function () {
             method: 'POST',
             data: payload,
             dataType: 'json',
-            success: function (resp) {
-                if (resp.status == 200) {
-                    // se a API retornar senha (resp.data.senha) preenche e mostra como no fluxo gerar-senha
-                    if (resp.data && resp.data.senha) {
-                        $('#senha_modal_usuario').val(resp.data.senha);
+            success: function (resposta) {
+                if (resposta.status == 200) {
+                    // se a API retornar senha (resposta.data.senha) preenche e mostra como no fluxo gerar-senha
+                    if (resposta.data && resposta.data.senha) {
+                        $('#senha_modal_usuario').val(resposta.data.senha);
                         $('#div_modal_usuario_senha').removeClass('d-none');
 
                         // mostrar botão de visualizar senha
@@ -243,8 +243,8 @@ $('#btn_modal_usuario_salvar').on('click', function () {
                     // retirar botão de gerar senha para evitar múltiplos cliques rápidos
 
                     // se a API retornar lastId, preencher o id no modal para permitir gerar nova senha / edição
-                    if (resp.data && resp.data.lastId) {
-                        id_usuario_selecionado = resp.data.lastId;
+                    if (resposta.data && resposta.data.lastId) {
+                        id_usuario_selecionado = resposta.data.lastId;
                         $('#email_modal_usuario').prop('disabled', true);
                         $('#btn_modal_usuario_gerar_senha').removeClass('d-none');
                     }
@@ -254,7 +254,7 @@ $('#btn_modal_usuario_salvar').on('click', function () {
                         tb_usuario.searchPanes.rebuildPane();
                     });
                 } else {
-                    window.alerta?.erro?.(resp.mensagem || 'Resposta inesperada do servidor.');
+                    window.alerta?.erro?.(resposta.mensagem || 'Resposta inesperada do servidor.');
                 }
             },
             error: function (xhr, status, err) {
@@ -278,11 +278,11 @@ $('#btn_modal_usuario_salvar').on('click', function () {
             method: 'PUT',
             data: payload,
             dataType: 'json',
-            success: function (resp) {
-                if (resp && resp.status) {
-                    // se a API retornar senha (resp.data.senha) preenche e mostra como no fluxo gerar-senha
-                    if (resp.data && resp.data.senha) {
-                        $('#senha_modal_usuario').val(resp.data.senha);
+            success: function (resposta) {
+                if (resposta && resposta.status) {
+                    // se a API retornar senha (resposta.data.senha) preenche e mostra como no fluxo gerar-senha
+                    if (resposta.data && resposta.data.senha) {
+                        $('#senha_modal_usuario').val(resposta.data.senha);
                         $('#div_modal_usuario_senha').removeClass('d-none');
 
                         // mostrar botão de visualizar senha
@@ -305,7 +305,7 @@ $('#btn_modal_usuario_salvar').on('click', function () {
                         tb_usuario.searchPanes.rebuildPane();
                     });
                 } else {
-                    window.alerta?.erro?.(resp.mensagem || 'Resposta inesperada do servidor.');
+                    window.alerta?.erro?.(resposta.mensagem || 'Resposta inesperada do servidor.');
                 }
             },
             error: function (xhr, status, err) {

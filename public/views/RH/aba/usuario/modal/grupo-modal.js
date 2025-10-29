@@ -276,12 +276,12 @@ $('#tb_modal_usuario_grupo').off('click', '.btn-modal-grupo-toggle').on('click',
                 grupo_id: grupo_id
             },
             dataType: 'json',
-            success: function (resp) {
-                if (resp && resp.status) {
-                    window.alerta.sucesso?.(resp.mensagem || 'Grupo adicionado.');
+            success: function (resposta) {
+                if (resposta && resposta.status) {
+                    window.alerta.sucesso?.(resposta.mensagem || 'Grupo adicionado.');
                     tb_modal_usuario_grupo.ajax.reload(null, false);
                 } else {
-                    window.alerta.erroPermissoes(resp?.mensagem || 'Erro ao adicionar grupo');
+                    window.alerta.erroPermissoes(resposta?.mensagem || 'Erro ao adicionar grupo');
                     $btn.prop('disabled', false).text('Adicionar');
                 }
             },
@@ -294,12 +294,12 @@ $('#tb_modal_usuario_grupo').off('click', '.btn-modal-grupo-toggle').on('click',
             url: '/api/rh/usuario/grupo/remover/' + encodeURIComponent(id_rel_usuario_grupo),
             method: 'DELETE',
             dataType: 'json',
-            success: function (resp) {
-                if (resp && resp.status) {
-                    window.alerta.sucesso?.(resp.mensagem || 'Grupo removido.');
+            success: function (resposta) {
+                if (resposta && resposta.status) {
+                    window.alerta.sucesso?.(resposta.mensagem || 'Grupo removido.');
                     tb_modal_usuario_grupo.ajax.reload(null, false);
                 } else {
-                    window.alerta.erroPermissoes(resp?.mensagem || 'Erro ao remover grupo');
+                    window.alerta.erroPermissoes(resposta?.mensagem || 'Erro ao remover grupo');
                     $btn.prop('disabled', false).text('Remover');
                 }
 

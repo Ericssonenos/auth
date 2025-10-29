@@ -193,12 +193,12 @@ $('#tb_modal_usuario_permissao').off('click', '.btn-modal-permissao-toggle').on(
                 permissao_id: permissao_id
             },
             dataType: 'json',
-            success: function (resp) {
-                if (resp?.status == 201) {
-                    window.alerta?.sucesso?.(resp.mensagem);
+            success: function (resposta) {
+                if (resposta?.status == 201) {
+                    window.alerta?.sucesso?.(resposta.mensagem);
                     tb_modal_usuario_permissao.ajax.reload(null, false);
                 } else {
-                    window.alerta?.erro?.(resp.mensagem);
+                    window.alerta?.erro?.(resposta.mensagem);
                     $btn.prop('disabled', false).text('Adicionar');
                 }
             },
@@ -217,12 +217,12 @@ $('#tb_modal_usuario_permissao').off('click', '.btn-modal-permissao-toggle').on(
             url: '/api/rh/usuario/permissao/remover/' + encodeURIComponent(id_rel_usuario_permissao),
             method: 'DELETE',
             dataType: 'json',
-            success: function (resp) {
-                if (resp?.status == 200) {
-                    window.alerta?.sucesso?.(resp.mensagem || 'Permissão removida.');
+            success: function (resposta) {
+                if (resposta?.status == 200) {
+                    window.alerta?.sucesso?.(resposta.mensagem || 'Permissão removida.');
                     tb_modal_usuario_permissao.ajax.reload(null, false);
                 } else {
-                    window.alerta?.erro?.(resp.mensagem || 'Erro ao remover permissão.');
+                    window.alerta?.erro?.(resposta.mensagem || 'Erro ao remover permissão.');
 
                 }
             },

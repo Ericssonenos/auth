@@ -219,6 +219,7 @@ class grupoModel extends Model
         try {
             $grupo_id = $params['grupo_id'];
             $permissao_id = $params['permissao_id'];
+            // classe singleton para obter id_Usuario logado
             $criado_Usuario_id = app(usuarioServices::class)->id_Usuario;
 
             // verificar se já existe vínculo ativo
@@ -230,7 +231,7 @@ class grupoModel extends Model
 
             if ($exists) {
                 return [
-                    'status' => false,
+                    'status' => 400,
                     'mensagem' => 'Permissão já atribuída a este grupo.'
                 ];
             }
@@ -247,14 +248,11 @@ class grupoModel extends Model
             $comando->closeCursor();
 
             return [
-                'status' => $rows > 0,
+                'status' => 200,
                 'mensagem' => $rows > 0 ? 'Permissão atribuída ao grupo com sucesso!' : 'Nenhuma permissão foi atribuída.'
             ];
         } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => 'Erro ao atribuir permissão ao grupo: ' . $e->getMessage()
-            ];
+             return Operacao::mapearExcecaoPDO($e, $params);
         }
     }
 
@@ -280,14 +278,11 @@ class grupoModel extends Model
             $comando->closeCursor();
 
             return [
-                'status' => $rows > 0,
+                'status' => 200,
                 'mensagem' => $rows > 0 ? 'Permissão removida do grupo com sucesso!' : 'Relacionamento não encontrado ou já removido.'
             ];
         } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => 'Erro ao remover permissão do grupo: ' . $e->getMessage()
-            ];
+             return Operacao::mapearExcecaoPDO($e, $params);
         }
     }
 

@@ -8,7 +8,7 @@ function Carregar_Tb_Modal_Grupo_Permissao(dados_permissoes) {
     $('#titulo_modal_grupo_permissao').text('Permissões do Grupo: ' + dados_permissoes?.nome_Grupo);
 
     // Atualizar variável global do id do grupo selecionado
-    const id_grupo_selecionado = dados_permissoes.id_Grupo;
+    id_grupo_selecionado = dados_permissoes.id_Grupo;
 
     // Inicializar DataTable de permissões no modal, se ainda não estiver inicializado
     if (!tb_modal_grupo_permissao) {
@@ -158,6 +158,61 @@ function Carregar_Tb_Modal_Grupo_Permissao(dados_permissoes) {
 
 }
 
+// Função para Atribuir permissão ao grupo
+function Atribuir_Permissao_Grupo_Modal(id_permissao, btn) {
+    // Lógica para atribuir a permissão ao grupo
+    $.ajax({
+        type: 'POST',
+        url: '/api/rh/grupo/permissao/adicionar',
+        data: {
+            permissao_id: id_permissao
+            , grupo_id: id_grupo_selecionado
+        },
+        success: function (resposta) {
+            if(resposta?.status == 200){
+                window.alerta?.sucesso(resposta.mensagem);
+                tb_modal_grupo_permissao.ajax.reload(null, false);
+            }else{
+                window.alerta.erro(resposta.mensagem);
+                btn.prop('disabled', false).text('Adicionar');
+            }
+        },
+        error: function (xhr, status, error) {
+            if(xhr.status == 403){
+                window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoes_necessarias);
+            }else{
+                window.alerta.erro('Erro ao atribuir permissão ao grupo: ' + xhr.responseJSON?.mensagem);
+            }
+            btn.prop('disabled', false).text('Adicionar');
+        }
+    });
+}
+
+// Função para Remover permissão do grupo
+function Remover_Permissao_Grupo_Modal(id_rel_grupo_permissao, btn) {
+    // Lógica para remover a permissão do grupo
+    $.ajax({
+        type: 'delete',
+        url: '/api/rh/grupo/permissao/remover/' + encodeURIComponent(id_rel_grupo_permissao),
+        success: function (resposta) {
+            if(resposta?.status == 200){
+                window.alerta?.sucesso(resposta.mensagem);
+                tb_modal_grupo_permissao.ajax.reload(null, false);
+            }else{
+                window.alerta.erro(resposta.mensagem);
+                btn.prop('disabled', false).text('Remover');
+            }
+        },
+        error: function (xhr, status, error) {
+            if(xhr.status == 403){
+                window.alerta.erroPermissoes(xhr.responseJSON?.mensagem, xhr.responseJSON?.cod_permissoes_necessarias);
+            }else{
+                window.alerta.erro('Erro ao remover permissão do grupo: ' + xhr.responseJSON?.mensagem);
+            }
+            btn.prop('disabled', false).text('Remover');
+        }
+    });
+}
 
 // Interaçao dos botões da tabela da tabela grupo
 
@@ -170,4 +225,20 @@ $('#tb_grupo').on('click', '.aba-usuario-tb-permissao', function () {
     const modalElement = document.getElementById('modal_grupo_permissao');
     const modalInstance = new bootstrap.Modal(modalElement);
     modalInstance.show();
+});
+
+$('#tb_modal_grupo_permissao').on('click', '.btn-modal-permissao-toggle', function () {
+    const btn = $(this);
+    const dados_permissao = tb_modal_grupo_permissao.row($(this).closest('tr')).data();
+
+    btn.prop('disabled', true);
+
+    // se id_rel_grupo_permissao não existir
+    // é porque não exite vinculo, então atribuir
+    if (!dados_permissao.id_rel_grupo_permissao) {
+        Atribuir_Permissao_Grupo_Modal(dados_permissao.id_permissao, btn);
+    } else  {
+        // se existir, remover o vinculo
+        Remover_Permissao_Grupo_Modal(dados_permissao.id_rel_grupo_permissao, btn);
+    }
 });

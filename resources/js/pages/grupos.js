@@ -170,13 +170,13 @@ $(function () {
                     grupo_id: grupo_id,
                     permissao_id: permissao_id
                 },
-                success: function (resp) {
-                    if (resp.status) {
-                        window.alerta.sucesso(resp.mensagem || 'Permissão adicionada com sucesso!');
+                success: function (resposta) {
+                    if (resposta.status) {
+                        window.alerta.sucesso(resposta.mensagem || 'Permissão adicionada com sucesso!');
                         tb_modal_grupo_permissao.ajax.reload(null, false);
                         table.ajax.reload(null, false); // atualizar tabela principal
                     } else {
-                        window.alerta.erro(resp.mensagem || 'Erro ao adicionar permissão');
+                        window.alerta.erro(resposta.mensagem || 'Erro ao adicionar permissão');
                         $btn.prop('disabled', false).text('Adicionar');
                     }
                 },
@@ -192,13 +192,13 @@ $(function () {
                 method: 'DELETE',
                 type: 'POST',
                 dataType: 'json',
-                success: function (resp) {
-                    if (resp.status) {
-                        window.alerta.sucesso(resp.mensagem || 'Permissão removida com sucesso!');
+                success: function (resposta) {
+                    if (resposta.status) {
+                        window.alerta.sucesso(resposta.mensagem || 'Permissão removida com sucesso!');
                         tb_modal_grupo_permissao.ajax.reload(null, false);
                         table.ajax.reload(null, false); // atualizar tabela principal
                     } else {
-                        window.alerta.erro(resp.mensagem || 'Erro ao remover permissão');
+                        window.alerta.erro(resposta.mensagem || 'Erro ao remover permissão');
                         $btn.prop('disabled', false).text('Remover');
                     }
                 },
@@ -230,13 +230,13 @@ $(function () {
             method: 'DELETE',
             type: 'POST',
             dataType: 'json',
-            success: function (resp) {
-                if (resp.status) {
-                    window.alerta.sucesso(resp.mensagem || 'Grupo excluído com sucesso!');
+            success: function (resposta) {
+                if (resposta.status) {
+                    window.alerta.sucesso(resposta.mensagem || 'Grupo excluído com sucesso!');
                     table.ajax.reload(null, false);
                     bootstrap.Modal.getInstance(document.getElementById('modal_grupo')).hide();
                 } else {
-                    window.alerta.erro(resp.mensagem || 'Erro ao excluir grupo');
+                    window.alerta.erro(resposta.mensagem || 'Erro ao excluir grupo');
                 }
             },
             error: function (xhr) {
@@ -268,13 +268,13 @@ $(function () {
             method: method,
             dataType: 'json',
             data: formData,
-            success: function (resp) {
-                if (resp.status) {
-                    window.alerta.sucesso(resp.mensagem || 'Grupo salvo com sucesso!');
+            success: function (resposta) {
+                if (resposta.status) {
+                    window.alerta.sucesso(resposta.mensagem || 'Grupo salvo com sucesso!');
                     table.ajax.reload(null, false);
                     bootstrap.Modal.getInstance(document.getElementById('modal_grupo')).hide();
                 } else {
-                    window.alerta.erro(resp.mensagem || 'Erro ao salvar grupo');
+                    window.alerta.erro(resposta.mensagem || 'Erro ao salvar grupo');
                 }
             },
             error: function (xhr) {
@@ -303,12 +303,12 @@ $(function () {
             url: '/api/rh/categoria/dados',
             type: 'POST',
             dataType: 'json',
-            success: function (resp) {
+            success: function (resposta) {
                 const $select = $('#categoria_id_modal_grupo');
                 $select.empty().append('<option value="">Selecione uma categoria</option>');
 
-                if (resp.data && Array.isArray(resp.data)) {
-                    resp.data.forEach(function (categoria) {
+                if (resposta.data && Array.isArray(resposta.data)) {
+                    resposta.data.forEach(function (categoria) {
                         $select.append(`<option value="${categoria.id_Categoria}">${categoria.nome_Categoria}</option>`);
                     });
                 }
