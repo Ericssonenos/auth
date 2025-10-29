@@ -5,7 +5,7 @@ let tb_modal_grupo_permissao;
 function Carregar_Tb_Modal_Grupo_Permissao(dados_permissoes) {
 
     // Atualizar o titulo do modal
-    $('#titulo_modal_permissao_grupo').text('Permissões do Grupo'+ dados_permissoes?.nome_Grupo);
+    $('#titulo_modal_grupo_permissao').text('Permissões do Grupo: ' + dados_permissoes?.nome_Grupo);
 
     // Atualizar variável global do id do grupo selecionado
     const id_grupo_selecionado = dados_permissoes.id_Grupo;
@@ -76,7 +76,81 @@ function Carregar_Tb_Modal_Grupo_Permissao(dados_permissoes) {
                         return retorno;
                     }
                 }
+            ], dom: "<'row'<'col-sm-12 col-md-5'f><'col-sm-12 col-md-7'B>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'d-flex justify-content-between'<p>>" +
+                "<'d-flex justify-content-between'<i>>",
+            buttons: [
+                {
+                    extend: 'copy',
+                    titleAttr: 'Copiar para área de transferência',
+                    text: '<i class="bi bi-copy"></i>',
+                    className: 'btn btn-outline-dark',
+                    exportOptions: { columns: ':visible' }//exclui a última coluna (geralmente a de ações como botões)
+                },
+                {
+                    extend: 'excel',
+                    titleAttr: 'Exportar para Excel',
+                    text: '<i class="bi bi-filetype-xls"></i>',
+                    className: 'btn btn-outline-success',
+                    exportOptions: { columns: ':visible' }//exclui a última coluna (geralmente a de ações como botões)
+                },
+                {
+                    extend: 'csv',
+                    titleAttr: 'Exportar para CSV',
+                    text: '<i class="bi bi-filetype-csv"></i>',
+                    className: 'btn btn-outline-secondary',
+                    exportOptions: { columns: ':visible' } //exclui a última coluna (geralmente a de ações como botões)
+                },
+                {
+                    extend: 'pdf',
+                    titleAttr: 'Exportar para PDF',
+                    text: '<i class="bi bi-file-earmark-pdf"></i>',
+                    className: 'btn btn-outline-danger',
+                    exportOptions: { columns: ':visible' } //exclui a última coluna (geralmente a de ações como botões)
+                },
+                {
+                    extend: 'print',
+                    titleAttr: 'Imprimir',
+                    text: '<i class="bi bi-printer"></i>',
+                    className: 'btn btn-outline-warning',
+                    exportOptions: { columns: ':visible' } //exclui a última coluna (geralmente a de ações como botões)
+                },
+                {
+                    extend: 'spacer',
+                    style: 'bar'
+                },
+                {
+                    text: '<i class="bi bi-arrow-clockwise"></i>',
+                    titleAttr: 'Atualizar Filtros',
+                    className: 'btn btn-warning',
+                    action: function () {
+                        tb_modal_grupo_permissao.clear().draw();
+                        tb_modal_grupo_permissao.ajax.reload(null, false); // false mantém a página atual
+                        tb_modal_grupo_permissao.columns.adjust().draw();
+                    }
+                },
+                {
+                    extend: 'pageLength',
+                    titleAttr: 'Linhas',
+                    text: '<i class="bi bi-list-ol"></i>',
+                    className: 'btn btn-info',
+                },
+                {
+                    extend: 'colvis',
+                    titleAttr: 'Visibilidade de colunas',
+                    text: '<i class="bi bi-eye"></i>',
+                    className: 'btn btn-primary',
+
+                }
+
+
             ],
+            lengthMenu: [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "Todos"]],
+            select: true,          // seleção de linhas/colunas
+            colReorder: true,      // arrastar e reordenar colunas
+            responsive: true,      // responsivo
+            processing: true,     // mostrar "processando" durante carregamento
             // Outras opções do DataTable, se necessário
         });
     }

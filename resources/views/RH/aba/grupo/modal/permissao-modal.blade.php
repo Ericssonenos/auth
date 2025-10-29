@@ -8,7 +8,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 id="modal_permissao_titulo" class="modal-title"></h5>
+                <h5 id="titulo_modal_grupo_permissao" class="modal-title"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body">
