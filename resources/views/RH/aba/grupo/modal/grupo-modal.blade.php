@@ -9,8 +9,7 @@
             <form id="fm_modal_grupo">
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="titulo_modal_usuario">Novo grupo</h5>
-                    <!-- Título será definido dinamicamente -->
+                    <h5 class="modal-title" id="titulo_modal_grupo"></h5><!-- Título será definido dinamicamente -->
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
 

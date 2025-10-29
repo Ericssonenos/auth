@@ -22,7 +22,7 @@ class categoriaModal extends Model
     {
         try {
             $consultaSql = "SELECT
-                id_categoria,
+                id_Categoria,
                 nome_Categoria,
                 descricao_Categoria
             FROM RH.Tbl_Categorias
@@ -72,7 +72,7 @@ class categoriaModal extends Model
 
     public function AtualizarCategoria($params)
     {
-        $id_categoria = $params['id_categoria'];
+        $id_Categoria = $params['id_Categoria'];
         $nome_Categoria = $params['nome_Categoria'];
         $descricao_Categoria = $params['descricao_Categoria'] ?? null;
         $usuario_atualizado_por = $params['usuario_atualizado_por'];
@@ -82,7 +82,7 @@ class categoriaModal extends Model
                             descricao_Categoria = :descricao_Categoria,
                             atualizado_Usuario_id = :usuario_atualizado_por,
                             dat_atualizado_em = GETDATE()
-                        WHERE id_categoria = :id_categoria
+                        WHERE id_Categoria = :id_Categoria
                           AND dat_cancelamento_em IS NULL";
 
         $comando = $this->conexao->prepare($consultaSql);
@@ -90,7 +90,7 @@ class categoriaModal extends Model
             ':nome_Categoria' => $nome_Categoria,
             ':descricao_Categoria' => $descricao_Categoria,
             ':usuario_atualizado_por' => $usuario_atualizado_por,
-            ':id_categoria' => $id_categoria
+            ':id_Categoria' => $id_Categoria
         ]);
 
         $comando->closeCursor();
@@ -98,19 +98,19 @@ class categoriaModal extends Model
 
     public function RemoverCategoria($params)
     {
-        $id_categoria = $params['id_categoria'];
+        $id_Categoria = $params['id_Categoria'];
         $cancelamento_Usuario_id = $params['cancelamento_Usuario_id'];
 
         $consultaSql = "UPDATE RH.Tbl_Categorias
                         SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
                             dat_cancelamento_em = GETDATE()
-                        WHERE id_categoria = :id_categoria
+                        WHERE id_Categoria = :id_Categoria
                           AND dat_cancelamento_em IS NULL";
 
         $comando = $this->conexao->prepare($consultaSql);
         $comando->execute([
             ':cancelamento_Usuario_id' => $cancelamento_Usuario_id,
-            ':id_categoria' => $id_categoria
+            ':id_Categoria' => $id_Categoria
         ]);
 
         $comando->closeCursor();

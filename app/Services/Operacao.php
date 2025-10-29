@@ -480,7 +480,6 @@ class Operacao
                 ||  $key === 'dados_do_usuario_logado'
                 ||  $key === 'permissoes_do_usuario_logado'
                 ||  $key === 'token'
-                ||  str_ends_with($key, '_id')
                 ||  $key === 'fn'
             ) continue;
 

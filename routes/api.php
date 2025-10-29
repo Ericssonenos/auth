@@ -43,7 +43,7 @@ Route::middleware(['web', 'usuarioMiddleware'])->prefix('rh')->group(function ()
     // Permissões
     Route::prefix('permissao')->group(function () {
         // Permissões
-        Route::post('dados', [PermissaoController::class, 'ObterRHPermissoes']);
+        Route::post('dados', [PermissaoController::class, 'ObterPermissoes']);
     });
 
     // Grupos

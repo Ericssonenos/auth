@@ -40,7 +40,7 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
                 url: '/api/rh/grupo/dados',
                 data: function (d) {
                     d.usuario_id = id_usuario_selecionado;
-                    d.fn = 'btn-abrir-modal-tb-grupo';
+                    d.fn = 'fn-do-usuario';
                     d.order_by = 'CASE WHEN rug.id_rel_usuario_grupo IS NOT NULL THEN 1 ELSE 0 END, g.nome_Grupo';
                     return d;
                 },
@@ -69,7 +69,7 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
                         const toggleBtn = assigned
                             ? `<button class="btn btn-sm btn-danger btn-modal-grupo-toggle"  data-action="remover">Remover</button>`
                             : `<button class="btn btn-sm btn-success btn-modal-grupo-toggle"  data-action="adicionar">Adicionar</button>`;
-                        const expandBtn = `<button class="btn btn-sm btn-light btn-expand-grupo" >Permissões</button>`;
+                        const expandBtn = `<button class="btn btn-sm btn-light fn-grupo-status" >Permissões</button>`;
                         return expandBtn + ' ' + toggleBtn;
                     }
                 },
@@ -158,14 +158,14 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
         $('#tb_modal_usuario_grupo').on('search.dt', sincronizarBuscaSubtabelas);
 
         // expandir/mostrar subtabela de permissões do grupo
-        $('#tb_modal_usuario_grupo tbody').off('click', '.btn-expand-grupo').on('click', '.btn-expand-grupo', function () {
+        $('#tb_modal_usuario_grupo tbody').off('click', '.fn-grupo-status').on('click', '.fn-grupo-status', function () {
 
             // obter dados da linha selecionada
             const $btn = $(this);
             const tr = $btn.closest('tr');
             const row = tb_modal_usuario_grupo.row(tr);
             const rowData = row.data();
-            const grupo_id = rowData.id_Grupo;
+            const id_Grupo = rowData.id_Grupo;
 
             // alterna child row
             if (row.child.isShown()) {
@@ -175,24 +175,23 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
             }
 
             // garante id único e evita reuse de elemento antigo
-            const childId = 'subPermissoes_' + grupo_id + '_' + Date.now();
+            const childId = 'subPermissoes_' + id_Grupo + '_' + Date.now();
             const childHtml = `<div style="padding:10px;"><table id="${childId}" class="table table-sm w-100"></table></div>`;
             row.child(childHtml).show();
             tr.addClass('shown');
 
             // destruir cache antigo referente ao mesmo grupo (se existir) para evitar sobreposição
-            if (tb_modal_usuario_grupo_permissoes[grupo_id]) {
-                try { tb_modal_usuario_grupo_permissoes[grupo_id].destroy(); } catch (e) { }
-                delete tb_modal_usuario_grupo_permissoes[grupo_id];
+            if (tb_modal_usuario_grupo_permissoes[id_Grupo]) {
+                try { tb_modal_usuario_grupo_permissoes[id_Grupo].destroy(); } catch (e) { }
+                delete tb_modal_usuario_grupo_permissoes[id_Grupo];
             }
 
-            tb_modal_usuario_grupo_permissoes[grupo_id] = $('#' + childId).DataTable({
+            tb_modal_usuario_grupo_permissoes[id_Grupo] = $('#' + childId).DataTable({
                 ajax: {
                     method: 'POST',
                     url: '/api/rh/permissao/dados',
                     data: function (requestData) {
-                        requestData.grupo_id = grupo_id;
-                        requestData.fn = 'btn-expand-grupo';
+                        requestData.grupo_id = id_Grupo;
                         return requestData;
                     },
                     dataSrc: function (json) {

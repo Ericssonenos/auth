@@ -1,5 +1,5 @@
 
-// abrir modal de permissões
+//  tabela permissões de usuário
 let tb_modal_usuario_permissao = null;
 
 // abrir Tabelas - de permissões no modal
@@ -26,7 +26,7 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
                 // enviar parametros dinamicamente a cada requisição
                 data: function (requestData) {
                     requestData.usuario_id = id_usuario_selecionado; // variável atualizada antes do reload
-                    requestData.fn = 'btn-abrir-modal-tb-permissao';
+                    requestData.fn = 'fn-usuario-status';
                     requestData.order_by = 'CASE WHEN rup.id_rel_usuario_permissao IS NOT NULL THEN 1 ELSE 0 END, p.cod_permissao';
                     return requestData;
                 },

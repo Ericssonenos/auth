@@ -14,14 +14,39 @@ class permissaoModel extends Model
     {
         $this->conexao = DB::connection()->getPdo();
     }
-    // para login usar o maiximo de segurança possivel
-    public function ObterLoginPermissoes($params)
-    {
-        $execParams[':id_Usuario_Permissao'] = $params['id_Usuario'];
-        $execParams[':id_Usuario_Grupo'] = $params['id_Usuario'];
 
-        // 1 select no Union
-        $SqlUnionPermissao = "SELECT
+    /**
+     * Retorna todas as permissões com flag indicando se o usuário possui cada permissão (vínculo ativo).
+     */
+    public function ObterPermissoes($params)
+    {
+
+        $fn = $params['fn'] ?? null;
+
+        $parametrizacao = Operacao::Parametrizar($params);
+        // Verifica se houve erro na parametrização
+        if ($parametrizacao['status'] === 422) {
+            return [
+                'status' => $parametrizacao['status'],
+                'mensagem' => $parametrizacao['mensagem'],
+                'data' => []
+            ];
+        }
+
+
+
+
+        if ($fn == 'fn-do-usuario') {
+            // este traz as permissões ativas de um usuário para o middleware
+            // seja diretamente ou via grupo
+
+            // id_usuario pra se relacionar com permissões diretas
+            $execParams[':id_Usuario_Permissao'] = $params['id_Usuario'];
+            // id_usuario pra se relacionar com permissões via grupo
+            $execParams[':id_Usuario_Grupo'] = $params['id_Usuario'];
+
+            // 1 select no Union
+            $consultaSql = "SELECT
                                PRM.cod_permissao
                             FROM RH.Tbl_Permissoes PRM
                             LEFT JOIN RH.Tbl_Rel_Usuarios_Permissoes REL_USUARIO_P
@@ -41,52 +66,11 @@ class permissaoModel extends Model
                             AND     PRM.dat_cancelamento_em IS NULL
                             AND     REL_USUARIO_G.usuario_id = :id_Usuario_Grupo
                             ";
-        try {
-            $comando = $this->conexao->prepare($SqlUnionPermissao);
-            $comando->execute($execParams);
-            $data = $comando->fetchAll(\PDO::FETCH_ASSOC);
-            if (empty($data)) {
-                return [
-                    'status' => 204,
-                    'mensagem' => 'Nenhuma permissão encontrada para o usuário.',
-                    'data' => []
-                ];
-            }
-        } catch (\Exception $e) {
-            return Operacao::mapearExcecaoPDO($e, $params);
-        }
-        return [
-            'status' => 200,
-            'mensagem' => 'Permissões do usuário carregadas.',
-            'data' => $data
-        ];
-    }
 
-    /**
-     * Retorna todas as permissões com flag indicando se o usuário possui cada permissão (vínculo ativo).
-     */
-    public function ObterRHPermissoes($params)
-    {
+        } else if ($fn == 'fn-usuario-status') {
+            // traz todas as permissões com flag indicando se o usuário possui cada permissão
 
-        $fn = $params['fn'] ?? null;
-
-        $parametrizacao = Operacao::Parametrizar($params);
-        // Verifica se houve erro na parametrização
-        if ($parametrizacao['status'] === 422) {
-            return [
-                'status' => $parametrizacao['status'],
-                'mensagem' => $parametrizacao['mensagem'],
-                'data' => []
-            ];
-        }
-
-
-        $whereParams = $parametrizacao['whereParams'];
-        $optsParams = $parametrizacao['optsParams'];
-        $execParams = $parametrizacao['execParams'];
-
-
-        if ($fn == 'btn-abrir-modal-tb-permissao') {
+            // Adicionar  o usuario_id
             $execParams[':usuario_id'] = $params['usuario_id'];
             $execParams[':usuario_id_Sub'] = $params['usuario_id'];
             $consultaSql = "SELECT
@@ -107,12 +91,9 @@ class permissaoModel extends Model
                                 ON rup.permissao_id = p.id_permissao
                                 AND rup.usuario_id = :usuario_id
                                 AND rup.dat_cancelamento_em IS NULL
-                            WHERE p.dat_cancelamento_em IS NULL"
-                . implode(' ', $whereParams)
-                . ($optsParams['order_by'] ?? "  ")
-                . ($optsParams['limit'] ?? "  ")
-                . ($optsParams['offset'] ?? "  ");
-        } else if ($fn == 'btn-permissoes-grupo') {
+                            WHERE p.dat_cancelamento_em IS NULL";
+
+        } else if ($fn == 'fn-grupo-status') {
             $execParams[':grupo_id'] = $params['grupo_id'];
             $consultaSql = "SELECT
                                 p.id_permissao
@@ -124,28 +105,11 @@ class permissaoModel extends Model
                                 ON rgp.permissao_id = p.id_permissao
                                 AND rgp.grupo_id = :grupo_id
                                 AND rgp.dat_cancelamento_em IS NULL
-                            WHERE p.dat_cancelamento_em IS NULL"
-                . implode(' ', $whereParams)
-                . ($optsParams['order_by'] ?? "  ")
-                . ($optsParams['limit'] ?? "  ")
-                . ($optsParams['offset'] ?? "  ");
-        } else if ($fn == 'btn-expand-grupo') {
-            $execParams[':grupo_id'] = $params['grupo_id'];
-            $consultaSql = "SELECT
-                                p.id_permissao
-                            ,   p.cod_permissao
-                            ,   p.descricao_permissao
-                            FROM RH.Tbl_Permissoes p
-                            LEFT JOIN RH.Tbl_Rel_Grupos_Permissoes rgp
-                                ON rgp.permissao_id = p.id_permissao
-                                AND rgp.dat_cancelamento_em IS NULL
-                            WHERE p.dat_cancelamento_em IS NULL
-                            AND rgp.grupo_id = :grupo_id"
-                . implode(' ', $whereParams)
-                . ($optsParams['order_by'] ?? "  ")
-                . ($optsParams['limit'] ?? "  ")
-                . ($optsParams['offset'] ?? "  ");
+                            WHERE p.dat_cancelamento_em IS NULL";
         } else if ($fn == 'middleware-se-existe') {
+            // Verifica se a permissão existe (para o middleware)
+            // este não tem a trava de dat_cancelamento_em IS NULL
+
             // Deixar execParams apenas com o cod_permissao
             $execParams = [];
             // Adicionar apenas o cod_permissao
@@ -159,14 +123,21 @@ class permissaoModel extends Model
                             AND p.cod_permissao = :cod_permissao";
         } else {
             // Consulta padrão para obter todas as permissões
+
+            $execParams = $parametrizacao['execParams'];
+            $whereParams = $parametrizacao['whereParams'];
+            $optsParams = $parametrizacao['optsParams'];
+
             $consultaSql = "SELECT
                                 p.id_permissao
                             ,   p.cod_permissao
                             ,   p.descricao_permissao
                             FROM RH.Tbl_Permissoes p
+                            LEFT JOIN RH.Tbl_Rel_Grupos_Permissoes rgp
+                                ON rgp.permissao_id = p.id_permissao
                             WHERE p.dat_cancelamento_em IS NULL"
                 . implode(' ', $whereParams)
-                . ($optsParams['order_by'] ?? "  ")
+                . ($optsParams['order_by'] ?? " order by p.cod_permissao ")
                 . ($optsParams['limit'] ?? "  ")
                 . ($optsParams['offset'] ?? "  ");
         }

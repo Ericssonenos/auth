@@ -4,7 +4,7 @@
 $(function () {
 
     // variáveis globais para controle de modais e DataTables
-    let dataTable_Permissoes_Modal = null;
+    let tb_modal_grupo_permissao = null;
     let grupos_id_Selecionado = null;
 
     // se a tabela não existir nesta página, aborta
@@ -89,20 +89,20 @@ $(function () {
         grupos_id_Selecionado = rowData.id_Grupo;
 
         // abrir modal
-        const modal = new bootstrap.Modal(document.getElementById('modal_permissao'));
+        const modal = new bootstrap.Modal(document.getElementById('modal_grupo_permissao'));
         modal.show();
 
         $('#modal_permissao_titulo').text('Permissões do grupo: ' + (rowData?.nome_Grupo || '??'));
 
         // inicializar ou recarregar DataTable de permissões
-        if (!dataTable_Permissoes_Modal) {
-            dataTable_Permissoes_Modal = $('#dataTable_Permissoes_Modal').DataTable({
+        if (!tb_modal_grupo_permissao) {
+            tb_modal_grupo_permissao = $('#tb_modal_grupo_permissao').DataTable({
                 ajax: {
                     method: 'POST',
                     url: '/api/rh/permissoes/dados',
                     data: function (requestData) {
                         requestData.grupo_id = grupos_id_Selecionado; // enviar grupo_id ao invés de usuario_id
-                        requestData.fn = 'btn-permissoes-grupo';
+                        requestData.fn = 'fn-grupo-status';
                         requestData.order_by = 'CASE WHEN rgp.id_rel_grupo_permissao IS NOT NULL THEN 1 ELSE 0 END, p.cod_permissao';
                         return requestData;
                     },
@@ -141,16 +141,16 @@ $(function () {
             });
         } else {
             // limpar e recarregar tabela de permissões
-            $('#dataTable_Permissoes_Modal').DataTable().clear().draw();
-            dataTable_Permissoes_Modal.ajax.reload(null, false);
-            dataTable_Permissoes_Modal.columns.adjust().draw();
+            $('#tb_modal_grupo_permissao').DataTable().clear().draw();
+            tb_modal_grupo_permissao.ajax.reload(null, false);
+            tb_modal_grupo_permissao.columns.adjust().draw();
         }
     });
 
     // handler para adicionar/remover permissões do grupo
-    $('#dataTable_Permissoes_Modal').off('click', '.btn-permissao-toggle').on('click', '.btn-permissao-toggle', function () {
+    $('#tb_modal_grupo_permissao').off('click', '.btn-permissao-toggle').on('click', '.btn-permissao-toggle', function () {
         const tr = $(this).closest('tr');
-        const rowData = dataTable_Permissoes_Modal.row(tr).data();
+        const rowData = tb_modal_grupo_permissao.row(tr).data();
         const grupo_id = grupos_id_Selecionado;
         const id_rel_grupo_permissao = rowData.id_rel_grupo_permissao;
         const permissao_id = rowData.id_permissao;
@@ -173,7 +173,7 @@ $(function () {
                 success: function (resp) {
                     if (resp.status) {
                         window.alerta.sucesso(resp.mensagem || 'Permissão adicionada com sucesso!');
-                        dataTable_Permissoes_Modal.ajax.reload(null, false);
+                        tb_modal_grupo_permissao.ajax.reload(null, false);
                         table.ajax.reload(null, false); // atualizar tabela principal
                     } else {
                         window.alerta.erro(resp.mensagem || 'Erro ao adicionar permissão');
@@ -195,7 +195,7 @@ $(function () {
                 success: function (resp) {
                     if (resp.status) {
                         window.alerta.sucesso(resp.mensagem || 'Permissão removida com sucesso!');
-                        dataTable_Permissoes_Modal.ajax.reload(null, false);
+                        tb_modal_grupo_permissao.ajax.reload(null, false);
                         table.ajax.reload(null, false); // atualizar tabela principal
                     } else {
                         window.alerta.erro(resp.mensagem || 'Erro ao remover permissão');
@@ -284,15 +284,15 @@ $(function () {
     });
 
     // resetar grupos_id_Selecionado quando modais fecharem
-    $('#modal_grupo, #modal_permissao').on('hidden.bs.modal', function () {
+    $('#modal_grupo, #modal_grupo_permissao').on('hidden.bs.modal', function () {
         grupos_id_Selecionado = null;
 
         // cleanup: destruir DataTable de permissões para evitar sobreposição
         try {
-            if (dataTable_Permissoes_Modal) {
-                dataTable_Permissoes_Modal.destroy();
-                dataTable_Permissoes_Modal = null;
-                $('#dataTable_Permissoes_Modal').empty();
+            if (tb_modal_grupo_permissao) {
+                tb_modal_grupo_permissao.destroy();
+                tb_modal_grupo_permissao = null;
+                $('#tb_modal_grupo_permissao').empty();
             }
         } catch (e) { }
     });
@@ -301,7 +301,7 @@ $(function () {
     function carregarCategorias() {
         $.ajax({
             url: '/api/rh/categoria/dados',
-            method: 'POST',
+            type: 'POST',
             dataType: 'json',
             success: function (resp) {
                 const $select = $('#categoria_id_modal_grupo');
@@ -309,7 +309,7 @@ $(function () {
 
                 if (resp.data && Array.isArray(resp.data)) {
                     resp.data.forEach(function (categoria) {
-                        $select.append(`<option value="${categoria.id_categoria}">${categoria.nome_Categoria}</option>`);
+                        $select.append(`<option value="${categoria.id_Categoria}">${categoria.nome_Categoria}</option>`);
                     });
                 }
             },

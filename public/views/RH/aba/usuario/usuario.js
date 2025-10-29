@@ -67,7 +67,7 @@ $(function () {
                         render: function (row) {
                             return `
                                 <button class="btn btn-sm btn-primary btn-abrir-modal-editar-usuario" title="Editar"><i class="bi bi-person-gear"></i>Editar</button>
-                                <button class="btn btn-sm btn-secondary btn-abrir-modal-tb-grupo" title="Grupo"><i class="bi bi-person-check"></i>Grupo</button>
+                                <button class="btn btn-sm btn-secondary btn-abrir-modal-tb-grupo" title="Grupo"><i class="bi bi-people"></i></i>Grupo</button>
                                 <button class="btn btn-sm btn-info btn-abrir-modal-tb-permissoes" title="Permissões"><i class="bi bi-shield-lock"></i>Permissões</button>
                             `;
                         }

@@ -1,0 +1,36 @@
+
+
+## Permissão.http
+@baseUrl = http://localhost:8080
+
+
+
+### 1. Acessar API de permissões (com sessão do login)
+POST {{baseUrl}}/api/rh/permissao/dados
+Content-Type: application/json
+
+{
+    "fn": "lista-permissao"
+}
+
+### 2. Carregar select de categorias via API
+###
+POST {{baseUrl}}/api/rh/categoria/dados
+Content-Type: application/json
+
+## 3. Excluir grupo via API
+###
+DELETE {{baseUrl}}/api/rh/grupo/deletar/4
+Content-Type: application/json
+
+
+## 4. Obter permissões de um grupo via API
+###
+POST {{baseUrl}}/api/rh/permissao/dados
+Content-Type: application/json
+
+{
+    "Grupo_id": 4,
+    "fn": "fn-grupo-status"
+}
+

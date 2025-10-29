@@ -18,39 +18,10 @@ class grupoModel extends Model
 
     public function ObterDadosGrupo($params)
     {
-        $parametrizacao = Operacao::Parametrizar($params);
-        // Verifica se houve erro na parametrização
-        if ($parametrizacao['status'] === 422) {
-            return [
-                'status' => $parametrizacao['status'],
-                'mensagem' => $parametrizacao['mensagem'],
-                'data' => []
-            ];
-        }
+        $fn = $params['fn'] ?? null;
 
-        $whereParams = $parametrizacao['whereParams'];
-        $optsParams = $parametrizacao['optsParams'];
-        $execParams = $parametrizacao['execParams'];
-
-        // Se fn = 'listar-grupos', buscar todos os grupos para a página principal
-        if (isset($params['fn']) && $params['fn'] === 'listar-grupos') {
-            $consultaSql = "SELECT
-                            g.id_Grupo,
-                            g.nome_Grupo,
-                            g.descricao_Grupo,
-                            g.categoria_id,
-                            c.nome_Categoria,
-                            RH.Fn_GetPermissoesGrupoXML(g.id_Grupo) as permissoes_XML
-                        FROM RH.Tbl_Grupos g
-                        LEFT JOIN RH.Tbl_Categorias c ON g.categoria_id = c.id_categoria
-                        WHERE g.dat_cancelamento_em IS NULL
-                        AND (c.dat_cancelamento_em IS NULL OR c.dat_cancelamento_em IS NOT NULL)"
-                . implode(' ', $whereParams)
-                . ($optsParams['order_by'] ?? ' ORDER BY g.nome_Grupo')
-                . ($optsParams['limit'] ?? '')
-                . ($optsParams['offset'] ?? '');
-        } else if (isset($params['fn']) && $params['fn'] === 'btn-abrir-modal-tb-grupo') {
-
+        if ($fn === 'fn-do-usuario') {
+            // este traz os grupos vinculados a um usuário específico
             $execParams[':usuario_id'] = $params['usuario_id'];
             $consultaSql = "SELECT
                                 g.id_Grupo
@@ -64,17 +35,38 @@ class grupoModel extends Model
                                 ON rug.grupo_id = g.id_Grupo
                                 AND rug.usuario_id = :usuario_id
                                 AND rug.dat_cancelamento_em IS NULL
-                            WHERE g.dat_cancelamento_em IS NULL"
-                . implode(" ", $whereParams)
-                . ($optsParams['order_by'] ?? " ORDER BY g.nome_Grupo ASC ")
-                . ($optsParams['limit'] ?? "")
-                . ($optsParams['offset'] ?? "");
-        }else{
-            return [
-                'status' => false,
-                'mensagem' => 'Função (fn) inválida ou não especificada.',
-                'data' => []
-            ];
+                            WHERE g.dat_cancelamento_em IS NULL";
+        } else {
+
+            $parametrizacao = Operacao::Parametrizar($params);
+            // Verifica se houve erro na parametrização
+            if ($parametrizacao['status'] === 422) {
+                return [
+                    'status' => $parametrizacao['status'],
+                    'mensagem' => $parametrizacao['mensagem'],
+                    'data' => []
+                ];
+            }
+
+            $whereParams = $parametrizacao['whereParams'];
+            $optsParams = $parametrizacao['optsParams'];
+            $execParams = $parametrizacao['execParams'];
+
+            $consultaSql = "SELECT
+                            g.id_Grupo,
+                            g.nome_Grupo,
+                            g.descricao_Grupo,
+                            g.categoria_id,
+                            c.nome_Categoria,
+                            RH.Fn_GetPermissoesGrupoXML(g.id_Grupo) as permissoes_XML
+                        FROM RH.Tbl_Grupos g
+                        LEFT JOIN RH.Tbl_Categorias c ON g.categoria_id = c.id_Categoria
+                        WHERE g.dat_cancelamento_em IS NULL
+                        AND c.dat_cancelamento_em IS NULL"
+                . implode(' ', $whereParams)
+                . ($optsParams['order_by'] ?? ' ORDER BY g.nome_Grupo')
+                . ($optsParams['limit'] ?? '')
+                . ($optsParams['offset'] ?? '');
         }
 
         try {
@@ -95,8 +87,6 @@ class grupoModel extends Model
             ];
         }
     }
-
-
 
     public function CriarGrupo($params)
     {

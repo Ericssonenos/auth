@@ -21,18 +21,15 @@
                         <label class="form-label" for="nome_completo_modal_usuario">Nome</label>
                         <!-- ter no minimo 4 caracteres -->
                         <input id="nome_completo_modal_usuario" minlength="4" name="nome_Completo" class="form-control"
-                            maxlength="255" required
-                            aria-describedby="nome_completo_modal_usuario_feedback nome_completo_modal_usuario_help" />
-                        <div id="nome_completo_modal_usuario_help" class="form-text">Mínimo de 4 caracteres.</div>
-                        <div id="nome_completo_modal_usuario_feedback" class="invalid-feedback">&nbsp;</div>
+                            maxlength="255" required />
+
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label" for="email_modal_usuario">Email</label>
                         <input id="email_modal_usuario" name="email" class="form-control" type="email"
-                            maxlength="255" required aria-describedby="email_modal_usuario_feedback" />
-                        <div id="email_modal_usuario_feedback" class="invalid-feedback">&nbsp;</div>
-                        <div class="form-text text-muted">O email será usado como login e deve ser único.</div>
+                            maxlength="255" />
+
                     </div>
 
                     <div class="mb-3 d-none" id="div_modal_usuario_senha">
@@ -43,7 +40,7 @@
                             <button type="button" id="btn_modal_usuario_mostrar_senha" class="btn btn-sm btn-outline-secondary d-none"
                                 title="Mostrar senha por 10s">Mostrar</button>
                         </div>
-                        <div id="senha_modal_usuario_feedback" class="invalid-feedback">&nbsp;</div>
+
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -41,7 +41,7 @@ class CategoriaController extends Controller
     public function AtualizarCategoria(Request $request, $id)
     {
         $payload = $request->all();
-        $payload['id_categoria'] = $id;
+        $payload['id_Categoria'] = $id;
         // [ ] validar uso
         return response()->json($this->categoriaModel->AtualizarCategoria($payload));
     }
@@ -50,7 +50,7 @@ class CategoriaController extends Controller
     public function RemoverCategoria(Request $request, $id)
     {
         $payload = $request->all();
-        $payload['id_categoria'] = $id;
+        $payload['id_Categoria'] = $id;
         // [ ] validar uso
         return response()->json($this->categoriaModel->RemoverCategoria($payload));
     }

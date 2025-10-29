@@ -47,7 +47,7 @@ IF OBJECT_ID('RH.Tbl_Categorias', 'U') IS NULL
 BEGIN
     CREATE TABLE RH.Tbl_Categorias
     (
-        id_categoria INT IDENTITY(1,1) PRIMARY KEY,
+        id_Categoria INT IDENTITY(1,1) PRIMARY KEY,
         nome_Categoria NVARCHAR(200) NOT NULL,
         descricao_Categoria NVARCHAR(1000) NULL,
         criado_Usuario_id INT NOT NULL,
@@ -73,7 +73,7 @@ BEGIN
         dat_atualizado_em DATETIME2(3) NULL,
         cancelamento_Usuario_id INT,
         dat_cancelamento_em DATETIME2(3) NULL,
-        CONSTRAINT FK_Tbl_Grupos_Categorias FOREIGN KEY (categoria_id) REFERENCES RH.Tbl_Categorias(id_categoria)
+        CONSTRAINT FK_Tbl_Grupos_Categorias FOREIGN KEY (categoria_id) REFERENCES RH.Tbl_Categorias(id_Categoria)
     );
 END
 

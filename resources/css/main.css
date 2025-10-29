@@ -701,3 +701,17 @@ main{
         font-size: 0.95rem;
     }
 }
+
+
+/* ====================================
+   ESTILOS GLOBAIS PARA DATATABLES
+   ==================================== */
+
+/* Coluna de ações um pouco maior */
+.dataTable td.child {
+     word-wrap: break-word !important;
+    word-break: break-word !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+}
+

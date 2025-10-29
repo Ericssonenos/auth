@@ -94,7 +94,12 @@ class LoginController extends Controller
         $modelPermissao = new permissaoModel();
         // id_Usuario traz as permissões ativas
         // usuario_id traz todas as permissões com flag (possui ou não)
-        $permissoes_usuario = $modelPermissao->ObterLoginPermissoes(['id_Usuario' => $dadosUsuario['id_Usuario']]);
+        $permissoes_usuario = $modelPermissao->ObterPermissoes(
+            [
+                'id_Usuario' => $dadosUsuario['id_Usuario'],
+                'fn' => 'fn-do-usuario'
+            ]
+        );
 
         // Verificar se a resposta contém permissões
         if ($permissoes_usuario['status'] == 200) {
@@ -129,7 +134,7 @@ class LoginController extends Controller
         Session::forget('dados_usuario_sessao');
         return redirect()->route('login');
     }
-      /**
+    /**
      * Gera uma nova senha temporária para o usuário e retorna a senha gerada (JSON).
      */
     public function GerarNovaSenha(Request $request, $id)

@@ -7,7 +7,7 @@
             <h1> Sistema de Gerenciamento de Permissões</h1>
         </div>
 
-        <div class=" shadow-sm">
+        <div >
 
             <div class="card-header bg-white">
                 <ul class="nav nav-tabs card-header-pills mb-0">

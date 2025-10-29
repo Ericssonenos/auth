@@ -1,10 +1,44 @@
 
 @baseUrl = http://localhost:8080
 
-### POST para API (sem CSRF) - prefix /api é automático
-POST {{baseUrl}}/api/rh/usuarios/dados
+### 1. Fazer login via API (sem CSRF)
+# @name doLogin
+POST {{baseUrl}}/api/login
+Content-Type: application/json
+
+{
+    "email": "seu-email@exemplo.com",
+    "senha": "sua-senha"
+}
+
+###
+
+### 2. Acessar API de grupos (com sessão do login)
+POST {{baseUrl}}/api/rh/grupo/dados
 Content-Type: application/json
 
 {
 
 }
+
+### 3. Carregar select de categorias via API
+###
+POST {{baseUrl}}/api/rh/categoria/dados
+Content-Type: application/json
+
+## 4. Excluir grupo via API
+###
+DELETE {{baseUrl}}/api/rh/grupo/deletar/4
+Content-Type: application/json
+
+
+## 5. Obter permissões de um grupo via API
+###
+POST {{baseUrl}}/api/rh/permissao/dados
+Content-Type: application/json
+
+{
+    "Grupo_id": 4,
+    "fn": "fn-grupo-status"
+}
+

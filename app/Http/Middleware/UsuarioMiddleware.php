@@ -43,7 +43,12 @@ class UsuarioMiddleware
                 $permissaoModel = new permissaoModel();
                 // id_Usuario traz as permissões ativas
                 // usuario_id traz todas as permissões com flag (possui ou não)
-                $permissoes_usuario = $permissaoModel->ObterLoginPermissoes(['id_Usuario' => $dados['id_Usuario']]);
+                $permissoes_usuario = $permissaoModel->ObterPermissoes(
+                    [
+                        'id_Usuario' => $dados['id_Usuario'],
+                        'fn' => 'fn-do-usuario'
+                    ]
+                );
 
                 // Verificar se a resposta contém permissões
                 if ($permissoes_usuario['status'] == 200) {
@@ -84,7 +89,7 @@ class UsuarioMiddleware
                 $permissaoModel = new permissaoModel();
                 foreach ($cod_permissoes_necessarias as $cod_permissao) {
                     // Verifica se a permissão já existe
-                    $permissaoExistente = $permissaoModel->ObterRHPermissoes([
+                    $permissaoExistente = $permissaoModel->ObterPermissoes([
                         'cod_permissao' => $cod_permissao,
                         'fn' => 'middleware-se-existe'
                     ])['data'] ?? null;

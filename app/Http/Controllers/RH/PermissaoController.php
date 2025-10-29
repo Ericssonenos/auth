@@ -18,9 +18,9 @@ class PermissaoController extends Controller
     /**
      * Retorna todas as permissões com flag indicando se o usuário já possui cada uma.
      */
-    public function ObterRHPermissoes(Request $request)
+    public function ObterPermissoes(Request $request)
     {
-        $respostaDadosPermissao = $this->permissaoModel->ObterRHPermissoes($request->all());
+        $respostaDadosPermissao = $this->permissaoModel->ObterPermissoes($request->all());
         return response()->json($respostaDadosPermissao, $respostaDadosPermissao['status']);
     }
 }
