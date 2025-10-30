@@ -32,7 +32,7 @@
         <header class="header">
           <div class="brand">
             <img src="{{ asset('favicon.png') }}" alt="Logo" class="brand-logo" />
-            <span class="brand-name">SUPPLYTEK</span>
+            <span class="brand-name">MENU</span>
           </div>
 
           <div class="nav-actions">
@@ -50,35 +50,37 @@
           </div>
         </header>
 
-        <nav class="navbar st-metal" aria-label="Primary navigation">
-          <div class="nav">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom" aria-label="Navegação principal">
+          <a class="navbar-brand d-lg-none" href="{{ route('home.view') }}">SUPPLYTEK</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Alternar navegação">
+            <span class="navbar-toggler-icon"></span>
+          </button>
 
-            <a class="active" href="{{ route('home.view') }}"><i class="bi bi-house-door-fill" aria-hidden="true"></i> Início</a>
+          <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('home.view') ? 'active' : '' }}" href="{{ route('home.view') }}">
+                  <i class="bi bi-house-door-fill me-1" aria-hidden="true"></i>
+                  Início
+                </a>
+              </li>
 
-            <div class="dropdown">
-              <a href="#" aria-haspopup="true" aria-expanded="false"><i class="bi bi-bar-chart" aria-hidden="true"></i> Relatórios ▾</a>
-              <div class="dropdown-menu" role="menu" aria-label="Relatórios">
-                @href_permissa('relatorios.vendas', 'Vendas', 'bi bi-currency-dollar')
-                @href_permissa('relatorios.logistica', 'Logística', 'bi bi-truck')
-                @href_permissa('relatorios.financeiro', 'Financeiro', 'bi bi-wallet2')
-                @href_permissa('usuario.view', 'Cadastros', 'bi bi-people')
-              </div>
-            </div>
-
-            <div class="dropdown">
-              <a href="#" aria-haspopup="true" aria-expanded="false"><i class="bi bi-shield-lock" aria-hidden="true"></i> Permissões ▾</a>
-              <div class="dropdown-menu" role="menu" aria-label="Configurações">
-                @href_permissa('usuario.view', 'Usuários', 'bi bi-people')
-
-                @href_permissa('grupos.view', 'Grupos', 'bi bi-people-fill')
-              </div>
-            </div>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRelatorios" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-bar-chart me-1" aria-hidden="true"></i>
+                  Relatórios
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownRelatorios" role="menu">
+                  <li>@href_permissa('relatorios.vendas', 'Vendas', 'bi bi-currency-dollar', 'dropdown-item')</li>
+                  <li>@href_permissa('relatorios.logistica', 'Logística', 'bi bi-truck', 'dropdown-item')</li>
+                  <li>@href_permissa('relatorios.financeiro', 'Financeiro', 'bi bi-wallet2', 'dropdown-item')</li>
+                  <li>@href_permissa('usuario.view', 'Cadastros', 'bi bi-people', 'dropdown-item')</li>
+                </ul>
+              </li>
 
 
-
+            </ul>
           </div>
-
-
         </nav>
     @endif
 

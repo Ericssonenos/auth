@@ -126,9 +126,6 @@ main{
     transform: translateY(2px);
 }
 
-/* ===========================
-   CABEÇALHO + NAVBAR (atualizado para metal escovado)
-   =========================== */
 
 .header {
     display: flex;
@@ -170,156 +167,6 @@ main{
     font-family: "Glacial Indifference", system-ui, sans-serif;
 }
 
-.nav {
-    display: flex;
-    align-items: center;
-    margin-left: 30px;
-    gap: 22px;
-    font-size: 0.95rem;
-    height: 40px;
-    background: transparent;
-    overflow: visible;
-}
-
-/* Navbar principal (metal escovado elegante) */
-.navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    /* posiciona filtros à direita */
-    padding: 8px 12px;
-    height: 48px;
-    border-radius: 0;
-    /* removido arredondamento */
-    position: relative;
-    overflow: visible;
-
-    /* Base metálica com gradiente suave das cores oficiais */
-    background: linear-gradient(145deg,
-            #8f9295 0%,
-            /* var(--st-gray-hi) mais claro */
-            #77797b 30%,
-            /* var(--st-gray) */
-            #5f6467 70%,
-            /* var(--st-gray-lo) mais escuro */
-            #77797b 100%);
-    /* volta ao cinza base */
-
-    /* Sombras elegantes para relevo discreto */
-    box-shadow:
-        inset 0 1px 2px rgba(255, 255, 255, 0.15),
-        /* brilho superior suave */
-        inset 0 -1px 2px rgba(0, 0, 0, 0.20),
-        /* sombra inferior suave */
-        0 3px 8px rgba(0, 0, 0, 0.12);
-    /* sombra externa leve */
-
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-}
-
-/* Brilho metálico refinado no topo */
-.navbar::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 40%;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0));
-    pointer-events: none;
-}
-
-/* Textura escovada horizontal muito sutil */
-.navbar::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: repeating-linear-gradient(0deg,
-            transparent 0px,
-            rgba(255, 255, 255, 0.015) 1px,
-            transparent 2px);
-    pointer-events: none;
-}
-
-/* faixa de brilho diagonal sutil para simular aço escovado reflexivo */
-.navbar::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(120deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0) 20%);
-    mix-blend-mode: screen;
-    opacity: 0.8;
-}
-
-/* linha inferior levemente elevada (efeito flange) */
-.navbar::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 2px;
-    pointer-events: none;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.18));
-}
-
-/* ajuste fino nos itens para legibilidade sobre metal */
-.st-metal .nav a {
-    color: #f4f7fb;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.nav-tabs .nav-link {
-    color: #787d85e1;
-    text-shadow: 0 1px 0 rgba(48, 45, 45, 0.342);
-    text-decoration: none;
-    cursor: pointer;
-}
-
-
-
-/* Dropdown */
-.dropdown {
-    position: relative;
-}
-
-.dropdown-menu {
-    position: absolute;
-    /* posiciona o menu colado ao trigger (evita lacuna que fecha o menu ao mover o mouse) */
-    top: calc(100% + 1px);
-    left: 0;
-    min-width: 220px;
-    background: #141922;
-    padding: 8px;
-    box-shadow: var(--st-shadow-2);
-    border: 1px solid rgba(255, 255, 255, .06);
-    display: none;
-    z-index: 400;
-}
-
-/* manter aberto quando o trigger ou o próprio menu tiverem hover/foco (melhora acessibilidade) */
-.dropdown:hover .dropdown-menu,
-.dropdown:focus-within .dropdown-menu,
-.dropdown .dropdown-menu:hover {
-    display: block;
-}
-
-.dropdown-menu a {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 12px;
-    color: #3e4398 !important;
-    text-decoration: none;
-}
-
-.dropdown-menu a:hover {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.18)) ;
-}
 
 
 .navbar a.nao-autorizado:hover {
@@ -333,12 +180,7 @@ main{
     color: rgba(226, 12, 12, 0.45);
 }
 
-/* Ações do usuário */
-.nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+
 
 .user-name {
     font-weight: 600;

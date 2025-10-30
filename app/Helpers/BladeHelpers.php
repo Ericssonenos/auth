@@ -11,7 +11,7 @@ class BladeHelpers
      * Gera a tag <a> condicionada à permissão da rota.
      * Recebe: nomeRota (string), innerHtml (string|null), icon (string|null)
      */
-    public static function hrefPermissa(string $nomeRota, $innerHtml = null, $icon = null): string
+    public static function hrefPermissa(string $nomeRota, $innerHtml = null, $icon = null, string $extraClasses = ''): string
     {
         $dadosUsuario = app(usuarioServices::class);
 
@@ -45,12 +45,18 @@ class BladeHelpers
             $href = '#';
         }
 
+        $classeFormatada = trim($extraClasses);
+
         if ($autorizado) {
-            return '<a href="' . e($href) . '" role="menuitem">' . $innerHtml . '</a>';
+            $classe = $classeFormatada !== '' ? ' class="' . e($classeFormatada) . '"' : '';
+            return '<a href="' . e($href) . '"' . $classe . ' role="menuitem">' . $innerHtml . '</a>';
         }
 
         // se não autorizado, mas expoem a rota mesmo assim. obs Não tire a rota da tag, pois pode ser útil para SEO e acessibilidade
-        return '<a href="' . e($href) . '" title="Acesso Negado" class="nao-autorizado" aria-disabled="true" role="menuitem">' . $innerHtml . '</a>';
+        $classesNaoAutorizado = trim('nao-autorizado ' . $classeFormatada);
+        $classe = $classesNaoAutorizado !== '' ? ' class="' . e($classesNaoAutorizado) . '"' : '';
+
+        return '<a href="' . e($href) . '" title="Acesso Negado"' . $classe . ' aria-disabled="true" role="menuitem">' . $innerHtml . '</a>';
     }
 
     /**
