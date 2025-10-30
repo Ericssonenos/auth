@@ -78,8 +78,7 @@
 
           </div>
 
-          <!-- Filtros à direita da navbar -->
-          <button class="filters-toggle" id="filtersToggle"><i class="bi bi-funnel" aria-hidden="true"></i> Filtros</button>
+
         </nav>
     @endif
 

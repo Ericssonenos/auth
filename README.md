@@ -26,4 +26,5 @@ php -S 0.0.0.0:${PORT} -t public
 
 
 Custom Build Command
-composer install --no-dev --optimize-autoloader && npm run build
+composer install --no-dev --optimize-autoloader && npm install  && npm run build
+  
