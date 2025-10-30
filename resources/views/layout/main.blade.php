@@ -39,7 +39,7 @@
 
 
             @usuarioLogado
-              <span class="user-name">{{ $dadosUsuario->nome_Completo ?? 'Usuário' }}</span>
+              <span class="user-name">{{ $dadosUsuario->nome_completo ?? 'Usuário' }}</span>
               <form method="POST" action="{{ route('logout') }}" class="m-0">
                 @csrf
                 <button type="submit" class="btn btn-ghost">Sair</button>

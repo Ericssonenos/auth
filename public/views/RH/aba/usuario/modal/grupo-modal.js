@@ -29,7 +29,7 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
     $('#modalGruposTitulo').text('Grupos do usuário: ' + (rowData?.email || '??'));
 
     // atualizar variável global
-    id_usuario_selecionado = rowData?.id_usuario ?? rowData?.id_Usuario ?? null;
+    id_usuario_selecionado = rowData?.id_usuario ?? rowData?.id_usuario ?? null;
 
 
     // inicializar ou recarregar DataTable de grupos

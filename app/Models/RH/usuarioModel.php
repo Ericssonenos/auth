@@ -323,7 +323,7 @@ class usuarioModel extends Model
     public function CadastrarUsuarios($params)
     {
         try {
-            $nomeCompleto = $params['nome_completo'] ?? $params['nome_Completo'] ?? null;
+            $nomeCompleto = $params['nome_completo'] ?? $params['nome_completo'] ?? null;
             $email = $params['email'] ?? null;
             $senhaGerada = bin2hex(random_bytes(4));
             $criadoUsuarioId = $this->obterUsuarioAutenticadoId();
@@ -456,15 +456,15 @@ class usuarioModel extends Model
     }
 
     /**
-     * Atualiza apenas o nome_Completo do usuário.
+     * Atualiza apenas o nome_completo do usuário.
      */
     public function AtualizarUsuarios($params)
     {
         try {
             $usuario_id = $params['usuario_id'];
-            $nome_Completo = $params['nome_completo'] ?? $params['nome_Completo'] ?? null;
+            $nome_completo = $params['nome_completo'] ?? $params['nome_completo'] ?? null;
 
-            if (is_null($nome_Completo)) {
+            if (is_null($nome_completo)) {
                 return [
                     'status' => 400,
                     'mensagem' => 'nome_completo é obrigatório.',
@@ -474,7 +474,7 @@ class usuarioModel extends Model
 
             $consultaSql = "UPDATE rh.tb_usuarios SET nome_completo = :nome_completo WHERE id_usuario = :id_usuario AND dat_cancelamento_em IS NULL";
             $cmd = $this->conexao->prepare($consultaSql);
-            $cmd->execute([':nome_completo' => $nome_Completo, ':id_usuario' => $usuario_id]);
+            $cmd->execute([':nome_completo' => $nome_completo, ':id_usuario' => $usuario_id]);
             $rows = $cmd->rowCount();
             if ($rows == 0) {
                 return [
@@ -538,7 +538,7 @@ class usuarioModel extends Model
             return (int) $usuarioService->id_usuario;
         }
 
-        return (int) ($usuarioService->id_Usuario ?? 0);
+        return (int) ($usuarioService->id_usuario ?? 0);
     }
 
 

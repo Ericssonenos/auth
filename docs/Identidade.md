@@ -235,7 +235,7 @@ Exemplo mínimo de uso (HTML/Blade):
   </div>
   <div class="nav-actions">
     <button class="filters-toggle">🔎 Filtros</button>
-    <span class="user-name">{{ $dadosUsuario->nome_Completo ?? 'Visitante' }}</span>
+    <span class="user-name">{{ $dadosUsuario->nome_completo ?? 'Visitante' }}</span>
     @usuarioLogado
       <form method="POST" action="{{ route('logout') }}" class="m-0">@csrf
         <button type="submit" class="btn btn-ghost">Sair</button>

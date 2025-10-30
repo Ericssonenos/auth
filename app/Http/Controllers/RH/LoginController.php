@@ -92,11 +92,11 @@ class LoginController extends Controller
 
 
         $modelPermissao = new permissaoModel();
-        // id_Usuario traz as permissões ativas
+        // id_usuario traz as permissões ativas
         // usuario_id traz todas as permissões com flag (possui ou não)
         $permissoes_usuario = $modelPermissao->ObterPermissoes(
             [
-                'id_Usuario' => $dadosUsuario['id_Usuario'],
+                'id_usuario' => $dadosUsuario['id_usuario'],
                 'fn' => 'fn-do-usuario'
             ]
         );
@@ -203,7 +203,7 @@ class LoginController extends Controller
         $dadosUsuario = $resultadoStatus_Usuario['data'][0];
 
 
-        $usuarioId = $dadosUsuario['id_Usuario'];
+        $usuarioId = $dadosUsuario['id_usuario'];
 
         $resultado = $this->usuarioModel->AtualizarSenha([
             'usuario_id' => $usuarioId,

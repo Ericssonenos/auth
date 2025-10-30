@@ -355,6 +355,6 @@ class grupoModel extends Model
             return (int) $usuarioService->id_usuario;
         }
 
-        return (int) ($usuarioService->id_Usuario ?? 0);
+        return (int) ($usuarioService->id_usuario ?? 0);
     }
 }

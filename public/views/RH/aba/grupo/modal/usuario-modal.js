@@ -245,7 +245,7 @@ $('#tb_modal_grupo_usuario').on('click', '.btn-modal-usuario-toggle', function (
     // se id_rel_usuario_grupo não existir
     // é porque não exite vinculo, então atribuir
     if (!dados_usuario.id_rel_usuario_grupo) {
-        Atribuir_usuario_Grupo_Modal(dados_usuario.id_usuario ?? dados_usuario.id_Usuario ?? dados_usuario.idUsuario, btn);
+        Atribuir_usuario_Grupo_Modal(dados_usuario.id_usuario ?? dados_usuario.id_usuario ?? dados_usuario.idUsuario, btn);
     } else {
         // se existir, remover o vinculo
         const idRelacao = dados_usuario.id_rel_usuario_grupo ?? dados_usuario.id_relUsuarioGrupo ?? dados_usuario.idRelUsuarioGrupo;

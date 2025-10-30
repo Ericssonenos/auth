@@ -20,7 +20,7 @@
 
                         <label class="form-label" for="nome_completo_modal_usuario">Nome</label>
                         <!-- ter no minimo 4 caracteres -->
-                        <input id="nome_completo_modal_usuario" minlength="4" name="nome_Completo" class="form-control"
+                        <input id="nome_completo_modal_usuario" minlength="4" name="nome_completo" class="form-control"
                             maxlength="255" required />
 
                     </div>

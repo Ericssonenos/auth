@@ -100,7 +100,7 @@ class UsuarioController extends Controller
 
 
     /**
-     * Atualiza apenas o nome_Completo do usuário identificado por id.
+     * Atualiza apenas o nome_completo do usuário identificado por id.
      */
     public function AtualizarUsuarios(Request $request, $usuario_id)
     {

@@ -38,11 +38,11 @@ $('#tb_usuario')
         $('#titulo_modal_usuario').text('Editar usuário');
 
         // atualizar variável global
-    const usuarioId = rowData?.id_usuario ?? rowData?.id_Usuario ?? null;
+    const usuarioId = rowData?.id_usuario ?? rowData?.id_usuario ?? null;
     id_usuario_selecionado = usuarioId;
 
     // preencher formulário com os dados do usuário
-    $('#nome_completo_modal_usuario').val(rowData?.nome_completo ?? rowData?.nome_Completo ?? '');
+    $('#nome_completo_modal_usuario').val(rowData?.nome_completo ?? rowData?.nome_completo ?? '');
     $('#email_modal_usuario').val(rowData?.email ?? '');
 
         // desabilitar campo de email
@@ -212,7 +212,7 @@ $('#btn_modal_usuario_salvar').on('click', function () {
         const nomeCompleto = $('#nome_completo_modal_usuario').val();
         const payload = {
             nome_completo: nomeCompleto,
-            nome_Completo: nomeCompleto,
+            nome_completo: nomeCompleto,
             email: $('#email_modal_usuario').val(),
         };
 
@@ -246,7 +246,7 @@ $('#btn_modal_usuario_salvar').on('click', function () {
                     // retirar botão de gerar senha para evitar múltiplos cliques rápidos
 
                     // se a API retornar lastId, preencher o id no modal para permitir gerar nova senha / edição
-                    const novoId = resposta.data?.id_usuario ?? resposta.data?.id_Usuario ?? resposta.data?.lastId;
+                    const novoId = resposta.data?.id_usuario ?? resposta.data?.id_usuario ?? resposta.data?.lastId;
                     if (novoId) {
                         id_usuario_selecionado = novoId;
                         $('#email_modal_usuario').prop('disabled', true);
@@ -276,7 +276,7 @@ $('#btn_modal_usuario_salvar').on('click', function () {
         const nomeCompleto = $('#nome_completo_modal_usuario').val();
         const payload = {
             nome_completo: nomeCompleto,
-            nome_Completo: nomeCompleto,
+            nome_completo: nomeCompleto,
         };
         // atualizar (usa mesmo molde de retorno/erros que o POST de cadastro)
         $.ajax({

@@ -13,10 +13,10 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
     $('#titulo_modal_usuario_permissao').text('Permissões do usuário: ' + (rowData?.email || '??'));
 
     // atualizar variável global
-    id_usuario_selecionado = rowData?.id_usuario ?? rowData?.id_Usuario ?? null;
+    id_usuario_selecionado = rowData?.id_usuario ?? rowData?.id_usuario ?? null;
 
     // inicializar ou recarregar DataTable de permissões
-    // passar o id_Usuario pelo body da requisição POST
+    // passar o id_usuario pelo body da requisição POST
     if (!tb_modal_usuario_permissao) {
         tb_modal_usuario_permissao = $('#tb_modal_usuario_permissao').DataTable({
             ajax: {

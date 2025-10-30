@@ -9,8 +9,8 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [RH].[Tbl_Usuarios](
-	[id_Usuario] [int] IDENTITY(1,1) NOT NULL,
-	[nome_Completo] [nvarchar](200) NULL,
+	[id_usuario] [int] IDENTITY(1,1) NOT NULL,
+	[nome_completo] [nvarchar](200) NULL,
 	[email] [nvarchar](200) NULL,
 	[senha] [nvarchar](200) NULL,
 	[b_senha_Temporaria] [bit] NULL,
@@ -25,7 +25,7 @@ CREATE TABLE [RH].[Tbl_Usuarios](
 	[dat_cancelamento_em] [datetime2](3) NULL,
  CONSTRAINT [PK__Tbl_Usua__8E901EAA146FE352] PRIMARY KEY CLUSTERED
 (
-	[id_Usuario] ASC
+	[id_usuario] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
@@ -69,7 +69,7 @@ ALTER TABLE [RH].[Tbl_Rel_Usuarios_Permissoes] CHECK CONSTRAINT [FK_Rel_Usuario_
 GO
 
 ALTER TABLE [RH].[Tbl_Rel_Usuarios_Permissoes]  WITH CHECK ADD  CONSTRAINT [FK_Rel_Usuario_Permissao_Usuario] FOREIGN KEY([Usuario_id])
-REFERENCES [RH].[Tbl_Usuarios] ([id_Usuario])
+REFERENCES [RH].[Tbl_Usuarios] ([id_usuario])
 GO
 
 ALTER TABLE [RH].[Tbl_Rel_Usuarios_Permissoes] CHECK CONSTRAINT [FK_Rel_Usuario_Permissao_Usuario]
@@ -111,7 +111,7 @@ ALTER TABLE [RH].[Tbl_Rel_Usuarios_Grupos] CHECK CONSTRAINT [FK_Rel_Usuario_Grup
 GO
 
 ALTER TABLE [RH].[Tbl_Rel_Usuarios_Grupos]  WITH CHECK ADD  CONSTRAINT [FK_Rel_Usuario_Grupos_Usuario] FOREIGN KEY([Usuario_id])
-REFERENCES [RH].[Tbl_Usuarios] ([id_Usuario])
+REFERENCES [RH].[Tbl_Usuarios] ([id_usuario])
 GO
 
 ALTER TABLE [RH].[Tbl_Rel_Usuarios_Grupos] CHECK CONSTRAINT [FK_Rel_Usuario_Grupos_Usuario]

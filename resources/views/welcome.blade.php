@@ -4,7 +4,7 @@
 
 @section('content')
     <h1>RH Access Demo</h1>
-    <p>Matrícula: {{ $dadosUsuario->nome_Completo ?? 'N/A' }}</p>
+    <p>Matrícula: {{ $dadosUsuario->nome_completo ?? 'N/A' }}</p>
 
     <hr />
 

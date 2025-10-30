@@ -15,7 +15,7 @@ class UsuarioMiddleware
         $dados = session('dados_usuario_sessao', null);
         // Verifica se o usuário está devidamente autenticado no sistema
         //[ ] testar acesso dia api ajax sem estar logado
-        if (empty($dados['id_Usuario'])) {
+        if (empty($dados['id_usuario'])) {
 
             // Se a requisição espera JSON (API), retorna resposta JSON
             // ou se na rota contem api/
@@ -41,11 +41,11 @@ class UsuarioMiddleware
             // Recarregar permissões do usuário via model (mesma lógica do LoginController)
             try {
                 $permissaoModel = new permissaoModel();
-                // id_Usuario traz as permissões ativas
+                // id_usuario traz as permissões ativas
                 // usuario_id traz todas as permissões com flag (possui ou não)
                 $permissoes_usuario = $permissaoModel->ObterPermissoes(
                     [
-                        'id_Usuario' => $dados['id_Usuario'],
+                        'id_usuario' => $dados['id_usuario'],
                         'fn' => 'fn-do-usuario'
                     ]
                 );
@@ -98,7 +98,7 @@ class UsuarioMiddleware
                         $params = [
                             'cod_permissao' => $cod_permissao,
                             'descricao_permissao' => 'Permissão criada automaticamente em modo debug.',
-                            'criado_Usuario_id' => 1 // $dados['id_Usuario'] ??
+                            'criado_Usuario_id' => 1 // $dados['id_usuario'] ??
 
                         ];
                         $permissaoModel->CriarPermissao($params);

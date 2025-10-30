@@ -20,7 +20,7 @@ class RHModelsSmokeTest extends TestCase
         // 2) Criar 2 permissoes
         // 3) Criar grupo vinculado à categoria
         // 4) Atribuir permissoes ao grupo
-        // 5) Atribuir grupo ao usuario (usar id_Usuario existente C000000)
+        // 5) Atribuir grupo ao usuario (usar id_usuario existente C000000)
         // 6) Verificar ObterPermissoesUsuario retorna as permissoes atribuídas via grupo
 
         // Recomenda-se executar manualmente o arquivo tests/smoke/rh_models_smoke.php para inspeção interativa.

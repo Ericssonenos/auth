@@ -42,9 +42,9 @@ class permissaoModel extends Model
             // seja diretamente ou via grupo
 
             // id_usuario pra se relacionar com permissões diretas
-            $execParams[':id_usuario_permissao'] = $params['id_usuario'] ?? $params['id_Usuario'];
+            $execParams[':id_usuario_permissao'] = $params['id_usuario'] ?? $params['id_usuario'];
             // id_usuario pra se relacionar com permissões via grupo
-            $execParams[':id_usuario_grupo'] = $params['id_usuario'] ?? $params['id_Usuario'];
+            $execParams[':id_usuario_grupo'] = $params['id_usuario'] ?? $params['id_usuario'];
 
             // 1 select no Union
             $consultaSql = "SELECT
@@ -307,6 +307,6 @@ class permissaoModel extends Model
             return (int) $usuarioService->id_usuario;
         }
 
-        return (int) ($usuarioService->id_Usuario ?? 0);
+        return (int) ($usuarioService->id_usuario ?? 0);
     }
 }
