@@ -194,7 +194,7 @@ $('#tb_modal_usuario_permissao').off('click', '.btn-modal-permissao-toggle').on(
             },
             dataType: 'json',
             success: function (resposta) {
-                if (resposta?.status == 201) {
+                if (resposta?.status == 200) {
                     window.alerta?.sucesso?.(resposta.mensagem);
                     tb_modal_usuario_permissao.ajax.reload(null, false);
                 } else {

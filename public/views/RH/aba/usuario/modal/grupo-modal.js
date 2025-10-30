@@ -40,7 +40,7 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
                 url: '/api/rh/grupo/dados',
                 data: function (d) {
                     d.usuario_id = id_usuario_selecionado;
-                    d.fn = 'fn-do-usuario';
+                    d.fn = 'fn-usuario-status';
                     d.order_by = 'CASE WHEN rug.id_rel_usuario_grupo IS NOT NULL THEN 1 ELSE 0 END, g.nome_Grupo';
                     return d;
                 },

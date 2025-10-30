@@ -42,3 +42,12 @@ Content-Type: application/json
     "fn": "fn-grupo-status"
 }
 
+## 6. obter dados do usuário com status dos grupos via API
+###
+POST {{baseUrl}}/api/rh/usuario/dados
+Content-Type: application/json
+
+{
+    "fn": "fn-grupo-status",
+    "grupo_id": 1
+}

@@ -47,7 +47,7 @@ class UsuarioController extends Controller
 
         // [x] validar uso
         // Se atribuição foi bem sucedida, atualiza versão de permissões para o usuário afetado
-        if ($respostaStatusAtribuicao['status']==201) {
+        if ($respostaStatusAtribuicao['status']== 200) {
             Cache::put("versao_permissao_global", time());
         }
 
@@ -60,7 +60,7 @@ class UsuarioController extends Controller
         $respostaStatusAtribuicao = $this->usuarioModel->AtribuirGrupo($request->all());
 
         // [ ] validar uso
-        if ($respostaStatusAtribuicao['status'] == 201) {
+        if ($respostaStatusAtribuicao['status'] == 200) {
             Cache::put("versao_permissao_global", time());
         }
 
@@ -75,7 +75,7 @@ class UsuarioController extends Controller
         $respostaStatusRemocao = $this->usuarioModel->RemoverPermissoes($payload);
 
         // [x] validar uso
-        if ($respostaStatusRemocao['status'] === 201) {
+        if ($respostaStatusRemocao['status'] === 200) {
             Cache::put("versao_permissao_global", time());
         }
 
@@ -90,7 +90,7 @@ class UsuarioController extends Controller
         $respostaStatusRemocao = $this->usuarioModel->RemoverGrupo($payload);
 
         // [ ] validar uso
-        if ($respostaStatusRemocao['status'] === 201) {
+        if ($respostaStatusRemocao['status'] === 200) {
             Cache::put("versao_permissao_global", time());
         }
 
@@ -120,7 +120,7 @@ class UsuarioController extends Controller
 
         $respostaStatusDeletar = $this->usuarioModel->DeletarUsuarios($payload);
 
-        if($respostaStatusDeletar['status'] === 201) {
+        if($respostaStatusDeletar['status'] === 200) {
             Cache::put("versao_permissao_global", time());
         }
 

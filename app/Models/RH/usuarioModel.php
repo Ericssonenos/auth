@@ -74,22 +74,43 @@ class usuarioModel extends Model
     public function ObterDadosUsuarios($params)
     {
 
-        $parametrizacao = Operacao::Parametrizar($params);
-        // Verifica se houve erro na parametrização
-        if ($parametrizacao['status'] !== 200) {
-            return [
-                'status' => $parametrizacao['status'],
-                'mensagem' => $parametrizacao['mensagem'],
-                'data' => []
-            ];
-        }
 
-        $whereParams = $parametrizacao['whereParams'];
-        $optsParams  = $parametrizacao['optsParams'];
-        $execParams  = $parametrizacao['execParams'];
+        $fn = $params['fn'] ?? null;
 
-        //montar a consulta SQL
-        $consultaSql = "SELECT
+        if ($fn === 'fn-grupo-status') {
+            // este traz os usuários vinculados a um grupo específico
+            $execParams[':grupo_id'] = $params['grupo_id'];
+            $consultaSql = "SELECT
+                        u.id_Usuario,
+                        u.nome_Completo,
+                        u.email,
+                        u.dat_criado_em,
+                        rug.id_rel_usuario_grupo
+                    FROM RH.Tbl_Usuarios u
+                    LEFT JOIN RH.Tbl_Rel_Usuarios_Grupos rug
+                        ON u.id_Usuario = rug.usuario_id
+                        AND rug.grupo_id = :grupo_id
+                        AND rug.dat_cancelamento_em IS NULL
+                    WHERE u.dat_cancelamento_em IS NULL
+                    ORDER BY CASE WHEN rug.id_rel_usuario_grupo IS NOT NULL THEN 1 ELSE 0 END, u.nome_Completo";
+        } else {
+
+            $parametrizacao = Operacao::Parametrizar($params);
+            // Verifica se houve erro na parametrização
+            if ($parametrizacao['status'] !== 200) {
+                return [
+                    'status' => $parametrizacao['status'],
+                    'mensagem' => $parametrizacao['mensagem'],
+                    'data' => []
+                ];
+            }
+
+            $whereParams = $parametrizacao['whereParams'];
+            $optsParams  = $parametrizacao['optsParams'];
+            $execParams  = $parametrizacao['execParams'];
+
+            //montar a consulta SQL
+            $consultaSql = "SELECT
                         id_Usuario,
                         nome_Completo,
                         email,
@@ -104,10 +125,13 @@ class usuarioModel extends Model
                         criado_Usuario_id
                     FROM RH.Tbl_Usuarios
                     WHERE dat_cancelamento_em IS NULL"
-            . implode(' ', $whereParams)
-            . ($optsParams['order_by']   ?? '')
-            . ($optsParams['limit']      ?? '')
-            . ($optsParams['offset']     ?? '');
+                . implode(' ', $whereParams)
+                . ($optsParams['order_by']   ?? '')
+                . ($optsParams['limit']      ?? '')
+                . ($optsParams['offset']     ?? '');
+        }
+
+
 
         try {
             $comando = $this->conexao->prepare($consultaSql);
@@ -169,7 +193,7 @@ class usuarioModel extends Model
         }
 
         return [
-            'status' => 201,
+            'status' => 200,
             'mensagem' => 'Permissão atribuída.',
             'data' => ['afetadas' => $rows]
         ];
@@ -211,7 +235,7 @@ class usuarioModel extends Model
         }
 
         return [
-            'status' => 201,
+            'status' => 200,
             'mensagem' => 'Grupo atribuído.',
             'data' => ['afetadas' => $rows]
         ];
@@ -287,11 +311,7 @@ class usuarioModel extends Model
                 ];
             }
         } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'mensagem' => $e->getMessage(),
-                'data' => null
-            ];
+            return Operacao::mapearExcecaoPDO($e, $params);
         }
 
         return [
@@ -346,7 +366,7 @@ class usuarioModel extends Model
             return Operacao::mapearExcecaoPDO($e, $params);
         }
         return [
-            'status' => 201,
+            'status' => 200,
             'mensagem' => 'Usuário criado.',
             'data' => ['affected' => $rows, 'senha' => $senhaGerada, 'id_Usuario' => $lastId]
         ];
@@ -492,13 +512,13 @@ class usuarioModel extends Model
             $rows = $comando->rowCount();
             $comando->closeCursor();
 
-           if ($rows == 0) {
-               return [
-                   'status' => 204,
-                   'mensagem' => 'Nenhuma alteração realizada.',
-                   'data' => ['affected' => $rows]
-               ];
-           }
+            if ($rows == 0) {
+                return [
+                    'status' => 204,
+                    'mensagem' => 'Nenhuma alteração realizada.',
+                    'data' => ['affected' => $rows]
+                ];
+            }
         } catch (\Exception $e) {
             return Operacao::mapearExcecaoPDO($e, $params);
         }

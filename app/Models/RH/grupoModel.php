@@ -20,7 +20,7 @@ class grupoModel extends Model
     {
         $fn = $params['fn'] ?? null;
 
-        if ($fn === 'fn-do-usuario') {
+        if ($fn === 'fn-usuario-status') {
             // este traz os grupos vinculados a um usuário específico
             $execParams[':usuario_id'] = $params['usuario_id'];
             $consultaSql = "SELECT

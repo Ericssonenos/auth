@@ -135,6 +135,7 @@ class permissaoModel extends Model
                             FROM RH.Tbl_Permissoes p
                             LEFT JOIN RH.Tbl_Rel_Grupos_Permissoes rgp
                                 ON rgp.permissao_id = p.id_permissao
+                                and rgp.dat_cancelamento_em IS NULL
                             WHERE p.dat_cancelamento_em IS NULL"
                 . implode(' ', $whereParams)
                 . ($optsParams['order_by'] ?? " order by p.cod_permissao ")
@@ -198,7 +199,7 @@ class permissaoModel extends Model
             return Operacao::mapearExcecaoPDO($e, $params);
         }
         return [
-            'status' => 201,
+            'status' => 200,
             'mensagem' => 'Permissão criada com sucesso.',
             'data' => ['affected' => $rows]
         ];

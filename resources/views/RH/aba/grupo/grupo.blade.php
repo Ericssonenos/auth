@@ -11,3 +11,5 @@
 @include('RH.aba.grupo.modal.grupo-modal')
 
 @include('RH.aba.grupo.modal.permissao-modal')
+
+@include('RH.aba.grupo.modal.usuario-modal')
