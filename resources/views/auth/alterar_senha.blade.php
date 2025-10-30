@@ -5,7 +5,7 @@
 @section('header')
     <header class="login-top">
         <div class="d-flex align-items-center justify-content-center gap-3 mx-auto">
-            <img src="{{ asset('favicon.png') }}" alt="Logo" class="logo-img" onerror="this.style.display='none'" />
+            <img src="{{ asset('icon-512.png') }}" alt="Logo" class="logo-img" onerror="this.style.display='none'" />
         </div>
     </header>
 @endsection

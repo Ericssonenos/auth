@@ -6,7 +6,7 @@
 @section('header')
     <header class="login-top">
         <div class="d-flex align-items-center justify-content-center gap-3 mx-auto">
-            <img src="{{ asset('favicon.png') }}" alt="Logo" class="logo-img" onerror="this.style.display='none'" />
+            <img src="{{ asset('icon-512.png') }}" alt="Logo" class="logo-img" onerror="this.style.display='none'" />
         </div>
     </header>
     <style>
@@ -30,7 +30,7 @@
                     <img src="{{ asset('images/apresentacao/logo.png') }}" alt="Logo" class="logo-img me-3"
                         onerror="this.style.display='none'" />
                     <div>
-                        <h3 id="login-title" class="text-h1-login text-center card-title mb-0">Suplay Teck</h3>
+                        <h3 id="login-title" class="text-h1-login text-center card-title mb-0">SUPPLYTEK</h3>
                     </div>
                 </div>
 
