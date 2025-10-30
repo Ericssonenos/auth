@@ -10,6 +10,8 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home.view');
 
+Route::view('em-desenvolvimento', 'pages.em-desenvolvimento')->name('em-desenvolvimento');
+
 
 
 

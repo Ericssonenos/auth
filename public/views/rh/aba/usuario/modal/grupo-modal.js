@@ -211,7 +211,7 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
                 searching: true,
                 info: false,
                 dom: "<''<''t>>" +
-                    "<'d-flex justify-content-between'<''l><''i><''p>>",
+                    "<'d-flex justify-content-between flex-wrap'<''l><''i><''p>>",
                 columns: [
                     { data: 'cod_permissao', title: 'Código' },
                     { data: 'descricao_permissao', title: 'Descrição' }

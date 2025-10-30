@@ -41,11 +41,11 @@
     <section id="catalogo" class="container" style="padding: 12px 0 28px;">
         <h2 style="margin:0 0 12px">Catálogo e Destaques</h2>
         <div style="display:flex;flex-wrap:wrap;gap:14px;">
-            <a class="btn btn-secondary" href="#" aria-label="Ver modelos MIG/MAG"><i class="bi bi-lightning-charge me-1" aria-hidden="true"></i>MIG/MAG</a>
-            <a class="btn btn-secondary" href="#" aria-label="Ver modelos TIG"><i class="bi bi-droplet me-1" aria-hidden="true"></i>TIG</a>
-            <a class="btn btn-secondary" href="#" aria-label="Ver modelos Eletrodo"><i class="bi bi-hammer me-1" aria-hidden="true"></i>MMA</a>
-            <a class="btn btn-secondary" href="#" aria-label="Ver modelos Plasma"><i class="bi bi-scissors me-1" aria-hidden="true"></i>Plasma</a>
-            <a class="btn btn-secondary" href="#" aria-label="Ver acessórios e consumíveis"><i class="bi bi-box-seam me-1" aria-hidden="true"></i>Acessórios</a>
+            <a class="btn btn-secondary" href="{{ route('em-desenvolvimento') }}" aria-label="Ver modelos MIG/MAG"><i class="bi bi-lightning-charge me-1" aria-hidden="true"></i>MIG/MAG</a>
+            <a class="btn btn-secondary" href="{{ route('em-desenvolvimento') }}" aria-label="Ver modelos TIG"><i class="bi bi-droplet me-1" aria-hidden="true"></i>TIG</a>
+            <a class="btn btn-secondary" href="{{ route('em-desenvolvimento') }}" aria-label="Ver modelos Eletrodo"><i class="bi bi-hammer me-1" aria-hidden="true"></i>MMA</a>
+            <a class="btn btn-secondary" href="{{ route('em-desenvolvimento') }}" aria-label="Ver modelos Plasma"><i class="bi bi-scissors me-1" aria-hidden="true"></i>Plasma</a>
+            <a class="btn btn-secondary" href="{{ route('em-desenvolvimento') }}" aria-label="Ver acessórios e consumíveis"><i class="bi bi-box-seam me-1" aria-hidden="true"></i>Acessórios</a>
         </div>
     </section>
 
@@ -55,7 +55,7 @@
             <p style="margin:0 0 12px">Fale com nossos especialistas e receba uma proposta sob medida.</p>
             <div style="display:flex;gap:10px;flex-wrap:wrap">
                 <a href="#contato" class="btn btn-primary" aria-label="Falar com especialista">Falar com especialista</a>
-                <a href="#" class="btn btn-ghost" aria-label="Baixar catálogo em PDF">Baixar catálogo PDF</a>
+                <a href="{{ route('em-desenvolvimento') }}" class="btn btn-ghost" aria-label="Baixar catálogo em PDF">Baixar catálogo PDF</a>
             </div>
         </div>
     </section>

@@ -65,55 +65,55 @@
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMaquinas" role="button"
+                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}" id="navbarDropdownMaquinas" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-gear-wide-connected me-1" aria-hidden="true"></i>
                             Máquinas de Solda
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownMaquinas" role="menu">
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-lightning-charge me-2"
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-lightning-charge me-2"
                                         aria-hidden="true"></i>MIG/MAG</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-droplet me-2"
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-droplet me-2"
                                         aria-hidden="true"></i>TIG</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-hammer me-2"
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-hammer me-2"
                                         aria-hidden="true"></i>MMA (Eletrodo)</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-layers me-2"
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-layers me-2"
                                         aria-hidden="true"></i>Multiprocesso</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-scissors me-2"
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-scissors me-2"
                                         aria-hidden="true"></i>Plasma</a></li>
                         </ul>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCons" role="button"
+                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}" id="navbarDropdownCons" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-box-seam me-1" aria-hidden="true"></i>
                             Consumíveis
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownCons" role="menu">
-                            <li><a class="dropdown-item" href="#">Arames</a></li>
-                            <li><a class="dropdown-item" href="#">Eletrodos</a></li>
-                            <li><a class="dropdown-item" href="#">Gases</a></li>
-                            <li><a class="dropdown-item" href="#">Bicos e Ponteiras</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Arames</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Eletrodos</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Gases</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Bicos e Ponteiras</a></li>
                         </ul>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSol" role="button"
+                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}" id="navbarDropdownSol" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-grid-3x3-gap me-1" aria-hidden="true"></i>
                             Soluções
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownSol" role="menu">
-                            <li><a class="dropdown-item" href="#">Automotiva</a></li>
-                            <li><a class="dropdown-item" href="#">Metalmecânica</a></li>
-                            <li><a class="dropdown-item" href="#">Oil & Gas</a></li>
-                            <li><a class="dropdown-item" href="#">Construção</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Automotiva</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Metalmecânica</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Oil & Gas</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Construção</a></li>
                         </ul>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProc" role="button"
+                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}" id="navbarDropdownProc" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-diagram-3 me-1" aria-hidden="true"></i>
                             Processos Internos
@@ -127,14 +127,14 @@
                         <a class="nav-link" href="#catalogo"><i class="bi bi-journal-text me-1"
                                 aria-hidden="true"></i>Catálogo</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="bi bi-tools me-1"
-                                aria-hidden="true"></i>Assistência Técnica</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="bi bi-tag me-1"
-                                aria-hidden="true"></i>Ofertas</a>
-                    </li>
+            <li class="nav-item">
+            <a class="nav-link" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-tools me-1"
+                aria-hidden="true"></i>Assistência Técnica</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-tag me-1"
+                aria-hidden="true"></i>Ofertas</a>
+            </li>
                 </ul>
 
                 <ul class="navbar-nav ms-auto">

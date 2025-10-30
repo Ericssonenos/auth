@@ -79,10 +79,10 @@ $(function () {
                     },
                 ],
                 // 'B' = Buttons, 'l' = length, 'f' = filter, 't' = table, 'i' = info, 'p' = pagination
-                dom: "<''<'d-flex justify-content-between'P>>" +
-                    "<'d-flex justify-content-between'<''f><''B>>" +
+                dom: "<''<'d-flex justify-content-between flex-wrap'P>>" +
+                    "<'d-flex justify-content-between flex-wrap'<''f><''B>>" +
                     "<''<''t>>" +
-                    "<'d-flex justify-content-between'<''l><''i><''p>>",
+                    "<'d-flex justify-content-between flex-wrap'<''l><''i><''p>>",
                 buttons: [
                     {
                         extend: 'copy',
