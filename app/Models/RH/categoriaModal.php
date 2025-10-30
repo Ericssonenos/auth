@@ -22,12 +22,12 @@ class categoriaModal extends Model
     {
         try {
             $consultaSql = "SELECT
-                id_Categoria,
-                nome_Categoria,
-                descricao_Categoria
-            FROM RH.Tbl_Categorias
+                id_categoria,
+                nome_categoria,
+                descricao_categoria
+            FROM rh.tb_categorias
             WHERE dat_cancelamento_em IS NULL
-            ORDER BY nome_Categoria";
+            ORDER BY nome_categoria";
 
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute();
@@ -54,17 +54,17 @@ class categoriaModal extends Model
 
     public function CriarCategoria($params)
     {
-        $nome_Categoria = $params['nome_Categoria'];
-        $descricao_Categoria = $params['descricao_Categoria'] ?? null;
-        $criado_Usuario_id = $params['criado_Usuario_id'];
+        $nomeCategoria = $params['nome_categoria'] ?? $params['nome_Categoria'] ?? null;
+        $descricaoCategoria = $params['descricao_categoria'] ?? $params['descricao_Categoria'] ?? null;
+        $criadoUsuarioId = $params['criado_usuario_id'] ?? $params['criado_Usuario_id'] ?? null;
 
-        $consultaSql = "INSERT INTO RH.Tbl_Categorias (nome_Categoria, descricao_Categoria, criado_Usuario_id) VALUES (:nome_Categoria, :descricao_Categoria, :criado_Usuario_id)";
+        $consultaSql = "INSERT INTO rh.tb_categorias (nome_categoria, descricao_categoria, criado_usuario_id) VALUES (:nome_categoria, :descricao_categoria, :criado_usuario_id)";
 
         $comando = $this->conexao->prepare($consultaSql);
         $comando->execute([
-            ':nome_Categoria' => $nome_Categoria,
-            ':descricao_Categoria' => $descricao_Categoria,
-            ':criado_Usuario_id' => $criado_Usuario_id
+            ':nome_categoria' => $nomeCategoria,
+            ':descricao_categoria' => $descricaoCategoria,
+            ':criado_usuario_id' => $criadoUsuarioId
         ]);
 
         $comando->closeCursor();
@@ -72,25 +72,26 @@ class categoriaModal extends Model
 
     public function AtualizarCategoria($params)
     {
-        $id_Categoria = $params['id_Categoria'];
-        $nome_Categoria = $params['nome_Categoria'];
-        $descricao_Categoria = $params['descricao_Categoria'] ?? null;
-        $usuario_atualizado_por = $params['usuario_atualizado_por'];
+        $idCategoria = $params['id_categoria'] ?? $params['id_Categoria'];
+        $nomeCategoria = $params['nome_categoria'] ?? $params['nome_Categoria'];
+        $descricaoCategoria = $params['descricao_categoria'] ?? $params['descricao_Categoria'] ?? null;
+        $usuarioAtualizadoPor = $params['usuario_atualizado_por'] ?? $params['atualizado_usuario_id'] ?? null;
 
-        $consultaSql = "UPDATE RH.Tbl_Categorias
-                        SET nome_Categoria = :nome_Categoria,
-                            descricao_Categoria = :descricao_Categoria,
-                            atualizado_Usuario_id = :usuario_atualizado_por,
-                            dat_atualizado_em = GETDATE()
-                        WHERE id_Categoria = :id_Categoria
+        $consultaSql = "UPDATE rh.tb_categorias
+                        SET nome_categoria = :nome_categoria,
+                            descricao_categoria = :descricao_categoria,
+                            atualizado_usuario_id = :usuario_atualizado_por,
+                            dat_atualizado_em = :dat_atualizado_em
+                        WHERE id_categoria = :id_categoria
                           AND dat_cancelamento_em IS NULL";
 
         $comando = $this->conexao->prepare($consultaSql);
         $comando->execute([
-            ':nome_Categoria' => $nome_Categoria,
-            ':descricao_Categoria' => $descricao_Categoria,
-            ':usuario_atualizado_por' => $usuario_atualizado_por,
-            ':id_Categoria' => $id_Categoria
+            ':nome_categoria' => $nomeCategoria,
+            ':descricao_categoria' => $descricaoCategoria,
+            ':usuario_atualizado_por' => $usuarioAtualizadoPor,
+            ':dat_atualizado_em' => date('Y-m-d H:i:s'),
+            ':id_categoria' => $idCategoria
         ]);
 
         $comando->closeCursor();
@@ -98,19 +99,20 @@ class categoriaModal extends Model
 
     public function RemoverCategoria($params)
     {
-        $id_Categoria = $params['id_Categoria'];
-        $cancelamento_Usuario_id = $params['cancelamento_Usuario_id'];
+        $idCategoria = $params['id_categoria'] ?? $params['id_Categoria'];
+        $cancelamentoUsuarioId = $params['cancelamento_usuario_id'] ?? $params['cancelamento_Usuario_id'];
 
-        $consultaSql = "UPDATE RH.Tbl_Categorias
-                        SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
-                            dat_cancelamento_em = GETDATE()
-                        WHERE id_Categoria = :id_Categoria
+        $consultaSql = "UPDATE rh.tb_categorias
+                        SET cancelamento_usuario_id = :cancelamento_usuario_id,
+                            dat_cancelamento_em = :dat_cancelamento_em
+                        WHERE id_categoria = :id_categoria
                           AND dat_cancelamento_em IS NULL";
 
         $comando = $this->conexao->prepare($consultaSql);
         $comando->execute([
-            ':cancelamento_Usuario_id' => $cancelamento_Usuario_id,
-            ':id_Categoria' => $id_Categoria
+            ':cancelamento_usuario_id' => $cancelamentoUsuarioId,
+            ':dat_cancelamento_em' => date('Y-m-d H:i:s'),
+            ':id_categoria' => $idCategoria
         ]);
 
         $comando->closeCursor();

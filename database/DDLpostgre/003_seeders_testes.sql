@@ -1,5 +1,5 @@
 -- Script: 003_seeders_testes.sql (PostgreSQL)
--- Objetivo: popular dados básicos de usuários, categorias e permissões para testes.
+-- Objetivo: popular dados básicos com identificadores em minúsculo.
 
 DO $$
 DECLARE
@@ -10,47 +10,43 @@ DECLARE
     admin_id          INTEGER;
     perm              RECORD;
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM "RH"."Tbl_Usuarios" WHERE "email" = admin_email
-    ) THEN
-        INSERT INTO "RH"."Tbl_Usuarios" ("nome_Completo", "email", "senha", "locatario_id", "criado_Usuario_id")
+    IF NOT EXISTS (SELECT 1 FROM rh.tb_usuarios WHERE email = admin_email) THEN
+        INSERT INTO rh.tb_usuarios (nome_completo, email, senha, locatario_id, criado_usuario_id)
         VALUES ('Administrador', admin_email, 'Senha', 1, 1);
     END IF;
 
-    UPDATE "RH"."Tbl_Usuarios"
-    SET "criado_Usuario_id" = 1
-    WHERE "email" = admin_email;
+    UPDATE rh.tb_usuarios
+    SET criado_usuario_id = 1
+    WHERE email = admin_email;
 
     WHILE i < 10 LOOP
         usuario_email := format('usuario%1$s@exemplo.com', i);
 
-        IF NOT EXISTS (
-            SELECT 1 FROM "RH"."Tbl_Usuarios" WHERE "email" = usuario_email
-        ) THEN
-            INSERT INTO "RH"."Tbl_Usuarios" ("nome_Completo", "email", "senha", "locatario_id", "criado_Usuario_id")
+        IF NOT EXISTS (SELECT 1 FROM rh.tb_usuarios WHERE email = usuario_email) THEN
+            INSERT INTO rh.tb_usuarios (nome_completo, email, senha, locatario_id, criado_usuario_id)
             VALUES (format('Usuário %s', i), usuario_email, 'Senha', 1, 1);
         END IF;
 
         i := i + 1;
     END LOOP;
 
-    UPDATE "RH"."Tbl_Usuarios"
-    SET "criado_Usuario_id" = 1
-    WHERE "email" ~ '^usuario[0-9]+@exemplo\.com$';
+    UPDATE rh.tb_usuarios
+    SET criado_usuario_id = 1
+    WHERE email ~ '^usuario[0-9]+@exemplo\.com$';
 
     IF NOT EXISTS (
         SELECT 1
-        FROM "RH"."Tbl_Categorias"
-        WHERE "nome_Categoria" = categoria_default
-          AND "dat_cancelamento_em" IS NULL
+        FROM rh.tb_categorias
+        WHERE nome_categoria = categoria_default
+          AND dat_cancelamento_em IS NULL
     ) THEN
-        INSERT INTO "RH"."Tbl_Categorias" ("nome_Categoria", "descricao_Categoria", "criado_Usuario_id")
+        INSERT INTO rh.tb_categorias (nome_categoria, descricao_categoria, criado_usuario_id)
         VALUES (categoria_default, 'Categoria padrão para perfis administrativos.', 1);
     END IF;
 
-    UPDATE "RH"."Tbl_Categorias"
-    SET "criado_Usuario_id" = 1
-    WHERE "nome_Categoria" = categoria_default;
+    UPDATE rh.tb_categorias
+    SET criado_usuario_id = 1
+    WHERE nome_categoria = categoria_default;
 
     FOR perm IN
         SELECT *
@@ -78,54 +74,50 @@ BEGIN
             ('R_GET_RH_USUARIOS', 'Permite consultar usuários do RH via API.'),
             ('R_GET_HOME', 'Permite carregar o painel inicial do sistema.'),
             ('R_GET_USUARIOS', 'Permite listar usuários por meio da API pública.')
-        ) AS perms("cod_permissao", "descricao_permissao")
+        ) AS perms(cod_permissao, descricao_permissao)
     LOOP
-        IF NOT EXISTS (
-            SELECT 1
-            FROM "RH"."Tbl_Permissoes"
-            WHERE "cod_permissao" = perm."cod_permissao"
-        ) THEN
-            INSERT INTO "RH"."Tbl_Permissoes" ("cod_permissao", "descricao_permissao", "criado_Usuario_id")
-            VALUES (perm."cod_permissao", perm."descricao_permissao", 1);
+        IF NOT EXISTS (SELECT 1 FROM rh.tb_permissoes WHERE cod_permissao = perm.cod_permissao) THEN
+            INSERT INTO rh.tb_permissoes (cod_permissao, descricao_permissao, criado_usuario_id)
+            VALUES (perm.cod_permissao, perm.descricao_permissao, 1);
         END IF;
 
-        UPDATE "RH"."Tbl_Permissoes"
-        SET "criado_Usuario_id" = 1,
-            "descricao_permissao" = perm."descricao_permissao"
-        WHERE "cod_permissao" = perm."cod_permissao";
+        UPDATE rh.tb_permissoes
+        SET criado_usuario_id = 1,
+            descricao_permissao = perm.descricao_permissao
+        WHERE cod_permissao = perm.cod_permissao;
     END LOOP;
 
-    SELECT "id_Usuario"
+    SELECT id_usuario
     INTO admin_id
-    FROM "RH"."Tbl_Usuarios"
-    WHERE "email" = admin_email
-    ORDER BY "id_Usuario"
+    FROM rh.tb_usuarios
+    WHERE email = admin_email
+    ORDER BY id_usuario
     LIMIT 1;
 
     IF admin_id IS NOT NULL THEN
         FOR perm IN
-            SELECT "id_permissao" AS permissao_id
-            FROM "RH"."Tbl_Permissoes"
+            SELECT id_permissao AS permissao_id
+            FROM rh.tb_permissoes
         LOOP
             IF NOT EXISTS (
                 SELECT 1
-                FROM "RH"."Tbl_Rel_Usuarios_Permissoes"
-                WHERE "usuario_id" = admin_id
-                  AND "permissao_id" = perm.permissao_id
-                  AND "dat_cancelamento_em" IS NULL
+                FROM rh.tr_usuarios_permissoes
+                WHERE usuario_id = admin_id
+                  AND permissao_id = perm.permissao_id
+                  AND dat_cancelamento_em IS NULL
             ) THEN
-                INSERT INTO "RH"."Tbl_Rel_Usuarios_Permissoes" ("usuario_id", "permissao_id", "criado_Usuario_id")
+                INSERT INTO rh.tr_usuarios_permissoes (usuario_id, permissao_id, criado_usuario_id)
                 VALUES (admin_id, perm.permissao_id, 1);
             END IF;
         END LOOP;
 
-        UPDATE "RH"."Tbl_Rel_Usuarios_Permissoes"
-        SET "criado_Usuario_id" = 1
-        WHERE "usuario_id" = admin_id
-          AND "permissao_id" IN (
-              SELECT "id_permissao"
-              FROM "RH"."Tbl_Permissoes"
-              WHERE "cod_permissao" IN (
+        UPDATE rh.tr_usuarios_permissoes
+        SET criado_usuario_id = 1
+        WHERE usuario_id = admin_id
+          AND permissao_id IN (
+              SELECT id_permissao
+              FROM rh.tb_permissoes
+              WHERE cod_permissao IN (
                   'R_POST_API_RH_USUARIO_DADOS',
                   'N_USUARIO.VIEW',
                   'R_POST_API_RH_USUARIO_PERMISSAO_ADICIONAR',

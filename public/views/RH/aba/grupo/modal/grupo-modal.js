@@ -21,7 +21,7 @@ Abrir_Modal_Novo_Grupo = function () {
 }
 
 // Função para carregar categorias no select do modal de grupo
-Carregar_Categorias_No_Select = function ( id_Categoria_ativo = null) {
+Carregar_Categorias_No_Select = function ( id_categoria_ativo = null) {
 
     // Requisição AJAX para obter categorias
     $.ajax({
@@ -37,8 +37,8 @@ Carregar_Categorias_No_Select = function ( id_Categoria_ativo = null) {
 
             // Iterar sobre os dados e adicionar opções ao select
             resposta.data.forEach(function (categoria) {
-                const option = new Option(categoria.nome_Categoria, categoria.id_Categoria);
-                if (categoria.id_Categoria === id_Categoria_ativo) {
+                const option = new Option(categoria.nome_categoria, categoria.id_categoria);
+                if (categoria.id_categoria === id_categoria_ativo) {
                     option.selected = true;
                 }
                 select.append(option);
@@ -54,14 +54,14 @@ Carregar_Categorias_No_Select = function ( id_Categoria_ativo = null) {
 Abrir_Modal_Editar_Grupo = function (dados_grupo) {
 
     // Resetar variáveis globais
-    id_grupo_selecionado = dados_grupo.id_Grupo;
+    id_grupo_selecionado = dados_grupo.id_grupo ?? dados_grupo.id_Grupo;
 
     // Atualizar título do modal
     $('#titulo_modal_grupo').text('Editar Grupo');
 
     // Preencher o formulário com os dados do grupo
-    $('#nome_modal_grupo').val(dados_grupo.nome_Grupo);
-    $('#descricao_modal_grupo').val(dados_grupo.descricao_Grupo);
+    $('#nome_modal_grupo').val(dados_grupo.nome_grupo ?? dados_grupo.nome_Grupo);
+    $('#descricao_modal_grupo').val(dados_grupo.descricao_grupo ?? dados_grupo.descricao_Grupo);
 
     // carregar Categorias no select
     Carregar_Categorias_No_Select(dados_grupo.categoria_id);
@@ -73,14 +73,16 @@ Abrir_Modal_Editar_Grupo = function (dados_grupo) {
 // Salvar Grupo (novo ou editado)
 Salvar_Grupo = function () {
     // Obter dados do formulário
-    const nome_Grupo = $('#nome_modal_grupo').val();
-    const descricao_Grupo = $('#descricao_modal_grupo').val();
+    const nomeGrupo = $('#nome_modal_grupo').val();
+    const descricaoGrupo = $('#descricao_modal_grupo').val();
     const categoria_id = $('#categoria_id_modal_grupo').val();
 
     // Construir objeto de dados
     const dados_grupo = {
-        nome_Grupo: nome_Grupo,
-        descricao_Grupo: descricao_Grupo,
+        nome_grupo: nomeGrupo,
+        nome_Grupo: nomeGrupo,
+        descricao_grupo: descricaoGrupo,
+        descricao_Grupo: descricaoGrupo,
         categoria_id: categoria_id
     };
 
@@ -118,7 +120,7 @@ Salvar_Grupo = function () {
 }
 
 // Função para excluir um grupo
-Excluir_Grupo = function (id_Grupo) {
+Excluir_Grupo = function (id_grupo) {
     // Confirmar exclusão
     if (!confirm('Tem certeza que deseja excluir este grupo?')) {
         return;
@@ -127,7 +129,7 @@ Excluir_Grupo = function (id_Grupo) {
     // Requisição AJAX para excluir o grupo
     $.ajax({
         type: 'delete',
-        url: '/api/rh/grupo/deletar/' + encodeURIComponent(id_Grupo),
+    url: '/api/rh/grupo/deletar/' + encodeURIComponent(id_grupo),
         contentType: 'application/json',
         success: function (resposta) {
             window.alerta.sucesso('Grupo excluído com sucesso.');

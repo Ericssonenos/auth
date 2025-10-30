@@ -36,21 +36,21 @@ $(function () {
                 columns: [
 
                     {
-                        data: 'nome_Grupo'
+                        data: 'nome_grupo'
                         , title: 'Nome do Grupo'
                         , orderable: true
                         , className: 'text-start'
                         , searchPanes: { show: true }
                     },
                     {
-                        data: 'descricao_Grupo',
+                        data: 'descricao_grupo',
                         title: 'Descrição do Grupo',
                         orderable: true,
                         className: 'text-start',
                         searchPanes: { show: true }
                     },
                     {
-                        data: 'nome_Categoria',
+                        data: 'nome_categoria',
                         title: 'Nome da Categoria',
                         orderable: true,
                         className: 'text-start',
@@ -70,7 +70,7 @@ $(function () {
                         }
                     },
                     {
-                        data: 'permissoes_XML',
+                        data: 'permissoes_xml',
                         title: 'Permissões XML',
                         orderable: true,
                         className: 'text-start',

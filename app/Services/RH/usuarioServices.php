@@ -5,10 +5,12 @@ namespace App\Services\RH;
 class usuarioServices
 {
     public array $cod_permissoes = [];
-    public int $id_Usuario;
-    public string $nome_Completo;
-    public string $email;
-    public string $mensagem;
+    public int $id_usuario = 0;
+    public int $id_Usuario = 0;
+    public string $nome_completo = '';
+    public string $nome_Completo = '';
+    public string $email = '';
+    public string $mensagem = '';
     public array $cod_permissoes_necessarias = [];
 
     public function __construct($dadosDoUsuario = null)
@@ -25,10 +27,12 @@ class usuarioServices
             }
         }
 
-        $this->cod_permissoes = array_values(array_unique($this->cod_permissoes));
-        $this->id_Usuario = $dadosDoUsuario['id_Usuario'] ?? 0;
-        $this->nome_Completo = $dadosDoUsuario['nome_Completo'] ?? '';
-        $this->email = $dadosDoUsuario['email'] ?? '';
+    $this->cod_permissoes = array_values(array_unique($this->cod_permissoes));
+    $this->id_usuario = $dadosDoUsuario['id_usuario'] ?? $dadosDoUsuario['id_Usuario'] ?? 0;
+    $this->id_Usuario = $this->id_usuario;
+    $this->nome_completo = $dadosDoUsuario['nome_completo'] ?? $dadosDoUsuario['nome_Completo'] ?? '';
+    $this->nome_Completo = $this->nome_completo;
+    $this->email = $dadosDoUsuario['email'] ?? '';
     }
 
 
@@ -38,7 +42,7 @@ class usuarioServices
     }
     public function estaLogado(): bool
     {
-        return !empty($this->id_Usuario);
+        return !empty($this->id_usuario);
     }
 
 }

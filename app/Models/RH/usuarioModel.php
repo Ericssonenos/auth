@@ -3,9 +3,9 @@
 namespace App\Models\RH;
 
 use App\Services\Operacao;
+use App\Services\RH\usuarioServices;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use App\Services\RH\usuarioServices;
 
 
 class usuarioModel extends Model
@@ -20,30 +20,28 @@ class usuarioModel extends Model
     // primeiro contato exite o maximo de segurança
     public function ObterLoginUsuario($params)
     {
+        $execParams[':email'] = $params['email'] ?? null;
+        $execParams[':senha'] = $params['senha'] ?? null;
+        $execParams[':locatario_id'] = $params['locatario_id'] ?? null;
 
-        $execParams[":email"] = $params['email'];
-        $execParams[":senha"] = $params['senha'];
-        $execParams[":locatario_id"] = $params['locatario_id'];
-
-        //montar a consulta SQL
         $consultaSql = "SELECT
-                        id_Usuario,
-                        nome_Completo,
+                        id_usuario,
+                        nome_completo,
                         email,
-                        senha =CASE
-                            WHEN b_senha_Temporaria = 1
-                            AND (dat_senha_Bloqueado_em IS NULL OR dat_senha_Bloqueado_em > GETDATE())
-                        THEN senha ELSE null END,
-                        senha_bloqueada = CASE
-                            WHEN (dat_senha_Bloqueado_em < GETDATE())
-                            THEN 1 ELSE 0 END,
+                        CASE
+                            WHEN b_senha_temporaria =  TRUE --- 1 PARA SQL SERVER ---
+                             AND (dat_senha_bloqueado_em IS NULL OR dat_senha_bloqueado_em > CURRENT_TIMESTAMP)
+                        THEN senha ELSE NULL END AS senha,
+                        CASE
+                            WHEN dat_senha_bloqueado_em IS NOT NULL AND dat_senha_bloqueado_em < CURRENT_TIMESTAMP
+                        THEN 1 ELSE 0 END AS senha_bloqueada,
                         dat_criado_em,
-                        criado_Usuario_id
-                    FROM RH.Tbl_Usuarios
+                        criado_usuario_id
+                    FROM rh.tb_usuarios
                     WHERE dat_cancelamento_em IS NULL
-                    and email = :email
-                    and senha = :senha
-                    and locatario_id = :locatario_id";
+                      AND email = :email
+                      AND senha = :senha
+                      AND locatario_id = :locatario_id";
 
 
         try {
@@ -81,18 +79,18 @@ class usuarioModel extends Model
             // este traz os usuários vinculados a um grupo específico
             $execParams[':grupo_id'] = $params['grupo_id'];
             $consultaSql = "SELECT
-                        u.id_Usuario,
-                        u.nome_Completo,
+                        u.id_usuario,
+                        u.nome_completo,
                         u.email,
                         u.dat_criado_em,
                         rug.id_rel_usuario_grupo
-                    FROM RH.Tbl_Usuarios u
-                    LEFT JOIN RH.Tbl_Rel_Usuarios_Grupos rug
-                        ON u.id_Usuario = rug.usuario_id
+                    FROM rh.tb_usuarios u
+                    LEFT JOIN rh.tr_usuarios_grupos rug
+                        ON u.id_usuario = rug.usuario_id
                         AND rug.grupo_id = :grupo_id
                         AND rug.dat_cancelamento_em IS NULL
                     WHERE u.dat_cancelamento_em IS NULL
-                    ORDER BY CASE WHEN rug.id_rel_usuario_grupo IS NOT NULL THEN 1 ELSE 0 END, u.nome_Completo";
+                    ORDER BY CASE WHEN rug.id_rel_usuario_grupo IS NOT NULL THEN 1 ELSE 0 END, u.nome_completo";
         } else {
 
             $parametrizacao = Operacao::Parametrizar($params);
@@ -111,19 +109,19 @@ class usuarioModel extends Model
 
             //montar a consulta SQL
             $consultaSql = "SELECT
-                        id_Usuario,
-                        nome_Completo,
+                        id_usuario,
+                        nome_completo,
                         email,
-                        senha =CASE
-                            WHEN b_senha_Temporaria = 1
-                            AND (dat_senha_Bloqueado_em IS NULL OR dat_senha_Bloqueado_em > GETDATE())
-                        THEN senha ELSE null END,
-                        senha_bloqueada = CASE
-                            WHEN (dat_senha_Bloqueado_em < GETDATE())
-                            THEN 1 ELSE 0 END,
+                        CASE
+                            WHEN b_senha_temporaria  =  TRUE --- 1 PARA SQL SERVER ---
+                             AND (dat_senha_bloqueado_em IS NULL OR dat_senha_bloqueado_em > CURRENT_TIMESTAMP)
+                        THEN senha ELSE NULL END AS senha,
+                        CASE
+                            WHEN dat_senha_bloqueado_em IS NOT NULL AND dat_senha_bloqueado_em < CURRENT_TIMESTAMP
+                        THEN 1 ELSE 0 END AS senha_bloqueada,
                         dat_criado_em,
-                        criado_Usuario_id
-                    FROM RH.Tbl_Usuarios
+                        criado_usuario_id
+                    FROM rh.tb_usuarios
                     WHERE dat_cancelamento_em IS NULL"
                 . implode(' ', $whereParams)
                 . ($optsParams['order_by']   ?? '')
@@ -159,23 +157,22 @@ class usuarioModel extends Model
     public function AtribuirPermissoes($params)
     {
         try {
-            $usuario_id = $params['usuario_id'];
-            $permissao_id = $params['permissao_id'];
-            $criado_Usuario_id = app(usuarioServices::class)->id_Usuario;
+            $usuarioId = $params['usuario_id'];
+            $permissaoId = $params['permissao_id'];
+            $criadoUsuarioId = $this->obterUsuarioAutenticadoId();
 
-
-            $consultaSql = "INSERT INTO RH.Tbl_Rel_Usuarios_Permissoes (
-                        usuario_id
-                    ,   permissao_id
-                    ,   criado_Usuario_id
-                    ) VALUES (:usuario_id, :permissao_id, :criado_Usuario_id)";
+            $consultaSql = "INSERT INTO rh.tr_usuarios_permissoes (
+                        usuario_id,
+                        permissao_id,
+                        criado_usuario_id
+                    ) VALUES (:usuario_id, :permissao_id, :criado_usuario_id)";
 
             $comando = $this->conexao->prepare($consultaSql);
 
             $comando->execute([
-                ':usuario_id' => $usuario_id,
-                ':permissao_id' => $permissao_id,
-                ':criado_Usuario_id' => $criado_Usuario_id
+                ':usuario_id' => $usuarioId,
+                ':permissao_id' => $permissaoId,
+                ':criado_usuario_id' => $criadoUsuarioId
             ]);
 
             $rows = $comando->rowCount();
@@ -202,22 +199,22 @@ class usuarioModel extends Model
     public function AtribuirGrupo($params)
     {
         try {
-            $usuario_id = $params['usuario_id'];
-            $grupo_id = $params['grupo_id'];
-            $criado_Usuario_id = app(usuarioServices::class)->id_Usuario;
+            $usuarioId = $params['usuario_id'];
+            $grupoId = $params['grupo_id'];
+            $criadoUsuarioId = $this->obterUsuarioAutenticadoId();
 
-            $consultaSql = "INSERT INTO RH.Tbl_Rel_Usuarios_Grupos (
-                        usuario_id
-                    ,   grupo_id
-                    ,   criado_Usuario_id
-                    ) VALUES (:usuario_id, :grupo_id, :criado_Usuario_id)";
+            $consultaSql = "INSERT INTO rh.tr_usuarios_grupos (
+                        usuario_id,
+                        grupo_id,
+                        criado_usuario_id
+                    ) VALUES (:usuario_id, :grupo_id, :criado_usuario_id)";
 
             $comando = $this->conexao->prepare($consultaSql);
 
             $comando->execute([
-                ':usuario_id' => $usuario_id,
-                ':grupo_id' => $grupo_id,
-                ':criado_Usuario_id' => $criado_Usuario_id
+                ':usuario_id' => $usuarioId,
+                ':grupo_id' => $grupoId,
+                ':criado_usuario_id' => $criadoUsuarioId
             ]);
 
             $rows = $comando->rowCount();
@@ -244,20 +241,21 @@ class usuarioModel extends Model
     public function RemoverPermissoes($params)
     {
         try {
-            $id_rel_usuario_permissao = $params['id_rel_usuario_permissao'];
-            $cancelamento_Usuario_id = app(usuarioServices::class)->id_Usuario;
+            $idRelUsuarioPermissao = $params['id_rel_usuario_permissao'];
+            $cancelamentoUsuarioId = $this->obterUsuarioAutenticadoId();
 
-            $consultaSql = "UPDATE RH.Tbl_Rel_Usuarios_Permissoes
-                            SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
-                                dat_cancelamento_em = GETDATE()
+            $consultaSql = "UPDATE rh.tr_usuarios_permissoes
+                            SET cancelamento_usuario_id = :cancelamento_usuario_id,
+                                dat_cancelamento_em = :dat_cancelamento_em
                             WHERE id_rel_usuario_permissao = :id_rel_usuario_permissao
                             AND dat_cancelamento_em IS NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
 
             $comando->execute([
-                ':id_rel_usuario_permissao' => $id_rel_usuario_permissao,
-                ':cancelamento_Usuario_id' => $cancelamento_Usuario_id
+                ':id_rel_usuario_permissao' => $idRelUsuarioPermissao,
+                ':cancelamento_usuario_id' => $cancelamentoUsuarioId,
+                ':dat_cancelamento_em' => date('Y-m-d H:i:s')
             ]);
 
             $rows = $comando->rowCount();
@@ -284,20 +282,21 @@ class usuarioModel extends Model
     public function RemoverGrupo($params)
     {
         try {
-            $id_rel_usuario_grupo = $params['id_rel_usuario_grupo'];
-            $cancelamento_Usuario_id = app(usuarioServices::class)->id_Usuario;
+            $idRelUsuarioGrupo = $params['id_rel_usuario_grupo'];
+            $cancelamentoUsuarioId = $this->obterUsuarioAutenticadoId();
 
-            $consultaSql = "UPDATE RH.Tbl_Rel_Usuarios_Grupos
-                            SET cancelamento_Usuario_id = :cancelamento_Usuario_id,
-                                dat_cancelamento_em = GETDATE()
+            $consultaSql = "UPDATE rh.tr_usuarios_grupos
+                            SET cancelamento_usuario_id = :cancelamento_usuario_id,
+                                dat_cancelamento_em = :dat_cancelamento_em
                             WHERE id_rel_usuario_grupo = :id_rel_usuario_grupo
                             AND dat_cancelamento_em IS NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
 
             $comando->execute([
-                ':id_rel_usuario_grupo' => $id_rel_usuario_grupo,
-                ':cancelamento_Usuario_id' => $cancelamento_Usuario_id
+                ':id_rel_usuario_grupo' => $idRelUsuarioGrupo,
+                ':cancelamento_usuario_id' => $cancelamentoUsuarioId,
+                ':dat_cancelamento_em' => date('Y-m-d H:i:s')
             ]);
 
             $rows = $comando->rowCount();
@@ -324,24 +323,23 @@ class usuarioModel extends Model
     public function CadastrarUsuarios($params)
     {
         try {
-            $nome_Completo = $params['nome_Completo'];
-            $email = $params['email'];
+            $nomeCompleto = $params['nome_completo'] ?? $params['nome_Completo'] ?? null;
+            $email = $params['email'] ?? null;
             $senhaGerada = bin2hex(random_bytes(4));
-            // ober o id do usuario que está criando o novo usuário
-            $criado_Usuario_id = app(usuarioServices::class)->id_Usuario;
+            $criadoUsuarioId = $this->obterUsuarioAutenticadoId();
 
-            $consultaSql = "INSERT INTO RH.Tbl_Usuarios
-                            (nome_Completo,  email,   senha,  criado_Usuario_id,  b_senha_Temporaria,  dat_senha_Bloqueado_em,  locatario_id)
+            $consultaSql = "INSERT INTO rh.tb_usuarios
+                            (nome_completo,  email,   senha,  criado_usuario_id,  b_senha_temporaria,  dat_senha_bloqueado_em,  locatario_id)
                             VALUES
-                            (:nome_Completo, :email, :senha, :criado_Usuario_id, :b_senha_Temporaria, :dat_senha_Bloqueado_em, :locatario_id)";
+                            (:nome_completo, :email, :senha, :criado_usuario_id, :b_senha_temporaria, :dat_senha_bloqueado_em, :locatario_id)";
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute([
-                ':nome_Completo' => $nome_Completo,
+                ':nome_completo' => $nomeCompleto,
                 ':email' => $email,
                 ':senha' => $senhaGerada,
-                ':criado_Usuario_id' => $criado_Usuario_id,
-                ':b_senha_Temporaria' => 1,
-                ':dat_senha_Bloqueado_em' => date('Y-m-d H:i:s', strtotime('+10 minutes')),
+                ':criado_usuario_id' => $criadoUsuarioId,
+                ':b_senha_temporaria' => TRUE, // 1 PARA SQL SERVER
+                ':dat_senha_bloqueado_em' => date('Y-m-d H:i:s', strtotime('+10 minutes')),
                 ':locatario_id' => 1 // Supplytek
             ]);
 
@@ -359,7 +357,7 @@ class usuarioModel extends Model
                 return [
                     'status' => 404,
                     'mensagem' => 'Usuário não criado.',
-                    'data' => ['affected' => $rows, 'senha' => null, 'id_Usuario' => null]
+                    'data' => ['affected' => $rows, 'senha' => null, 'id_usuario' => null]
                 ];
             }
         } catch (\PDOException $e) {
@@ -368,7 +366,7 @@ class usuarioModel extends Model
         return [
             'status' => 200,
             'mensagem' => 'Usuário criado.',
-            'data' => ['affected' => $rows, 'senha' => $senhaGerada, 'id_Usuario' => $lastId]
+            'data' => ['affected' => $rows, 'senha' => $senhaGerada, 'id_usuario' => $lastId]
         ];
     }
 
@@ -384,14 +382,15 @@ class usuarioModel extends Model
 
             // Atualizar senha e marcar b_senha_Temporaria
             $consultaUpdate = "UPDATE
-                RH.Tbl_Usuarios
+                rh.tb_usuarios
                 SET
                         senha = :nova_senha
-                    ,   b_senha_Temporaria = 0
-                    ,   dat_senha_Bloqueado_em = NULL
-                WHERE id_Usuario = :id_Usuario";
+                    ,   b_senha_temporaria = FALSE -- 0 PARA SQL SERVER
+                    ,   dat_senha_bloqueado_em = NULL
+                WHERE id_usuario = :id_usuario
+                  AND dat_cancelamento_em IS NULL";
             $cmd2 = $this->conexao->prepare($consultaUpdate);
-            $cmd2->execute([':nova_senha' => $nova_senha, ':id_Usuario' => $usuario_id]);
+            $cmd2->execute([':nova_senha' => $nova_senha, ':id_usuario' => $usuario_id]);
             $rows = $cmd2->rowCount();
 
             if ($rows == 0) {
@@ -422,16 +421,18 @@ class usuarioModel extends Model
             // gera senha aleatória (8 hex chars)
             $senhaGerada = bin2hex(random_bytes(4));
 
-            $consultaSql = "UPDATE RH.Tbl_Usuarios
+            $consultaSql = "UPDATE rh.tb_usuarios
                             SET senha = :senha,
-                                b_senha_Temporaria = 1,
-                                dat_senha_Bloqueado_em = DATEADD(minute, 10, GETDATE())
-                            WHERE id_Usuario = :id_Usuario";
+                                b_senha_temporaria = TRUE, -- 1 PARA SQL SERVER
+                                dat_senha_bloqueado_em = :dat_senha_bloqueado_em
+                            WHERE id_usuario = :id_usuario
+                              AND dat_cancelamento_em IS NULL";
 
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute([
                 ':senha' => $senhaGerada,
-                ':id_Usuario' => $usuario_id
+                ':id_usuario' => $usuario_id,
+                ':dat_senha_bloqueado_em' => date('Y-m-d H:i:s', strtotime('+10 minutes'))
             ]);
 
             $rows = $comando->rowCount();
@@ -461,19 +462,19 @@ class usuarioModel extends Model
     {
         try {
             $usuario_id = $params['usuario_id'];
-            $nome_Completo = $params['nome_Completo'] ?? null;
+            $nome_Completo = $params['nome_completo'] ?? $params['nome_Completo'] ?? null;
 
             if (is_null($nome_Completo)) {
                 return [
                     'status' => 400,
-                    'mensagem' => 'nome_Completo é obrigatório.',
+                    'mensagem' => 'nome_completo é obrigatório.',
                     'data' => []
                 ];
             }
 
-            $consultaSql = "UPDATE RH.Tbl_Usuarios SET nome_Completo = :nome_Completo WHERE id_Usuario = :id_Usuario";
+            $consultaSql = "UPDATE rh.tb_usuarios SET nome_completo = :nome_completo WHERE id_usuario = :id_usuario AND dat_cancelamento_em IS NULL";
             $cmd = $this->conexao->prepare($consultaSql);
-            $cmd->execute([':nome_Completo' => $nome_Completo, ':id_Usuario' => $usuario_id]);
+            $cmd->execute([':nome_completo' => $nome_Completo, ':id_usuario' => $usuario_id]);
             $rows = $cmd->rowCount();
             if ($rows == 0) {
                 return [
@@ -498,15 +499,15 @@ class usuarioModel extends Model
     public function DeletarUsuarios($params)
     {
         try {
-            $usuario_id = $params['usuario_id'];
-            // id do usuário que executa a ação
-            $cancelamento_Usuario_id = app(usuarioServices::class)->id_Usuario;
+            $usuarioId = $params['usuario_id'];
+            $cancelamentoUsuarioId = $this->obterUsuarioAutenticadoId();
 
-            $consultaSql = "UPDATE RH.Tbl_Usuarios SET cancelamento_Usuario_id = :cancelamento_Usuario_id, dat_cancelamento_em = GETDATE() WHERE id_Usuario = :id_Usuario AND dat_cancelamento_em IS NULL";
+            $consultaSql = "UPDATE rh.tb_usuarios SET cancelamento_usuario_id = :cancelamento_usuario_id, dat_cancelamento_em = :dat_cancelamento_em WHERE id_usuario = :id_usuario AND dat_cancelamento_em IS NULL";
             $comando = $this->conexao->prepare($consultaSql);
             $comando->execute([
-                ':cancelamento_Usuario_id' => $cancelamento_Usuario_id,
-                ':id_Usuario' => $usuario_id
+                ':cancelamento_usuario_id' => $cancelamentoUsuarioId,
+                ':id_usuario' => $usuarioId,
+                ':dat_cancelamento_em' => date('Y-m-d H:i:s')
             ]);
 
             $rows = $comando->rowCount();
@@ -527,6 +528,17 @@ class usuarioModel extends Model
             'mensagem' => 'Usuário excluído.',
             'data' => ['affected' => $rows]
         ];
+    }
+
+    private function obterUsuarioAutenticadoId(): int
+    {
+        $usuarioService = app(usuarioServices::class);
+
+        if (property_exists($usuarioService, 'id_usuario') && !empty($usuarioService->id_usuario)) {
+            return (int) $usuarioService->id_usuario;
+        }
+
+        return (int) ($usuarioService->id_Usuario ?? 0);
     }
 
 

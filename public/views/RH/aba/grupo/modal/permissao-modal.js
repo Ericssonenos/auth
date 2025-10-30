@@ -5,10 +5,10 @@ let tb_modal_grupo_permissao;
 function Carregar_Tb_Modal_Grupo_Permissao(dados_permissoes) {
 
     // Atualizar o titulo do modal
-    $('#titulo_modal_grupo_permissao').text('Permissões do Grupo: ' + dados_permissoes?.nome_Grupo);
+    $('#titulo_modal_grupo_permissao').text('Permissões do Grupo: ' + (dados_permissoes?.nome_grupo ?? dados_permissoes?.nome_Grupo ?? ''));
 
     // Atualizar variável global do id do grupo selecionado
-    id_grupo_selecionado = dados_permissoes.id_Grupo;
+    id_grupo_selecionado = dados_permissoes?.id_grupo ?? dados_permissoes?.id_Grupo ?? null;
 
     // Inicializar DataTable de permissões no modal, se ainda não estiver inicializado
     if (!tb_modal_grupo_permissao) {
@@ -60,7 +60,7 @@ function Carregar_Tb_Modal_Grupo_Permissao(dados_permissoes) {
                     className: 'text-center',
                     render: function (data, type, row) {
                         let retorno = '<div class="d-flex align-items-center gap-1">';
-                        if (row.ativo_Grupo) {
+                        if (row.ativo_grupo ?? row.ativo_Grupo) {
                             // criar um bolinha pequena com title "Vinculado por grupo"
                             retorno += '<span class="badge bg-success" title="Vinculado por grupo">G</span> ';
                         }

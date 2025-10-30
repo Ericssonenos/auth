@@ -39,7 +39,7 @@ $(function () {
                 columns: [
 
                     {
-                        data: 'nome_Completo'
+                        data: 'nome_completo'
                         , title: 'Nome'
                         , orderable: true
                         , className: 'text-start'

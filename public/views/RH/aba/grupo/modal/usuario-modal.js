@@ -8,10 +8,10 @@ function Carregar_Tb_Modal_Grupo_usuario(dados_permissoes) {
 
 
     // Atualizar o titulo do modal
-    $('#titulo_modal_grupo_usuario').text('Permissões do Grupo: ' + dados_permissoes?.nome_Grupo);
+    $('#titulo_modal_grupo_usuario').text('Permissões do Grupo: ' + (dados_permissoes?.nome_grupo ?? dados_permissoes?.nome_Grupo ?? dados_permissoes?.nomeGrupo ?? ''));
 
     // Atualizar variável global do id do grupo selecionado
-    id_grupo_selecionado = dados_permissoes.id_Grupo;
+    id_grupo_selecionado = dados_permissoes?.id_grupo ?? dados_permissoes?.id_Grupo ?? dados_permissoes?.idGrupo ?? null;
 
     // Inicializar DataTable de permissões no modal, se ainda não estiver inicializado
     if (!tb_modal_grupo_usuario) {
@@ -44,30 +44,36 @@ function Carregar_Tb_Modal_Grupo_usuario(dados_permissoes) {
             // COLUNAS / DEFINIÇÕES
             columns: [
                 {
-                    data: 'nome_Completo',
+                    data: function (row) {
+                        return row.nome_completo ?? row.nomeCompleto ?? row.nome_completo_usuario ?? '';
+                    },
                     title: 'Nome',
                     orderable: true,
                     className: 'text-start',
                     searchPanes: { show: true }
                 },
                 {
-                    data: 'email',
+                    data: function (row) {
+                        return row.email ?? row.email_usuario ?? '';
+                    },
                     title: 'E-mail',
                     orderable: true,
                     className: 'text-start',
                     searchPanes: { show: true }
                 },
                 {
-                    data: 'id_rel_usuario_grupo',
+                    data: function (row) {
+                        return row.id_rel_usuario_grupo ?? row.id_relUsuarioGrupo ?? row.idRelUsuarioGrupo ?? null;
+                    },
                     title: 'Ação <i class="bi bi-gear"></i>',
                     className: 'text-center',
                     render: function (data, type, row) {
                         let retorno = '<div class="d-flex align-items-center gap-1">';
-                        if (row.ativo_Grupo) {
+                        if (row.ativo_grupo ?? row.ativo_Grupo ?? row.ativoGrupo) {
                             // criar um bolinha pequena com title "Vinculado por grupo"
                             retorno += '<span class="badge bg-success" title="Vinculado por grupo">G</span> ';
                         }
-                        if (row.id_rel_usuario_grupo) {
+                        if (row.id_rel_usuario_grupo ?? row.id_relUsuarioGrupo ?? row.idRelUsuarioGrupo) {
                             retorno
                                 += `<button class="btn btn-sm btn-danger btn-modal-usuario-toggle"  data-action="remover">Remover</button>`;
                         } else {
@@ -239,9 +245,10 @@ $('#tb_modal_grupo_usuario').on('click', '.btn-modal-usuario-toggle', function (
     // se id_rel_usuario_grupo não existir
     // é porque não exite vinculo, então atribuir
     if (!dados_usuario.id_rel_usuario_grupo) {
-        Atribuir_usuario_Grupo_Modal(dados_usuario.id_Usuario, btn);
+        Atribuir_usuario_Grupo_Modal(dados_usuario.id_usuario ?? dados_usuario.id_Usuario ?? dados_usuario.idUsuario, btn);
     } else {
         // se existir, remover o vinculo
-        Remover_usuario_Grupo_Modal(dados_usuario.id_rel_usuario_grupo, btn);
+        const idRelacao = dados_usuario.id_rel_usuario_grupo ?? dados_usuario.id_relUsuarioGrupo ?? dados_usuario.idRelUsuarioGrupo;
+        Remover_usuario_Grupo_Modal(idRelacao, btn);
     }
 });

@@ -1,124 +1,55 @@
 -- Script: 002_drop_rh.sql
--- Objetivo: remover objetos do schema RH (DROP) de forma segura.
--- Observação importante: este script NÃO remove a tabela RH.Tbl_Usuarios (pertence ao cliente).
--- Execute com cuidado em ambiente de produção.
+-- Objetivo: remover objetos do schema rh sem apagar a tabela principal de usuários, se desejado.
 
 SET NOCOUNT ON;
 
-PRINT 'Iniciando limpeza do schema RH (exceto RH.Tbl_Usuarios)...';
+PRINT 'Iniciando limpeza do schema rh...';
 
 DECLARE @sql NVARCHAR(MAX);
-DECLARE @name SYSNAME;
-DECLARE @schema SYSNAME;
 
--- 1) Dropar FKs em tabelas do schema RH
-PRINT '1) Removendo constraints de FK em tabelas do schema RH...';
-WHILE EXISTS (SELECT 1 FROM sys.foreign_keys fk JOIN sys.tables t ON fk.parent_object_id = t.object_id WHERE SCHEMA_NAME(t.schema_id) = 'RH')
+-- Remover função
+IF OBJECT_ID('rh.fn_getpermissoesgrupoxml', 'FN') IS NOT NULL
 BEGIN
-    SELECT TOP(1) @name = fk.name, @schema = SCHEMA_NAME(t.schema_id)
-    FROM sys.foreign_keys fk
-    JOIN sys.tables t ON fk.parent_object_id = t.object_id
-    WHERE SCHEMA_NAME(t.schema_id) = 'RH';
+    DROP FUNCTION rh.fn_getpermissoesgrupoxml;
+END;
 
-    SET @sql = N'ALTER TABLE [' + @schema + N'].[' + REPLACE(@name, '''', '''''') + N'] DROP CONSTRAINT [' + @name + N']';
-    -- O SELECT acima pegou o nome da constraint, mas precisamos referenciar a tabela pai correta
-    -- Melhor construir a instrução a partir do objeto fk e da tabela pai explicitamente
-    SELECT TOP(1) @sql = N'ALTER TABLE [' + SCHEMA_NAME(tp.schema_id) + N'].[' + tp.name + N'] DROP CONSTRAINT [' + fk.name + N']'
-    FROM sys.foreign_keys fk
-    JOIN sys.tables tp ON fk.parent_object_id = tp.object_id
-    WHERE SCHEMA_NAME(tp.schema_id) = 'RH' AND fk.name = @name;
-
-    PRINT @sql;
-    EXEC sp_executesql @sql;
-END
-
-PRINT '2) Removendo constraints DEFAULT em tabelas do schema RH...';
-WHILE EXISTS (SELECT 1
-              FROM sys.default_constraints dc
-              JOIN sys.tables t ON dc.parent_object_id = t.object_id
-              WHERE SCHEMA_NAME(t.schema_id) = 'RH')
+-- Remover tabelas relacionais
+IF OBJECT_ID('rh.tr_usuarios_permissoes', 'U') IS NOT NULL
 BEGIN
-    SELECT TOP(1) @sql = N'ALTER TABLE [' + SCHEMA_NAME(t.schema_id) + N'].[' + t.name + N'] DROP CONSTRAINT [' + dc.name + N']'
-    FROM sys.default_constraints dc
-    JOIN sys.tables t ON dc.parent_object_id = t.object_id
-    WHERE SCHEMA_NAME(t.schema_id) = 'RH';
+    DROP TABLE rh.tr_usuarios_permissoes;
+END;
 
-    PRINT @sql;
-    EXEC sp_executesql @sql;
-END
-
-PRINT '3) Removendo views, procedures e funções em RH...';
--- Views
-WHILE EXISTS (SELECT 1 FROM sys.views v JOIN sys.schemas s ON v.schema_id = s.schema_id WHERE s.name = 'RH')
+IF OBJECT_ID('rh.tr_usuarios_grupos', 'U') IS NOT NULL
 BEGIN
-    SELECT TOP(1) @sql = N'DROP VIEW [' + s.name + N'].[' + v.name + N']'
-    FROM sys.views v
-    JOIN sys.schemas s ON v.schema_id = s.schema_id
-    WHERE s.name = 'RH';
+    DROP TABLE rh.tr_usuarios_grupos;
+END;
 
-    PRINT @sql;
-    EXEC sp_executesql @sql;
-END
-
--- Stored Procedures
-WHILE EXISTS (SELECT 1 FROM sys.procedures p JOIN sys.schemas s ON p.schema_id = s.schema_id WHERE s.name = 'RH')
+IF OBJECT_ID('rh.tr_grupos_permissoes', 'U') IS NOT NULL
 BEGIN
-    SELECT TOP(1) @sql = N'DROP PROCEDURE [' + s.name + N'].[' + p.name + N']'
-    FROM sys.procedures p
-    JOIN sys.schemas s ON p.schema_id = s.schema_id
-    WHERE s.name = 'RH';
+    DROP TABLE rh.tr_grupos_permissoes;
+END;
 
-    PRINT @sql;
-    EXEC sp_executesql @sql;
-END
-
--- Functions (scalar/table-valued)
-WHILE EXISTS (SELECT 1 FROM sys.objects o JOIN sys.schemas s ON o.schema_id = s.schema_id WHERE s.name = 'RH' AND o.type IN ('FN','IF','TF','FS','FT'))
+IF OBJECT_ID('rh.tr_grupos_grupos', 'U') IS NOT NULL
 BEGIN
-    SELECT TOP(1) @sql = N'DROP FUNCTION [' + s.name + N'].[' + o.name + N']'
-    FROM sys.objects o
-    JOIN sys.schemas s ON o.schema_id = s.schema_id
-    WHERE s.name = 'RH' AND o.type IN ('FN','IF','TF','FS','FT');
+    DROP TABLE rh.tr_grupos_grupos;
+END;
 
-    PRINT @sql;
-    EXEC sp_executesql @sql;
-END
-
--- 4) Dropar tabelas do schema RH exceto RH.Tbl_Usuarios
-PRINT '4) Removendo tabelas do schema RH (exceto RH.Tbl_Usuarios)...';
-WHILE EXISTS (SELECT 1 FROM sys.tables t JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE s.name = 'RH' AND t.name <> 'Tbl_Usuarios')
+-- Remover tabelas mestre (exceto rh.tb_usuarios, caso já exista e deva ser preservada)
+IF OBJECT_ID('rh.tb_permissoes', 'U') IS NOT NULL
 BEGIN
-    SELECT TOP(1) @sql = N'DROP TABLE [' + s.name + N'].[' + t.name + N']'
-    FROM sys.tables t
-    JOIN sys.schemas s ON t.schema_id = s.schema_id
-    WHERE s.name = 'RH';
+    DROP TABLE rh.tb_permissoes;
+END;
 
-    PRINT @sql;
-    EXEC sp_executesql @sql;
-END
-
--- 5) Remover tipos e sequences (se existirem)
-PRINT '5) Removendo types e sequences em RH (se existirem)...';
-WHILE EXISTS (SELECT 1 FROM sys.types t JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE s.name = 'RH' AND t.is_user_defined = 1)
+IF OBJECT_ID('rh.tb_grupos', 'U') IS NOT NULL
 BEGIN
-    SELECT TOP(1) @sql = N'DROP TYPE [' + s.name + N'].[' + t.name + N']'
-    FROM sys.types t
-    JOIN sys.schemas s ON t.schema_id = s.schema_id
-    WHERE s.name = 'RH' AND t.is_user_defined = 1;
+    DROP TABLE rh.tb_grupos;
+END;
 
-    PRINT @sql;
-    EXEC sp_executesql @sql;
-END
-
-WHILE EXISTS (SELECT 1 FROM sys.sequences seq JOIN sys.schemas s ON seq.schema_id = s.schema_id WHERE s.name = 'RH')
+IF OBJECT_ID('rh.tb_categorias', 'U') IS NOT NULL
 BEGIN
-    SELECT TOP(1) @sql = N'DROP SEQUENCE [' + s.name + N'].[' + seq.name + N']'
-    FROM sys.sequences seq
-    JOIN sys.schemas s ON seq.schema_id = s.schema_id
-    WHERE s.name = 'RH';
+    DROP TABLE rh.tb_categorias;
+END;
 
-    PRINT @sql;
-    EXEC sp_executesql @sql;
-END
+PRINT 'Limpeza do schema rh concluída. Tabela rh.tb_usuarios mantida.';
 
 

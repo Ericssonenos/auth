@@ -13,7 +13,7 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
     $('#titulo_modal_usuario_permissao').text('Permissões do usuário: ' + (rowData?.email || '??'));
 
     // atualizar variável global
-    id_usuario_selecionado = rowData.id_Usuario;
+    id_usuario_selecionado = rowData?.id_usuario ?? rowData?.id_Usuario ?? null;
 
     // inicializar ou recarregar DataTable de permissões
     // passar o id_Usuario pelo body da requisição POST
@@ -54,7 +54,7 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
                     className: 'text-center',
                     render: function (data, type, row) {
                         let retorno = '<div class="d-flex align-items-center gap-1">';
-                        if (row.ativo_Grupo) {
+                        if (row.ativo_grupo ?? row.ativo_Grupo) {
                             // criar um bolinha pequena com title "Vinculado por grupo"
                             retorno += '<span class="badge bg-success" title="Vinculado por grupo">G</span> ';
                         }

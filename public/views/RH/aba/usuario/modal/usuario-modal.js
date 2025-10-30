@@ -38,11 +38,12 @@ $('#tb_usuario')
         $('#titulo_modal_usuario').text('Editar usuário');
 
         // atualizar variável global
-        id_usuario_selecionado = rowData.id_Usuario;
+    const usuarioId = rowData?.id_usuario ?? rowData?.id_Usuario ?? null;
+    id_usuario_selecionado = usuarioId;
 
-        // preencher formulário com os dados do usuário
-        $('#nome_completo_modal_usuario').val(rowData.nome_Completo);
-        $('#email_modal_usuario').val(rowData.email);
+    // preencher formulário com os dados do usuário
+    $('#nome_completo_modal_usuario').val(rowData?.nome_completo ?? rowData?.nome_Completo ?? '');
+    $('#email_modal_usuario').val(rowData?.email ?? '');
 
         // desabilitar campo de email
         $('#email_modal_usuario').prop('disabled', true);
@@ -208,8 +209,10 @@ $('#btn_modal_usuario_salvar').on('click', function () {
 
     if (!id_usuario_selecionado) {
 
+        const nomeCompleto = $('#nome_completo_modal_usuario').val();
         const payload = {
-            nome_Completo: $('#nome_completo_modal_usuario').val(),
+            nome_completo: nomeCompleto,
+            nome_Completo: nomeCompleto,
             email: $('#email_modal_usuario').val(),
         };
 
@@ -243,8 +246,9 @@ $('#btn_modal_usuario_salvar').on('click', function () {
                     // retirar botão de gerar senha para evitar múltiplos cliques rápidos
 
                     // se a API retornar lastId, preencher o id no modal para permitir gerar nova senha / edição
-                    if (resposta.data && resposta.data.lastId) {
-                        id_usuario_selecionado = resposta.data.lastId;
+                    const novoId = resposta.data?.id_usuario ?? resposta.data?.id_Usuario ?? resposta.data?.lastId;
+                    if (novoId) {
+                        id_usuario_selecionado = novoId;
                         $('#email_modal_usuario').prop('disabled', true);
                         $('#btn_modal_usuario_gerar_senha').removeClass('d-none');
                     }
@@ -269,8 +273,10 @@ $('#btn_modal_usuario_salvar').on('click', function () {
             }
         });
     } else {
+        const nomeCompleto = $('#nome_completo_modal_usuario').val();
         const payload = {
-            nome_Completo: $('#nome_completo_modal_usuario').val(),
+            nome_completo: nomeCompleto,
+            nome_Completo: nomeCompleto,
         };
         // atualizar (usa mesmo molde de retorno/erros que o POST de cadastro)
         $.ajax({

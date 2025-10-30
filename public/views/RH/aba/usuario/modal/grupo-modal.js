@@ -2,7 +2,7 @@
 
 // gerenciamento de grupos: inicializa DataTable de grupos + subtabelas de permissões por grupo
 let tb_modal_usuario_grupo = null;
-let tb_modal_usuario_grupo_permissoes = {}; // cache de DataTables por id_Grupo
+let tb_modal_usuario_grupo_permissoes = {}; // cache de DataTables por id_grupo
 
 // reaplica o termo pesquisado na tabela principal para todas as subtabelas abertas
 const sincronizarBuscaSubtabelas = () => {
@@ -29,7 +29,7 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
     $('#modalGruposTitulo').text('Grupos do usuário: ' + (rowData?.email || '??'));
 
     // atualizar variável global
-    id_usuario_selecionado = rowData.id_Usuario;
+    id_usuario_selecionado = rowData?.id_usuario ?? rowData?.id_Usuario ?? null;
 
 
     // inicializar ou recarregar DataTable de grupos
@@ -41,7 +41,7 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
                 data: function (d) {
                     d.usuario_id = id_usuario_selecionado;
                     d.fn = 'fn-usuario-status';
-                    d.order_by = 'CASE WHEN rug.id_rel_usuario_grupo IS NOT NULL THEN 1 ELSE 0 END, g.nome_Grupo';
+                    d.order_by = 'CASE WHEN rug.id_rel_usuario_grupo IS NOT NULL THEN 1 ELSE 0 END, g.nome_grupo';
                     return d;
                 },
                 dataSrc: function (json) {
@@ -60,8 +60,8 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
                 }
             },
             columns: [
-                { data: 'id_Grupo', title: 'ID' },
-                { data: 'nome_Grupo', title: 'Grupo' },
+                { data: 'id_grupo', title: 'ID' },
+                { data: 'nome_grupo', title: 'Grupo' },
                 {
                     data: null,
                     render: function (row) {
@@ -74,7 +74,7 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
                     }
                 },
                 // coluna oculta para armazenar as permissões em XML usado no filtro
-                { data: 'permissoes_Grupo', title: 'Permissões (XML)', visible: false }
+                { data: 'permissoes_grupo', title: 'Permissões (XML)', visible: false }
 
             ],
             dom: "<'row'<'col-sm-12 col-md-5'f><'col-sm-12 col-md-7'B>>" +
@@ -165,7 +165,7 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
             const tr = $btn.closest('tr');
             const row = tb_modal_usuario_grupo.row(tr);
             const rowData = row.data();
-            const id_Grupo = rowData.id_Grupo;
+            const id_grupo = rowData.id_grupo ?? rowData.id_Grupo;
 
             // alterna child row
             if (row.child.isShown()) {
@@ -175,23 +175,23 @@ $('#tb_usuario').off('click', '.btn-abrir-modal-tb-grupo').on('click', '.btn-abr
             }
 
             // garante id único e evita reuse de elemento antigo
-            const childId = 'subPermissoes_' + id_Grupo + '_' + Date.now();
+            const childId = 'subPermissoes_' + id_grupo + '_' + Date.now();
             const childHtml = `<div style="padding:10px;"><table id="${childId}" class="table table-sm w-100"></table></div>`;
             row.child(childHtml).show();
             tr.addClass('shown');
 
             // destruir cache antigo referente ao mesmo grupo (se existir) para evitar sobreposição
-            if (tb_modal_usuario_grupo_permissoes[id_Grupo]) {
-                try { tb_modal_usuario_grupo_permissoes[id_Grupo].destroy(); } catch (e) { }
-                delete tb_modal_usuario_grupo_permissoes[id_Grupo];
+            if (tb_modal_usuario_grupo_permissoes[id_grupo]) {
+                try { tb_modal_usuario_grupo_permissoes[id_grupo].destroy(); } catch (e) { }
+                delete tb_modal_usuario_grupo_permissoes[id_grupo];
             }
 
-            tb_modal_usuario_grupo_permissoes[id_Grupo] = $('#' + childId).DataTable({
+            tb_modal_usuario_grupo_permissoes[id_grupo] = $('#' + childId).DataTable({
                 ajax: {
                     method: 'POST',
                     url: '/api/rh/permissao/dados',
                     data: function (requestData) {
-                        requestData.grupo_id = id_Grupo;
+                        requestData.grupo_id = id_grupo;
                         return requestData;
                     },
                     dataSrc: function (json) {
@@ -258,7 +258,7 @@ $('#tb_modal_usuario_grupo').off('click', '.btn-modal-grupo-toggle').on('click',
     // obter dados da linha selecionada
     const tr = $(this).closest('tr');
     const rowData = tb_modal_usuario_grupo.row(tr).data();
-    const grupo_id = rowData.id_Grupo; // id do grupo
+    const grupo_id = rowData.id_grupo ?? rowData.id_Grupo; // id do grupo
     const id_rel_usuario_grupo = rowData.id_rel_usuario_grupo; // id do relacionamento (se existir)
 
     // desabilitar botão e mostrar spinner

@@ -1,58 +1,58 @@
--- Seeders para testes iniciais de usuários e permissões
+-- Seeders para testes iniciais de usuários e permissões (SQL Server)
 
 SET NOCOUNT ON;
 
-DECLARE @AdminEmail NVARCHAR(200) = N'adm@exemplo.com';
+DECLARE @admin_email NVARCHAR(200) = N'adm@exemplo.com';
 
-IF NOT EXISTS (SELECT 1 FROM RH.Tbl_Usuarios WHERE email = @AdminEmail)
+IF NOT EXISTS (SELECT 1 FROM rh.tb_usuarios WHERE email = @admin_email)
 BEGIN
-    INSERT INTO RH.Tbl_Usuarios (nome_Completo, email, senha, locatario_id, criado_Usuario_id)
-    VALUES (N'Administrador', @AdminEmail, 'Senha', 1, 1);
+    INSERT INTO rh.tb_usuarios (nome_completo, email, senha, locatario_id, criado_usuario_id)
+    VALUES (N'Administrador', @admin_email, 'Senha', 1, 1);
 END;
 
-UPDATE RH.Tbl_Usuarios
-SET criado_Usuario_id = 1
-WHERE email = @AdminEmail;
+UPDATE rh.tb_usuarios
+SET criado_usuario_id = 1
+WHERE email = @admin_email;
 
 DECLARE @i INT = 2;
 
 WHILE @i < 10
 BEGIN
-    DECLARE @Email NVARCHAR(200) = CONCAT(N'usuario', @i, N'@exemplo.com');
+    DECLARE @email NVARCHAR(200) = CONCAT(N'usuario', @i, N'@exemplo.com');
 
-    IF NOT EXISTS (SELECT 1 FROM RH.Tbl_Usuarios WHERE email = @Email)
+    IF NOT EXISTS (SELECT 1 FROM rh.tb_usuarios WHERE email = @email)
     BEGIN
-        INSERT INTO RH.Tbl_Usuarios (nome_Completo, email, senha, locatario_id, criado_Usuario_id)
-        VALUES (CONCAT(N'Usuário ', @i), @Email, 'Senha', 1, 1);
+        INSERT INTO rh.tb_usuarios (nome_completo, email, senha, locatario_id, criado_usuario_id)
+        VALUES (CONCAT(N'Usuário ', @i), @email, 'Senha', 1, 1);
     END;
 
     SET @i += 1;
 END;
 
-UPDATE RH.Tbl_Usuarios
-SET criado_Usuario_id = 1
-WHERE email LIKE N'usuario[0-9]@exemplo.com';
+UPDATE rh.tb_usuarios
+SET criado_usuario_id = 1
+WHERE email LIKE N'usuario%@exemplo.com';
 
-DECLARE @Permissoes TABLE (cod_permissao NVARCHAR(200), descricao_permissao NVARCHAR(1000));
-
-DECLARE @CategoriaDefault NVARCHAR(200) = N'Sistema';
+DECLARE @categoria_default NVARCHAR(200) = N'Sistema';
 
 IF NOT EXISTS (
     SELECT 1
-    FROM RH.Tbl_Categorias
-    WHERE nome_Categoria = @CategoriaDefault
+    FROM rh.tb_categorias
+    WHERE nome_categoria = @categoria_default
       AND dat_cancelamento_em IS NULL
 )
 BEGIN
-    INSERT INTO RH.Tbl_Categorias (nome_Categoria, descricao_Categoria, criado_Usuario_id)
-    VALUES (@CategoriaDefault, N'Categoria padrão para perfis administrativos.', 1);
+    INSERT INTO rh.tb_categorias (nome_categoria, descricao_categoria, criado_usuario_id)
+    VALUES (@categoria_default, N'Categoria padrão para perfis administrativos.', 1);
 END;
 
-UPDATE RH.Tbl_Categorias
-SET criado_Usuario_id = 1
-WHERE nome_Categoria = @CategoriaDefault;
+UPDATE rh.tb_categorias
+SET criado_usuario_id = 1
+WHERE nome_categoria = @categoria_default;
 
-INSERT INTO @Permissoes (cod_permissao, descricao_permissao)
+DECLARE @permissoes TABLE (cod_permissao NVARCHAR(200), descricao_permissao NVARCHAR(1000));
+
+INSERT INTO @permissoes (cod_permissao, descricao_permissao)
 VALUES
     (N'R_POST_API_RH_USUARIO_DADOS', N'Autoriza o cadastro de usuários via API de RH.'),
     (N'N_USUARIO.VIEW', N'Permite visualizar a tela de consulta de usuários.'),
@@ -78,46 +78,44 @@ VALUES
     (N'R_GET_HOME', N'Permite carregar o painel inicial do sistema.'),
     (N'R_GET_USUARIOS', N'Permite listar usuários por meio da API pública.');
 
-INSERT INTO RH.Tbl_Permissoes (cod_permissao, descricao_permissao, criado_Usuario_id)
+INSERT INTO rh.tb_permissoes (cod_permissao, descricao_permissao, criado_usuario_id)
 SELECT p.cod_permissao, p.descricao_permissao, 1
-FROM @Permissoes p
+FROM @permissoes p
 WHERE NOT EXISTS (
-    SELECT 1
-    FROM RH.Tbl_Permissoes tp
-    WHERE tp.cod_permissao = p.cod_permissao
+    SELECT 1 FROM rh.tb_permissoes tp WHERE tp.cod_permissao = p.cod_permissao
 );
 
-UPDATE RH.Tbl_Permissoes
-SET criado_Usuario_id = 1
-WHERE cod_permissao IN (SELECT cod_permissao FROM @Permissoes);
+UPDATE rh.tb_permissoes
+SET criado_usuario_id = 1
+WHERE cod_permissao IN (SELECT cod_permissao FROM @permissoes);
 
-DECLARE @AdminId INT = (
-    SELECT TOP (1) id_Usuario
-    FROM RH.Tbl_Usuarios
-    WHERE email = @AdminEmail
+DECLARE @admin_id INT = (
+    SELECT TOP (1) id_usuario
+    FROM rh.tb_usuarios
+    WHERE email = @admin_email
 );
 
-IF @AdminId IS NOT NULL
+IF @admin_id IS NOT NULL
 BEGIN
-    INSERT INTO RH.Tbl_Rel_Usuarios_Permissoes (usuario_id, permissao_id, criado_Usuario_id)
-    SELECT @AdminId, perm.id_permissao, 1
-    FROM RH.Tbl_Permissoes perm
+    INSERT INTO rh.tr_usuarios_permissoes (usuario_id, permissao_id, criado_usuario_id)
+    SELECT @admin_id, perm.id_permissao, 1
+    FROM rh.tb_permissoes perm
     WHERE NOT EXISTS (
         SELECT 1
-        FROM RH.Tbl_Rel_Usuarios_Permissoes rup
-        WHERE rup.usuario_id = @AdminId
+        FROM rh.tr_usuarios_permissoes rup
+        WHERE rup.usuario_id = @admin_id
           AND rup.permissao_id = perm.id_permissao
           AND rup.dat_cancelamento_em IS NULL
     );
 
-        UPDATE rup
-        SET criado_Usuario_id = 1
-        FROM RH.Tbl_Rel_Usuarios_Permissoes rup
-        WHERE rup.usuario_id = @AdminId
-            AND EXISTS (
-                    SELECT 1
-                    FROM RH.Tbl_Permissoes perm
-                    WHERE perm.id_permissao = rup.permissao_id
-                        AND perm.cod_permissao IN (SELECT cod_permissao FROM @Permissoes)
-            );
+    UPDATE rup
+    SET criado_usuario_id = 1
+    FROM rh.tr_usuarios_permissoes rup
+    WHERE rup.usuario_id = @admin_id
+      AND EXISTS (
+            SELECT 1
+            FROM rh.tb_permissoes perm
+            WHERE perm.id_permissao = rup.permissao_id
+              AND perm.cod_permissao IN (SELECT cod_permissao FROM @permissoes)
+        );
 END;
