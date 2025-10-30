@@ -21,4 +21,9 @@ Onde estão os scripts
 
 
 
-[ ] Add nivel do usuário 0 a 20 onde o de nivel maior podera ver dos niveis inferiores.
+Custom Start Command
+php -S 0.0.0.0:${PORT} -t public
+
+
+Custom Build Command
+composer install --no-dev --optimize-autoloader && npm run build
