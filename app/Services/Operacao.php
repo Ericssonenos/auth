@@ -602,7 +602,7 @@ class Operacao
             'Cache-Control' => 'no-store, no-cache, must-revalidate, private',
             'X-Content-Type-Options' => 'nosniff',
             'Referrer-Policy' => 'no-referrer',
-            'X-Request-Id' => $requestId ?? uniqid('RH-', true),
+            'X-Request-Id' => $requestId ?? uniqid('rh-', true),
             'X-API-Version' => 'v1',
             'Content-Language' => 'pt-BR'
         ];
@@ -707,7 +707,7 @@ class Operacao
      * @param string $prefixo Prefixo para o ID único
      * @return string Request ID
      */
-    public static function extrairRequestId($request, string $prefixo = 'RH'): string
+    public static function extrairRequestId($request, string $prefixo = 'rh'): string
     {
         return $request->header('X-Request-Id', uniqid($prefixo . '-', true));
     }

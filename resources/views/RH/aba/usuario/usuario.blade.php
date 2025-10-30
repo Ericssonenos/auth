@@ -1,6 +1,6 @@
 @section('title','Usuários')
 @push('scripts')
-    <script src="{{ asset('/views/RH/aba/usuario/usuario.js') }}"></script>
+    <script src="{{ asset('/views/rh/aba/usuario/usuario.js') }}"></script>
 @endpush
 
 <div class="container py-4">
@@ -9,8 +9,8 @@
 </div>
 
 
-@include('RH.aba.usuario.modal.usuario-modal')
+@include('rh.aba.usuario.modal.usuario-modal')
 
-@include('RH.aba.usuario.modal.permissao-modal')
+@include('rh.aba.usuario.modal.permissao-modal')
 
-@include('RH.aba.usuario.modal.grupo-modal')
+@include('rh.aba.usuario.modal.grupo-modal')

@@ -1,9 +1,9 @@
 @extends('layout.main')
 
-@section('title', 'RH Access Demo')
+@section('title', 'rh Access Demo')
 
 @section('content')
-    <h1>RH Access Demo</h1>
+    <h1>rh Access Demo</h1>
     <p>Matrícula: {{ $dadosUsuario->nome_completo ?? 'N/A' }}</p>
 
     <hr />

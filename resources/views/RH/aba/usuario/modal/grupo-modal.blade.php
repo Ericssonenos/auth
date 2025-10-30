@@ -1,6 +1,6 @@
 
 @push('scripts')
-    <script src="{{ asset('/views/RH/aba/usuario/modal/grupo-modal.js') }}"></script>
+    <script src="{{ asset('/views/rh/aba/usuario/modal/grupo-modal.js') }}"></script>
 @endpush
 
 <!-- Modal Atribuir Grupo (placeholder) -->

@@ -1,6 +1,6 @@
 @section('title', 'Grupo')
 @push('scripts')
-    <script src="{{ asset('/views/RH/aba/grupo/grupo.js') }}"></script>
+    <script src="{{ asset('/views/rh/aba/grupo/grupo.js') }}"></script>
 @endpush
 
 <div class="container py-4">
@@ -8,8 +8,8 @@
     </table>
 </div>
 
-@include('RH.aba.grupo.modal.grupo-modal')
+@include('rh.aba.grupo.modal.grupo-modal')
 
-@include('RH.aba.grupo.modal.permissao-modal')
+@include('rh.aba.grupo.modal.permissao-modal')
 
-@include('RH.aba.grupo.modal.usuario-modal')
+@include('rh.aba.grupo.modal.usuario-modal')

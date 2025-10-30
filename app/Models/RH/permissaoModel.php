@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models\RH;
+namespace App\Models\rh;
 
 use App\Services\Operacao;
-use App\Services\RH\usuarioServices;
+use App\Services\rh\usuarioServices;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 

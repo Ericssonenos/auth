@@ -1,5 +1,5 @@
 @push('scripts')
-    <script src="{{ asset('/views/RH/aba/usuario/modal/usuario-modal.js') }}"></script>
+    <script src="{{ asset('/views/rh/aba/usuario/modal/usuario-modal.js') }}"></script>
 @endpush
 
 <!-- Modal Novo/Editar (reaproveitável) -->

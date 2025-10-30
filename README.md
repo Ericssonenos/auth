@@ -1,4 +1,4 @@
-# Mind — Auth (RH) — Resumo do Projeto
+# Mind — Auth (rh) — Resumo do Projeto
 
 O que é
 - Módulo DDL/estrutura para gerenciamento de autorização (grupos, permissões e vínculos históricos) usado pela aplicação Mind.

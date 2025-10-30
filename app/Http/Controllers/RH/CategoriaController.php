@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\RH;
+namespace App\Http\Controllers\rh;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\RH\categoriaModal;
+use App\Models\rh\categoriaModal;
 
 class CategoriaController extends Controller
 {

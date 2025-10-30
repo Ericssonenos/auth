@@ -1,5 +1,5 @@
 @push('scripts')
-    <script src="{{ asset('/views/RH/aba/usuario/modal/permissao-modal.js') }}"></script>
+    <script src="{{ asset('/views/rh/aba/usuario/modal/permissao-modal.js') }}"></script>
 @endpush
 
 <!-- Modal Permissões (simples) -->

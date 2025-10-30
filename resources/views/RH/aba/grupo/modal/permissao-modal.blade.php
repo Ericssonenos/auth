@@ -1,5 +1,5 @@
 @push('scripts')
-    <script src="{{'/views/RH/aba/grupo/modal/permissao-modal.js'}}"></script>
+    <script src="{{'/views/rh/aba/grupo/modal/permissao-modal.js'}}"></script>
 @endpush
 
 

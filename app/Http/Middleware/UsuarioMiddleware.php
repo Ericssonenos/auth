@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use App\Models\RH\permissaoModel;
+use App\Models\rh\permissaoModel;
 
 class UsuarioMiddleware
 {

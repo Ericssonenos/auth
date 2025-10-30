@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\RH;
+namespace App\Http\Controllers\rh;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\RH\usuarioModel;
+use App\Models\rh\usuarioModel;
 use Illuminate\Support\Facades\Cache;
 
 class UsuarioController extends Controller
@@ -22,7 +22,7 @@ class UsuarioController extends Controller
     public function index()
     {
         // [x] validar uso
-        return view('RH.rh');
+        return view('rh.rh');
     }
     // corresponde a usuario->CadastrarUsuarios($dados)
     public function CadastrarUsuarios(Request $request)

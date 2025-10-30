@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RH\LoginController;
-use App\Http\Controllers\RH\UsuarioController;
-use App\Http\Controllers\RH\GrupoController;
+use App\Http\Controllers\rh\LoginController;
+use App\Http\Controllers\rh\UsuarioController;
+use App\Http\Controllers\rh\GrupoController;
 
 
 Route::get('/', function () {
@@ -23,7 +23,7 @@ Route::get('login', [LoginController::class, 'exibirFormularioLogin'])->name('lo
 Route::get('alterar-senha', [LoginController::class, 'exibirAlterarSenha'])->name('alterar.senha.view');
 
 
-// Rotas RH - Views
+// Rotas rh - Views
 Route::prefix('rh')->group(function () {
     Route::get('usuarios', [UsuarioController::class, 'index'])->name('usuario.view')->middleware('usuarioMiddleware');
     Route::post('usuario/{id}/gerar-senha', [LoginController::class, 'GerarNovaSenha'])->name('usuario.gerar_senha')->middleware('usuarioMiddleware');

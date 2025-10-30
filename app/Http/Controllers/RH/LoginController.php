@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\RH;
+namespace App\Http\Controllers\rh;
 
 use Illuminate\Http\Request;
-use App\Models\RH\usuarioModel;
+use App\Models\rh\usuarioModel;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Controller;
-use App\Models\RH\permissaoModel;
+use App\Models\rh\permissaoModel;
 use Illuminate\Support\Facades\Cache;
 
 class LoginController extends Controller

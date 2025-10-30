@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use App\Services\RH\usuarioServices;
+use App\Services\rh\usuarioServices;
 use Illuminate\Support\Facades\Route;
 
 class BladeHelpers

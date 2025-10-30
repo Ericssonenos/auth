@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RH\UsuarioController;
-use App\Http\Controllers\RH\GrupoController;
-use App\Http\Controllers\RH\PermissaoController;
-use App\Http\Controllers\RH\CategoriaController;
-use App\Http\Controllers\RH\LoginController;
+use App\Http\Controllers\rh\UsuarioController;
+use App\Http\Controllers\rh\GrupoController;
+use App\Http\Controllers\rh\PermissaoController;
+use App\Http\Controllers\rh\CategoriaController;
+use App\Http\Controllers\rh\LoginController;
 /*
 |--------------------------------------------------------------------------
 | API Routes

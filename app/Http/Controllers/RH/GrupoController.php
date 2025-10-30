@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\RH;
+namespace App\Http\Controllers\rh;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\RH\grupoModel;
+use App\Models\rh\grupoModel;
 use Illuminate\Support\Facades\Cache;
 
 
@@ -24,7 +24,7 @@ class GrupoController extends Controller
     public function index()
     {
         // só acessa quem tiver a permissão GESTAO_GRUPOS
-       return view('RH.rh');
+       return view('rh.rh');
     }
 
 

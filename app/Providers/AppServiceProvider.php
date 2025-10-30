@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
-use App\Services\RH\usuarioServices;
+use App\Services\rh\usuarioServices;
 use Illuminate\Support\Facades\Blade;
 use App\Helpers\BladeHelpers;
 

@@ -1,5 +1,5 @@
 @push('scripts')
-    <script src="{{ asset('/views/RH/aba/grupo/modal/grupo-modal.js') }}"></script>
+    <script src="{{ asset('/views/rh/aba/grupo/modal/grupo-modal.js') }}"></script>
 @endpush
 
 <!-- Modal Novo/Editar Grupo -->

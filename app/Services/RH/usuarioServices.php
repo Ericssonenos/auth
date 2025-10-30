@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\RH;
+namespace App\Services\rh;
 
 class usuarioServices
 {
