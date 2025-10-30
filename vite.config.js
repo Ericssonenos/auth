@@ -5,7 +5,12 @@ export default defineConfig({
     plugins: [
         laravel({
             // adicionar aqui todos os CSS/JS usados pelo Blade via @vite
-            input: ['resources/css/app.css', 'resources/css/main.css', 'resources/js/app.js'],
+            input: [
+                'resources/css/app.css',
+                'resources/css/main.css',
+                'resources/css/login.css',
+                'resources/js/app.js',
+            ],
             refresh: true,
         }),
     ],
