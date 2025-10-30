@@ -22,8 +22,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#tab-estatisticas" data-bs-toggle="pill" data-tab="estatisticas">
-                            📊 Estatísticas
+                        <a class="nav-link" href="#tab-estatisticas" data-bs-toggle="pill" style="color: red" data-tab="estatisticas">
+                            <i class="bi bi-person-lock"></i> Permissão
                         </a>
                     </li>
                 </ul>

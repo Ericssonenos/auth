@@ -32,8 +32,22 @@ BEGIN
     EXEC sp_executesql @sql;
 END
 
--- 2) Dropar vistas, procedures e funções no schema RH
-PRINT '2) Removendo views, procedures e funções em RH...';
+PRINT '2) Removendo constraints DEFAULT em tabelas do schema RH...';
+WHILE EXISTS (SELECT 1
+              FROM sys.default_constraints dc
+              JOIN sys.tables t ON dc.parent_object_id = t.object_id
+              WHERE SCHEMA_NAME(t.schema_id) = 'RH')
+BEGIN
+    SELECT TOP(1) @sql = N'ALTER TABLE [' + SCHEMA_NAME(t.schema_id) + N'].[' + t.name + N'] DROP CONSTRAINT [' + dc.name + N']'
+    FROM sys.default_constraints dc
+    JOIN sys.tables t ON dc.parent_object_id = t.object_id
+    WHERE SCHEMA_NAME(t.schema_id) = 'RH';
+
+    PRINT @sql;
+    EXEC sp_executesql @sql;
+END
+
+PRINT '3) Removendo views, procedures e funções em RH...';
 -- Views
 WHILE EXISTS (SELECT 1 FROM sys.views v JOIN sys.schemas s ON v.schema_id = s.schema_id WHERE s.name = 'RH')
 BEGIN
@@ -70,8 +84,8 @@ BEGIN
     EXEC sp_executesql @sql;
 END
 
--- 3) Dropar tabelas do schema RH exceto RH.Tbl_Usuarios
-PRINT '3) Removendo tabelas do schema RH (exceto RH.Tbl_Usuarios)...';
+-- 4) Dropar tabelas do schema RH exceto RH.Tbl_Usuarios
+PRINT '4) Removendo tabelas do schema RH (exceto RH.Tbl_Usuarios)...';
 WHILE EXISTS (SELECT 1 FROM sys.tables t JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE s.name = 'RH' AND t.name <> 'Tbl_Usuarios')
 BEGIN
     SELECT TOP(1) @sql = N'DROP TABLE [' + s.name + N'].[' + t.name + N']'
@@ -83,8 +97,8 @@ BEGIN
     EXEC sp_executesql @sql;
 END
 
--- 4) Remover tipos e sequences (se existirem)
-PRINT '4) Removendo types e sequences em RH (se existirem)...';
+-- 5) Remover tipos e sequences (se existirem)
+PRINT '5) Removendo types e sequences em RH (se existirem)...';
 WHILE EXISTS (SELECT 1 FROM sys.types t JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE s.name = 'RH' AND t.is_user_defined = 1)
 BEGIN
     SELECT TOP(1) @sql = N'DROP TYPE [' + s.name + N'].[' + t.name + N']'

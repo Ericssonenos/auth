@@ -27,7 +27,7 @@ BEGIN
         senha_Tentativas INT NOT NULL DEFAULT 0,
         dat_senha_Bloqueado_em DATETIME2(3) NULL,
         locatario_id INT NOT NULL,
-        criado_Usuario_id INT NOT NULL,
+        criado_Usuario_id INT NOT NULL DEFAULT 1,
         dat_criado_em DATETIME2(3) NOT NULL DEFAULT GETDATE(),
         atualizado_Usuario_id INT,
         dat_atualizado_em DATETIME2(3) NULL,
@@ -50,7 +50,7 @@ BEGIN
         id_Categoria INT IDENTITY(1,1) PRIMARY KEY,
         nome_Categoria NVARCHAR(200) NOT NULL,
         descricao_Categoria NVARCHAR(1000) NULL,
-        criado_Usuario_id INT NOT NULL,
+        criado_Usuario_id INT NOT NULL DEFAULT 1,
         dat_criado_em DATETIME2(3) NOT NULL DEFAULT GETDATE(),
         atualizado_Usuario_id INT,
         dat_atualizado_em DATETIME2(3) NULL,
@@ -67,7 +67,7 @@ BEGIN
         nome_Grupo NVARCHAR(200) NOT NULL,
         descricao_Grupo NVARCHAR(1000) NULL,
         categoria_id INT NULL,
-        criado_Usuario_id int NOT NULL,
+        criado_Usuario_id int NOT NULL DEFAULT 1,
         dat_criado_em DATETIME2(3) NOT NULL DEFAULT GETDATE(),
         atualizado_Usuario_id INT,
         dat_atualizado_em DATETIME2(3) NULL,
@@ -84,7 +84,7 @@ BEGIN
         id_permissao INT IDENTITY(1,1) PRIMARY KEY,
         cod_permissao NVARCHAR(200) NOT NULL,
         descricao_permissao NVARCHAR(1000) NULL,
-        criado_Usuario_id int NOT NULL,
+        criado_Usuario_id int NOT NULL DEFAULT 1,
         dat_criado_em DATETIME2(3) NOT NULL DEFAULT GETDATE(),
         atualizado_Usuario_id INT,
         dat_atualizado_em DATETIME2(3) NULL,
@@ -101,7 +101,7 @@ BEGIN
         id_rel_grupo_grupo INT IDENTITY(1,1) PRIMARY KEY,
         grupo_pai_id INT NOT NULL,
         grupo_filho_id INT NOT NULL,
-        criado_Usuario_id int NOT NULL,
+        criado_Usuario_id int NOT NULL DEFAULT 1,
         dat_criado_em DATETIME2(3) NOT NULL DEFAULT GETDATE(),
         cancelamento_Usuario_id INT,
         dat_cancelamento_em DATETIME2(3) NULL,
@@ -126,7 +126,7 @@ BEGIN
         id_rel_usuario_grupo INT IDENTITY(1,1) PRIMARY KEY,
         usuario_id int NOT NULL,
         grupo_id INT NOT NULL,
-        criado_Usuario_id int NOT NULL,
+        criado_Usuario_id int NOT NULL DEFAULT 1,
         dat_criado_em DATETIME2(3) NOT NULL DEFAULT GETDATE(),
         cancelamento_Usuario_id INT,
         dat_cancelamento_em DATETIME2(3) NULL,
@@ -150,7 +150,7 @@ BEGIN
         id_rel_usuario_permissao INT IDENTITY(1,1) PRIMARY KEY,
         usuario_id int NOT NULL,
         permissao_id INT NOT NULL,
-        criado_Usuario_id int NOT NULL,
+        criado_Usuario_id int NOT NULL DEFAULT 1,
         dat_criado_em DATETIME2(3) NOT NULL DEFAULT GETDATE(),
         cancelamento_Usuario_id INT,
         dat_cancelamento_em DATETIME2(3) NULL,
@@ -174,7 +174,7 @@ BEGIN
         id_rel_grupo_permissao INT IDENTITY(1,1) PRIMARY KEY,
         grupo_id INT NOT NULL,
         permissao_id INT NOT NULL,
-        criado_Usuario_id int NOT NULL,
+        criado_Usuario_id int NOT NULL DEFAULT 1,
         dat_criado_em DATETIME2(3) NOT NULL DEFAULT GETDATE(),
         cancelamento_Usuario_id INT,
         dat_cancelamento_em DATETIME2(3) NULL,
@@ -198,21 +198,20 @@ BEGIN
 END
 GO
 
-CREATE FUNCTION RH.Fn_GetPermissoesGrupoXML(@id_Grupo INT)
+CREATE FUNCTION [RH].[Fn_GetPermissoesGrupoXML](@id_Grupo INT)
 RETURNS NVARCHAR(MAX)
 AS
 BEGIN
     DECLARE @PermissoesXML NVARCHAR(MAX);
 
-    SELECT @PermissoesXML = STRING_AGG(p.cod_permissao, ', ')
+    SELECT distinct @PermissoesXML = STRING_AGG(p.cod_permissao, ', ')
     FROM RH.Tbl_Permissoes p
     INNER JOIN RH.Tbl_Rel_Grupos_Permissoes rgp ON p.id_permissao = rgp.permissao_id
     WHERE rgp.grupo_id = @id_Grupo
         AND rgp.dat_cancelamento_em IS NULL
         AND p.dat_cancelamento_em IS NULL
-    ORDER BY p.cod_permissao;
 
-    RETURN ISNULL(@PermissoesXML, '');
+    RETURN ISNULL(@PermissoesXML, ' ');
 END
 GO
 
