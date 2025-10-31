@@ -32,7 +32,7 @@
         <header class="header">
             <div class="brand">
                 <img src="{{ asset('favicon.png') }}" alt="Logo" class="brand-logo" />
-                <span class="brand-name">SUPPLYTEK</span>
+                <span class="title-supplytek">SUPPLYTEK</span>
             </div>
 
             <div class="nav-actions d-flex align-items-center gap-2">

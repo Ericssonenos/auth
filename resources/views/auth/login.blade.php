@@ -24,13 +24,13 @@
 
 @section('content')
     <div class="min-vh-100 d-flex align-items-center justify-content-center py-5 bg-login">
-        <div class="shadow-sm w-100 login-page card" style="max-width:420px;">
+        <div class="shadow-sm w-100 bg-gradient-gear card" style="max-width:420px;">
             <div class="card-body">
                 <div class="d-flex align-items-center mb-3">
                     <img src="{{ asset('images/apresentacao/logo.png') }}" alt="Logo" class="logo-img me-3"
                         onerror="this.style.display='none'" />
                     <div>
-                         <h3 id="login-title" class=" text-white text-center text-warning card-title mb-0">
+                         <h3 id="login-title" class=" text-center text-warning card-title mb-0">
                             <i class="bi bi-shield-lock p-2 text-gradient-gear"></i>
                             <span class="title-supplytek">SUPPLYTEK</span>
                         </h3>
@@ -56,13 +56,13 @@
                     @csrf
 
                     <div class="mb-3">
-                        <label for="email" class="text-white form-label">Email</label>
+                        <label for="email" class=" form-label">Email</label>
                         <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus
                             class="form-control" placeholder="seu.email@empresa.com" />
                     </div>
 
                     <div class="mb-3 w-100">
-                        <label for="senha" class="text-white form-label">Senha</label>
+                        <label for="senha" class="form-label">Senha</label>
                         <input id="senha" name="senha" type="password" required class="form-control"
                             placeholder="Sua senha" />
                     </div>
@@ -72,7 +72,7 @@
                         Sistema</button>
                 </form>
 
-                <div class="text-center text-white mt-3 small">Precisa de ajuda? <a
+                <div class="text-center  mt-3 small">Precisa de ajuda? <a
                         href="mailto:suporte@empresa.com">suporte@empresa.com</a></div>
             </div>
         </div>

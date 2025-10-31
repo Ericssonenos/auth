@@ -1,4 +1,4 @@
-/* Bootstrap entry + custom overrides */
+/* Bootstrap base + tipografia da marca */
 @import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 
 /* Sources for build tooling (leave for IDEs / watchers) */
@@ -7,11 +7,43 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
-:root{
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+:root {
+    --font-sans: 'Glacial Indifference', 'Verdana', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-heading: 'Glacial Indifference', 'Verdana', ui-sans-serif, system-ui, sans-serif;
+}
+
+@font-face {
+    font-family: 'Glacial Indifference';
+    src: url('../fonts/GlacialIndifference-Regular.woff2') format('woff2'),
+         url('../fonts/GlacialIndifference-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glacial Indifference';
+    src: url('../fonts/GlacialIndifference-Bold.woff2') format('woff2'),
+         url('../fonts/GlacialIndifference-Bold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
 }
 
 /* Minimal project overrides */
-body{font-family:var(--font-sans);}
+body {
+    font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: .02em;
+}
 
 
