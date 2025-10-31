@@ -1,5 +1,6 @@
 -- Script: 001_create_rh_tables.sql (PostgreSQL)
 -- Objetivo: criar os objetos principais do schema rh com identificadores minúsculos e prefixos tb_/tr_.
+ALTER DATABASE railway SET timezone TO 'America/Sao_Paulo';
 
 CREATE SCHEMA IF NOT EXISTS rh;
 

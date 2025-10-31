@@ -49,7 +49,7 @@
                 @endif
 
 
-                <form method="POST" action="{{ route('api.login') }}" class="mt-3">
+                <form method="POST" action="{{ route('api.logar') }}" class="mt-3">
                     @csrf
 
                     <div class="mb-3">

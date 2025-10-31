@@ -22,7 +22,7 @@ Route::middleware('web')->group(function () {
         return redirect()->route('/');
     });
 
-    Route::post('login', [LoginController::class, 'processarLogin'])->name('api.login');
+    Route::post('logar', [LoginController::class, 'processarLogin'])->name('api.logar');
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
     Route::post('alterar-senha', [LoginController::class, 'processarAlterarSenha'])->name('alterar.senha');
 });

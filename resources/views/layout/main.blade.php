@@ -60,33 +60,32 @@
                         <a class="nav-link {{ request()->routeIs('home.view') ? 'active' : '' }}"
                             href="{{ route('home.view') }}">
                             <i class="bi bi-house-door-fill me-1" aria-hidden="true"></i>
-                            Início
                         </a>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}" id="navbarDropdownMaquinas" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}"
+                            id="navbarDropdownMaquinas" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-gear-wide-connected me-1" aria-hidden="true"></i>
-                            Máquinas de Solda
+                            Máquinas
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownMaquinas" role="menu">
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-lightning-charge me-2"
-                                        aria-hidden="true"></i>MIG/MAG</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-droplet me-2"
-                                        aria-hidden="true"></i>TIG</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-hammer me-2"
-                                        aria-hidden="true"></i>MMA (Eletrodo)</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-layers me-2"
-                                        aria-hidden="true"></i>Multiprocesso</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-scissors me-2"
-                                        aria-hidden="true"></i>Plasma</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i
+                                        class="bi bi-lightning-charge me-2" aria-hidden="true"></i>MIG/MAG</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i
+                                        class="bi bi-droplet me-2" aria-hidden="true"></i>TIG</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i
+                                        class="bi bi-hammer me-2" aria-hidden="true"></i>MMA (Eletrodo)</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i
+                                        class="bi bi-layers me-2" aria-hidden="true"></i>Multiprocesso</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i
+                                        class="bi bi-scissors me-2" aria-hidden="true"></i>Plasma</a></li>
                         </ul>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}" id="navbarDropdownCons" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}"
+                            id="navbarDropdownCons" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-box-seam me-1" aria-hidden="true"></i>
                             Consumíveis
                         </a>
@@ -94,27 +93,29 @@
                             <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Arames</a></li>
                             <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Eletrodos</a></li>
                             <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Gases</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Bicos e Ponteiras</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Bicos e Ponteiras</a>
+                            </li>
                         </ul>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}" id="navbarDropdownSol" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}"
+                            id="navbarDropdownSol" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-grid-3x3-gap me-1" aria-hidden="true"></i>
                             Soluções
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownSol" role="menu">
                             <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Automotiva</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Metalmecânica</a></li>
+                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Metalmecânica</a>
+                            </li>
                             <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Oil & Gas</a></li>
                             <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Construção</a></li>
                         </ul>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}" id="navbarDropdownProc" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}"
+                            id="navbarDropdownProc" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-diagram-3 me-1" aria-hidden="true"></i>
                             Processos Internos
                         </a>
@@ -124,28 +125,27 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#catalogo"><i class="bi bi-journal-text me-1"
-                                aria-hidden="true"></i>Catálogo</a>
+                        <a class="nav-link" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-tools me-1"
+                                aria-hidden="true"></i>Assistência Técnica</a>
                     </li>
-            <li class="nav-item">
-            <a class="nav-link" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-tools me-1"
-                aria-hidden="true"></i>Assistência Técnica</a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-tag me-1"
-                aria-hidden="true"></i>Ofertas</a>
-            </li>
+
                 </ul>
 
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="btn btn-warning" href="#orcamento" aria-label="Solicitar orçamento">
-                            <i class="bi bi-clipboard-check me-1" aria-hidden="true"></i>
-                            Solicitar Orçamento
-                        </a>
-                    </li>
-                </ul>
             </div>
+
+            <ul class="navbar-nav ms-auto gap-2 p-1" style="flex-direction: row;!important">
+                <li class="nav-item  ">
+                    <a class=" btn btn-outline-danger" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-tag me-1"
+                            aria-hidden="true"></i>Ofertas</a>
+                </li>
+                <li class="nav-item">
+                    <a class=" btn btn-outline-warning" href="#orcamento" aria-label="Solicitar orçamento">
+                        <i class="bi bi-clipboard-check me-1" aria-hidden="true"></i>
+                        Solicitar Orçamento
+                    </a>
+                </li>
+            </ul>
+
         </nav>
     @endif
 

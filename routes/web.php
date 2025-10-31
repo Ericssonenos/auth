@@ -13,9 +13,6 @@ Route::get('/', function () {
 Route::view('em-desenvolvimento', 'pages.em-desenvolvimento')->name('em-desenvolvimento');
 
 
-
-
-
 // rotas para login
 Route::get('login', [LoginController::class, 'exibirFormularioLogin'])->name('login');
 

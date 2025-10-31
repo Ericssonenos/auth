@@ -66,7 +66,6 @@ class LoginController extends Controller
             )->withInput();
         }
 
-        // Verificar se a conta do usuário está bloqueada
         if ($resultadoStatus_Usuario['data']['senha_bloqueada'] == 1) {
             // Apagar dados da sessão
             Session::forget('dados_usuario_sessao');
@@ -132,6 +131,7 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         Session::forget('dados_usuario_sessao');
+        // redicionar para o login pelo nome da rota
         return redirect()->route('login');
     }
     /**
