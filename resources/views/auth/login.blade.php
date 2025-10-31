@@ -11,7 +11,7 @@
     </header>
     <style>
         main {
-           margin-top: 0px !important;
+            margin-top: 0px !important;
         }
     </style>
 @endsection
@@ -30,7 +30,10 @@
                     <img src="{{ asset('images/apresentacao/logo.png') }}" alt="Logo" class="logo-img me-3"
                         onerror="this.style.display='none'" />
                     <div>
-                        <h3 id="login-title" class="text-h1-login text-center card-title mb-0">SUPPLYTEK</h3>
+                         <h3 id="login-title" class=" text-white text-center text-warning card-title mb-0">
+                            <i class="bi bi-shield-lock p-2 text-gradient-gear"></i>
+                            <span class="title-supplytek">SUPPLYTEK</span>
+                        </h3>
                     </div>
                 </div>
 
