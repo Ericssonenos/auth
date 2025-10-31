@@ -17,6 +17,11 @@ use App\Http\Controllers\rh\LoginController;
 */
 
 Route::middleware('web')->group(function () {
+    // Redireciona GET /api/login para a tela de login (evita 405 em acessos diretos)
+    Route::get('login', function () {
+        return redirect()->route('login');
+    });
+
     Route::post('login', [LoginController::class, 'processarLogin'])->name('api.login');
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
     Route::post('alterar-senha', [LoginController::class, 'processarAlterarSenha'])->name('alterar.senha');
