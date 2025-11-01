@@ -65,7 +65,7 @@ function Carregar_Tb_Modal_Grupo_usuario(dados_permissoes) {
                     data: function (row) {
                         return row.id_rel_usuario_grupo ?? row.id_relUsuarioGrupo ?? row.idRelUsuarioGrupo ?? null;
                     },
-                    title: 'Ação <i class="bi bi-gear"></i>',
+                    title: 'Ação ',
                     className: 'text-center',
                     render: function (data, type, row) {
                         let retorno = '<div class="d-flex align-items-center gap-1">';

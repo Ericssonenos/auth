@@ -91,6 +91,33 @@ class usuarioModel extends Model
                         AND rug.dat_cancelamento_em IS NULL
                     WHERE u.dat_cancelamento_em IS NULL
                     ORDER BY CASE WHEN rug.id_rel_usuario_grupo IS NOT NULL THEN 1 ELSE 0 END, u.nome_completo";
+        } else if ($fn === 'fn-permissao-status') {
+            $execParams[':permissao_id'] = $params['permissao_id'];
+            $execParams[':permissao_id_grupo'] = $params['permissao_id'];
+            $consultaSql = "SELECT
+                        u.id_usuario,
+                        u.nome_completo,
+                        u.email,
+                        u.dat_criado_em,
+                        rup.id_rel_usuario_permissao,
+                        CASE
+                            WHEN EXISTS (
+                                SELECT 1
+                                FROM rh.tr_grupos_permissoes rgp
+                                INNER JOIN rh.tr_usuarios_grupos rug
+                                    ON rug.grupo_id = rgp.grupo_id
+                                    AND rug.dat_cancelamento_em IS NULL
+                                WHERE rgp.permissao_id = :permissao_id_grupo
+                                  AND rgp.dat_cancelamento_em IS NULL
+                                  AND rug.usuario_id = u.id_usuario
+                            ) THEN 1 ELSE 0
+                        END AS ativo_grupo
+                    FROM rh.tb_usuarios u
+                    LEFT JOIN rh.tr_usuarios_permissoes rup
+                        ON rup.usuario_id = u.id_usuario
+                        AND rup.permissao_id = :permissao_id
+                        AND rup.dat_cancelamento_em IS NULL
+                    WHERE u.dat_cancelamento_em IS NULL";
         } else {
 
             $parametrizacao = Operacao::Parametrizar($params);

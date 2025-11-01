@@ -36,6 +36,24 @@ class grupoModel extends Model
                                 AND rug.usuario_id = :usuario_id
                                 AND rug.dat_cancelamento_em IS NULL
                             WHERE g.dat_cancelamento_em IS NULL";
+        } else if ($fn === 'fn-permissao-status') {
+            $execParams[':permissao_id'] = $params['permissao_id'];
+            $consultaSql = "SELECT
+                                g.id_grupo,
+                                g.nome_grupo,
+                                g.descricao_grupo,
+                                g.categoria_id,
+                                c.nome_categoria,
+                                rgp.id_rel_grupo_permissao
+                            FROM rh.tb_grupos g
+                            LEFT JOIN rh.tb_categorias c
+                                ON g.categoria_id = c.id_categoria
+                                AND c.dat_cancelamento_em IS NULL
+                            LEFT JOIN rh.tr_grupos_permissoes rgp
+                                ON rgp.grupo_id = g.id_grupo
+                                AND rgp.permissao_id = :permissao_id
+                                AND rgp.dat_cancelamento_em IS NULL
+                            WHERE g.dat_cancelamento_em IS NULL";
         } else {
 
             $parametrizacao = Operacao::Parametrizar($params);

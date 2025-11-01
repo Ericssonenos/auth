@@ -61,7 +61,7 @@ $(function () {
 
                     {
                         data: null,
-                        title: 'Ações <i class="bi bi-gear"></i>',
+                        title: 'Ações ',
                         className: 'text-center',
                         orderable: false,
                         render: function (row) {

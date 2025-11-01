@@ -56,7 +56,7 @@ function Carregar_Tb_Modal_Grupo_Permissao(dados_permissoes) {
                 },
                 {
                     data: 'id_rel_grupo_permissao',
-                    title: 'Ação <i class="bi bi-gear"></i>',
+                    title: 'Ação ',
                     className: 'text-center',
                     render: function (data, type, row) {
                         let retorno = '<div class="d-flex align-items-center gap-1">';

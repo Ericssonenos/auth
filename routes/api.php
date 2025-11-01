@@ -47,6 +47,9 @@ Route::middleware(['web', 'usuarioMiddleware'])->prefix('rh')->group(function ()
     Route::prefix('permissao')->group(function () {
         // Permissões
         Route::post('dados', [PermissaoController::class, 'ObterPermissoes']);
+        Route::post('cadastrar', [PermissaoController::class, 'CadastrarPermissao']);
+        Route::put('atualizar/{permissao_id}', [PermissaoController::class, 'AtualizarPermissao']);
+        Route::delete('deletar/{permissao_id}', [PermissaoController::class, 'DeletarPermissao']);
     });
 
     // Grupos

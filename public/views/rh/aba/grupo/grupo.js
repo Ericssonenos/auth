@@ -58,9 +58,10 @@ $(function () {
                     },
                     {
                         data: null,
-                        title: 'Ações <i class="bi bi-gear"></i>',
+                        title: 'Ações',
                         className: 'text-center',
                         orderable: false,
+                        searchPanes: { show: false },
                         render: function (row) {
                             return `
                                 <button class="btn btn-sm btn-primary btn-abrir-modal-editar-grupo" title="Editar"><i class="bi bi-people"></i></i>Editar</button>
@@ -193,6 +194,19 @@ $(function () {
                     controls: true,           // botões limpar/colapsar
                 },
             });
+
+                // Ajuste visual do cabeçalho: inserir o ícone no TH sem colocar HTML no título
+                try {
+                    // índice da coluna 'Ações' (0-based): 3
+                    const th = $('#tb_grupo thead th').eq(3);
+                    if (th.length) {
+                        // somente altera o conteúdo visual do cabeçalho
+                        th.html('Ações ');
+                    }
+                } catch (e) {
+                    // silencioso — não interrompe a inicialização
+                    console.debug('Não foi possível injetar ícone no cabeçalho de Ações', e);
+                }
         }
     };
 

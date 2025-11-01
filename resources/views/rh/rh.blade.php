@@ -40,7 +40,7 @@
                     </div>
 
                     <div class="tab-pane fade" id="tab-estatisticas" role="tabpanel">
-                        {{-- @include('rh.aba.estatisticas.estatisticas') --}}
+                         @include('rh.aba.permissao.permissao')
                     </div>
                 </div>
             </div>

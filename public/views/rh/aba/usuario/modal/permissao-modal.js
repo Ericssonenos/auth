@@ -50,7 +50,7 @@ $('#tb_usuario').on('click', '.btn-abrir-modal-tb-permissoes', function () {
                 { data: 'descricao_permissao', title: 'Descrição' },
                 {
                     data: 'id_rel_usuario_permissao',
-                    title: 'Ação <i class="bi bi-gear"></i>',
+                    title: 'Ação',
                     className: 'text-center',
                     render: function (data, type, row) {
                         let retorno = '<div class="d-flex align-items-center gap-1">';
