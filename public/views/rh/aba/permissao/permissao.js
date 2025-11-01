@@ -35,15 +35,6 @@ $(function () {
             columns: [
                 {
                     data: function (row) {
-                        return row.cod_permissao || row.nome_permissao || '';
-                    },
-                    title: 'Código',
-                    orderable: true,
-                    className: 'text-start',
-                    searchPanes: { show: true }
-                },
-                {
-                    data: function (row) {
                         return row.descricao_permissao || row.descricao || '';
                     },
                     title: 'Descrição',
@@ -51,6 +42,16 @@ $(function () {
                     className: 'text-start',
                     searchPanes: { show: true }
                 },
+                {
+                    data: function (row) {
+                        return row.cod_permissao || row.nome_permissao || '';
+                    },
+                    title: 'Código',
+                    orderable: true,
+                    className: 'text-start',
+                    searchPanes: { show: true }
+                },
+
                 {
                     data: null,
                     title: 'Ações ',
