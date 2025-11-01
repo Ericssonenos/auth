@@ -27,12 +27,8 @@
         <div class="shadow-sm w-100 bg-gradient-gear card" style="max-width:420px;">
             <div class="card-body">
                 <div class="d-flex align-items-center mb-3">
-                    @if (file_exists(public_path('images/apresentacao/logo.png')))
-                        <img src="{{ asset('images/apresentacao/logo.png') }}" alt="Logo" class="logo-img me-3"
-                            onerror="this.style.display='none'" />
-                    @endif
                     <div>
-                         <h3 id="login-title" class=" text-center text-warning card-title mb-0">
+                        <h3 id="login-title" class=" text-center text-warning card-title mb-0">
                             <i class="bi bi-shield-lock p-2 text-gradient-gear"></i>
                             <span class="title-supplytek">SUPPLYTEK</span>
                         </h3>
