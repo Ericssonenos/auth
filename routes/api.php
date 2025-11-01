@@ -18,12 +18,7 @@ use App\Http\Controllers\rh\LoginController;
 
 
 
-Route::middleware('web')->group(function () {
 
-    Route::post('logar', [LoginController::class, 'processarLogin'])->name('api.logar');
-    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
-    Route::post('alterar-senha', [LoginController::class, 'processarAlterarSenha'])->name('alterar.senha');
-});
 
 
 Route::middleware(['web', 'usuarioMiddleware'])->prefix('rh')->group(function () {

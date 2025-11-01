@@ -15,7 +15,9 @@ Route::view('em-desenvolvimento', 'pages.em-desenvolvimento')->name('em-desenvol
 
 // rotas para login
 Route::get('login', [LoginController::class, 'exibirFormularioLogin'])->name('login');
-
+Route::post('logar', [LoginController::class, 'processarLogin'])->name('logar');
+Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('alterar-senha', [LoginController::class, 'processarAlterarSenha'])->name('alterar.senha');
 
 
 // alteração de senha obrigatória (exibir formulário e processar)
