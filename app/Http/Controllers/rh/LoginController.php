@@ -66,7 +66,9 @@ class LoginController extends Controller
             )->withInput();
         }
 
-        if ($resultadoStatus_Usuario['data']['senha_bloqueada'] == 1) {
+    // Protege contra acesso a índice indefinido caso 'data' venha vazio
+    $senhaBloqueada = $resultadoStatus_Usuario['data']['senha_bloqueada'] ?? 0;
+    if ($senhaBloqueada == 1) {
             // Apagar dados da sessão
             Session::forget('dados_usuario_sessao');
 
@@ -79,7 +81,8 @@ class LoginController extends Controller
         }
 
         // Verificar se o usuário retorna senha, se sim forçar alteração
-        if ($resultadoStatus_Usuario['data']['senha'] != null) {
+    $senhaRetornada = $resultadoStatus_Usuario['data']['senha'] ?? null;
+    if ($senhaRetornada != null) {
             // Apagar dados da sessão
             Session::forget('dados_usuario_sessao');
             // Redirecionar para a página de alteração de senha

@@ -27,4 +27,14 @@ php -S 0.0.0.0:${PORT} -t public
 
 Custom Build Command
 composer install --no-dev --optimize-autoloader && npm install  && npm run build
+
+# limpa views, cache de rotas, config, e otimizações
+php artisan view:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan config:clear
+php artisan optimize:clear
+# remover arquivos compilados obsoletos (bootstrap cache)
+Remove-Item -Force -ErrorAction SilentlyContinue bootstrap\cache\packages.php,bootstrap\cache\services.php
+composer dump-autoload -o
   

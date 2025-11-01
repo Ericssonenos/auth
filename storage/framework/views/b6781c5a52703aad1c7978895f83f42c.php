@@ -5,53 +5,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@yield('title', 'Sistema rh')</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title><?php echo $__env->yieldContent('title', 'Sistema rh'); ?></title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <script>
-        window.AppErro = @json(session('erro', (object) []));
+        window.AppErro = <?php echo json_encode(session('erro', (object) []), 512) ?>;
     </script>
-    @stack('styles')
+    <?php echo $__env->yieldPushContent('styles'); ?>
 
 
 
-    <script src="{{ asset('js/layout/setup-csrf.js') }}"></script>
-    <script src="{{ asset('js/bibliotecas/datatables/datatables.js') }}"></script>
-    <script src="{{ asset('js/bibliotecas/datatables/default.js') }}"></script>
-    <link href="{{ asset('js/bibliotecas/datatables/datatables.css') }}" rel="stylesheet">
+    <script src="<?php echo e(asset('js/layout/setup-csrf.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/bibliotecas/datatables/datatables.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/bibliotecas/datatables/default.js')); ?>"></script>
+    <link href="<?php echo e(asset('js/bibliotecas/datatables/datatables.css')); ?>" rel="stylesheet">
 
 
-    @if (file_exists(public_path('build/manifest.json')))
-        @vite(['resources/css/app.css', 'resources/css/main.css', 'resources/js/app.js'])
-    @else
-        {{-- Fallback quando o manifest do Vite não existe (evita exceção durante renderização) --}}
-        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/main.css') }}">
-        <script src="{{ asset('js/app.js') }}" defer></script>
-    @endif
+    <?php if(file_exists(public_path('build/manifest.json'))): ?>
+        <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/css/main.css', 'resources/js/app.js']); ?>
+    <?php else: ?>
+        
+        <link rel="stylesheet" href="<?php echo e(asset('css/app.css')); ?>">
+        <link rel="stylesheet" href="<?php echo e(asset('css/main.css')); ?>">
+        <script src="<?php echo e(asset('js/app.js')); ?>" defer></script>
+    <?php endif; ?>
 
 </head>
 
 <body>
 
-    @hasSection('header')
-        @yield('header')
-    @else
+    <?php if (! empty(trim($__env->yieldContent('header')))): ?>
+        <?php echo $__env->yieldContent('header'); ?>
+    <?php else: ?>
         <header class="header">
             <div class="brand">
-                <img src="{{ asset('favicon.png') }}" alt="Logo" class="brand-logo" />
+                <img src="<?php echo e(asset('favicon.png')); ?>" alt="Logo" class="brand-logo" />
                 <span class="title-supplytek">SUPPLYTEK</span>
             </div>
 
             <div class="nav-actions d-flex align-items-center gap-2">
-                @usuarioLogado
-                    <span class="user-name">{{ $dadosUsuario->nome_completo ?? 'Usuário' }}</span>
-                    <form method="POST" action="{{ route('logout') }}" class="m-0">
-                        @csrf
+                <?php if (\Illuminate\Support\Facades\Blade::check('usuarioLogado')): ?>
+                    <span class="user-name"><?php echo e($dadosUsuario->nome_completo ?? 'Usuário'); ?></span>
+                    <form method="POST" action="<?php echo e(route('logout')); ?>" class="m-0">
+                        <?php echo csrf_field(); ?>
                         <button type="submit" class="btn btn-ghost">Sair</button>
                     </form>
-                @else
-                    <a href="{{ route('login') }}" class="btn btn-primary">Entrar</a>
-                @endusuarioLogado
+                <?php else: ?>
+                    <a href="<?php echo e(route('login')); ?>" class="btn btn-primary">Entrar</a>
+                <?php endif; ?>
             </div>
         </header>
 
@@ -64,75 +64,75 @@
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('home.view') ? 'active' : '' }}"
-                            href="{{ route('home.view') }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('home.view') ? 'active' : ''); ?>"
+                            href="<?php echo e(route('home.view')); ?>">
                             <i class="bi bi-house-door-fill me-1" aria-hidden="true"></i>
                         </a>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}"
+                        <a class="nav-link dropdown-toggle" href="<?php echo e(route('em-desenvolvimento')); ?>"
                             id="navbarDropdownMaquinas" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-gear-wide-connected me-1" aria-hidden="true"></i>
                             Máquinas
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownMaquinas" role="menu">
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i
+                            <li><a class="dropdown-item" href="<?php echo e(route('em-desenvolvimento')); ?>"><i
                                         class="bi bi-lightning-charge me-2" aria-hidden="true"></i>MIG/MAG</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i
+                            <li><a class="dropdown-item" href="<?php echo e(route('em-desenvolvimento')); ?>"><i
                                         class="bi bi-droplet me-2" aria-hidden="true"></i>TIG</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i
+                            <li><a class="dropdown-item" href="<?php echo e(route('em-desenvolvimento')); ?>"><i
                                         class="bi bi-hammer me-2" aria-hidden="true"></i>MMA (Eletrodo)</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i
+                            <li><a class="dropdown-item" href="<?php echo e(route('em-desenvolvimento')); ?>"><i
                                         class="bi bi-layers me-2" aria-hidden="true"></i>Multiprocesso</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}"><i
+                            <li><a class="dropdown-item" href="<?php echo e(route('em-desenvolvimento')); ?>"><i
                                         class="bi bi-scissors me-2" aria-hidden="true"></i>Plasma</a></li>
                         </ul>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}"
+                        <a class="nav-link dropdown-toggle" href="<?php echo e(route('em-desenvolvimento')); ?>"
                             id="navbarDropdownCons" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-box-seam me-1" aria-hidden="true"></i>
                             Consumíveis
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownCons" role="menu">
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Arames</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Eletrodos</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Gases</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Bicos e Ponteiras</a>
+                            <li><a class="dropdown-item" href="<?php echo e(route('em-desenvolvimento')); ?>">Arames</a></li>
+                            <li><a class="dropdown-item" href="<?php echo e(route('em-desenvolvimento')); ?>">Eletrodos</a></li>
+                            <li><a class="dropdown-item" href="<?php echo e(route('em-desenvolvimento')); ?>">Gases</a></li>
+                            <li><a class="dropdown-item" href="<?php echo e(route('em-desenvolvimento')); ?>">Bicos e Ponteiras</a>
                             </li>
                         </ul>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}"
+                        <a class="nav-link dropdown-toggle" href="<?php echo e(route('em-desenvolvimento')); ?>"
                             id="navbarDropdownSol" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-grid-3x3-gap me-1" aria-hidden="true"></i>
                             Soluções
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownSol" role="menu">
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Automotiva</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Metalmecânica</a>
+                            <li><a class="dropdown-item" href="<?php echo e(route('em-desenvolvimento')); ?>">Automotiva</a></li>
+                            <li><a class="dropdown-item" href="<?php echo e(route('em-desenvolvimento')); ?>">Metalmecânica</a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Oil & Gas</a></li>
-                            <li><a class="dropdown-item" href="{{ route('em-desenvolvimento') }}">Construção</a></li>
+                            <li><a class="dropdown-item" href="<?php echo e(route('em-desenvolvimento')); ?>">Oil & Gas</a></li>
+                            <li><a class="dropdown-item" href="<?php echo e(route('em-desenvolvimento')); ?>">Construção</a></li>
                         </ul>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="{{ route('em-desenvolvimento') }}"
+                        <a class="nav-link dropdown-toggle" href="<?php echo e(route('em-desenvolvimento')); ?>"
                             id="navbarDropdownProc" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-diagram-3 me-1" aria-hidden="true"></i>
                             Processos Internos
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownProc" role="menu">
-                            <li>@href_permissa('usuario.view', 'Cadastros', 'bi bi-people', 'dropdown-item')</li>
+                            <li><?php echo \App\Helpers\BladeHelpers::hrefPermissa('usuario.view', 'Cadastros', 'bi bi-people', 'dropdown-item'); ?></li>
                         </ul>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-tools me-1"
+                        <a class="nav-link" href="<?php echo e(route('em-desenvolvimento')); ?>"><i class="bi bi-tools me-1"
                                 aria-hidden="true"></i>Assistência Técnica</a>
                     </li>
 
@@ -142,7 +142,7 @@
 
             <ul class="navbar-nav ms-auto gap-2 p-1" style="flex-direction: row;!important">
                 <li class="nav-item  ">
-                    <a class=" btn btn-outline-danger" href="{{ route('em-desenvolvimento') }}"><i class="bi bi-tag me-1"
+                    <a class=" btn btn-outline-danger" href="<?php echo e(route('em-desenvolvimento')); ?>"><i class="bi bi-tag me-1"
                             aria-hidden="true"></i>Ofertas</a>
                 </li>
                 <li class="nav-item">
@@ -154,18 +154,18 @@
             </ul>
 
         </nav>
-    @endif
+    <?php endif; ?>
 
 
     <main>
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
     </main>
 
     <footer>
-        @yield('footer')
+        <?php echo $__env->yieldContent('footer'); ?>
     </footer>
 
-    {{-- Pequeno script para painel de filtros (toggle) --}}
+    
     <script>
         (function() {
             const btn = document.getElementById('filtersToggle');
@@ -182,7 +182,8 @@
     </script>
 
     <!-- Scripts das pǭginas -->
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 
 </html>
+<?php /**PATH C:\Repositorio\Mind\auth\resources\views/layout/main.blade.php ENDPATH**/ ?>
