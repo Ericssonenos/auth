@@ -4,5 +4,6 @@
 - Para mensagens técnicas (código, caminhos, comandos), mantenha termos e identificadores no idioma original quando necessário, mas explique em português.
 - Priorize brevidade, clareza e ações objetivas.
 - Não altere o idioma de strings de interface já existentes no código sem solicitação.
+- Evite uso execessivo de guards, pois isso esconde erros de negocio.
 
 Escopo: estas instruções se aplicam a todo o repositório.
