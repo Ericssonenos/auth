@@ -23,5 +23,5 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 env.json
-/storage
+/storage/*
 
