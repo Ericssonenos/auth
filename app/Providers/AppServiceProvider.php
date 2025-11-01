@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Services\rh\usuarioServices;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\URL;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -33,6 +34,9 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
 
 
         // View Composer para compartilhar dados do usuário com todas as views do sistema
@@ -65,6 +69,5 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('href_permissa', function ($expression) {
             return "<?php echo \\App\\Helpers\\BladeHelpers::hrefPermissa({$expression}); ?>";
         });
-
     }
 }
