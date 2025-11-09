@@ -1,0 +1,94 @@
+<mxfile host="65bd71144e">
+    <diagram name="Workflow" id="workflow">
+        <mxGraphModel dx="1420" dy="642" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="light-dark(#FFFFFF,#121212)" math="0" shadow="1" adaptiveColors="auto">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="proc" value="wf.tb_processo&#xa;- id_processo (PK)&#xa;- nome_processo&#xa;- cod_processo&#xa;- dat_cancelamento_em" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;sketch=1;curveFitting=1;jiggle=2;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="40" width="220" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="versao" value="wf.tb_versao&#xa;- id_versao (PK)&#xa;- cod_versao&#xa;- dat_inicio&#xa;- dat_fim&#xa;- dat_cancelamento_em" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;sketch=1;curveFitting=1;jiggle=2;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="230" width="220" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="etapa" value="wf.tb_etapa&#xa;- id_etapa (PK)&#xa;- nome_etapa&#xa;- cod_etapa&#xa;- page_etapa&#xa;- tipo_etapa&#xa;- dat_cancelamento_em" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;sketch=1;curveFitting=1;jiggle=2;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="778" y="297" width="240" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="acao" value="wf.tb_acao&#xa;- id_acao (PK)&#xa;- nome_acao&#xa;- cod_acao&#xa;- id_etapa_origem&#xa;- id_etapa_destino&#xa;- obrigatoria&#xa;- dat_cancelamento_em" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;sketch=1;curveFitting=1;jiggle=2;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="1164" y="138" width="260" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="rel" value="wf.tr_acao_processo_versao&#xa;- id_tr_acao_processo_versao (PK)&#xa;- id_acao&#xa;- id_processo&#xa;- id_versao&#xa;- dat_cancelamento_em" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;sketch=1;curveFitting=1;jiggle=2;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="497" y="80" width="270" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="inst" value="wf.tw_instancia&#xa;- id_instancia (PK)&#xa;- id_processo&#xa;- criado_usuario_id&#xa;- dat_criado_em" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;sketch=1;curveFitting=1;jiggle=2;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="34" y="689" width="240" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="mov" value="wf.tw_movimento&#xa;- id_movimento (PK)&#xa;- id_instancia&#xa;- id_acao&#xa;- nome_acao&#xa;- id_versao&#xa;- id_etapa_origem&#xa;- id_etapa_destino&#xa;- dat_movimento&#xa;- dat_cancelamento_em" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;sketch=1;curveFitting=1;jiggle=2;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="403" y="442" width="280" height="220" as="geometry"/>
+                </mxCell>
+                <mxCell id="qna" value="wf.tw_movimento_qna&#xa;- id_qna (PK)&#xa;- id_movimento&#xa;- pergunta&#xa;- resposta&#xa;- origem&#xa;- dat_cancelamento_em" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;sketch=1;curveFitting=1;jiggle=2;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="970" y="640" width="260" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="view" value="wf.vw_tw_instancia_estado (view)&#xa;- id_instancia&#xa;- id_ultimo_movimento&#xa;- id_etapa_atual&#xa;- status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;sketch=1;curveFitting=1;jiggle=2;shadow=1;dashed=1;" parent="1" vertex="1">
+                    <mxGeometry x="403" y="844" width="280" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_acao_etapa_origem" value="id_etapa_origem" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;exitX=0.1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="acao" target="etapa" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_acao_etapa_destino" value="id_etapa_destino" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;exitX=0.1;exitY=0.2;exitDx=0;exitDy=0;entryX=0.9;entryY=0.3;entryDx=0;entryDy=0;" parent="1" source="acao" target="etapa" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_rel_acao" value="id_acao" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="rel" target="acao" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_rel_processo" value="id_processo" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="rel" target="proc" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_rel_versao" value="id_versao" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="rel" target="versao" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_inst_proc" value="id_processo" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="inst" target="proc" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="154" y="440"/>
+                            <mxPoint x="310" y="440"/>
+                            <mxPoint x="310" y="115"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge_mov_inst" value="id_instancia" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="mov" target="inst" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="24" y="594"/>
+                            <mxPoint x="24" y="764"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge_mov_acao" value="id_acao" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="mov" target="acao" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_mov_etapa_origem" value="id_etapa_origem" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;entryX=0.2;entryY=1;entryDx=0;entryDy=0;" parent="1" source="mov" target="etapa" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_mov_etapa_destino" value="id_etapa_destino" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="mov" target="etapa" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_mov_versao" value="id_versao" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="mov" target="versao" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="150" y="507"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge_qna_mov" value="id_movimento" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#000000;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="qna" target="mov" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_view_inst" value="consulta estado atual" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#666666;dashed=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="view" target="inst" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_view_mov" value="usa ultimo movimento" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#666666;dashed=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="view" target="mov" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

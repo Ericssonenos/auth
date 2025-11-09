@@ -14,7 +14,6 @@ class UsuarioMiddleware
     {
         $dados = session('dados_usuario_sessao', null);
         // Verifica se o usuário está devidamente autenticado no sistema
-        //[ ] testar acesso dia api ajax sem estar logado
         if (empty($dados['id_usuario'])) {
 
             // Se a requisição espera JSON (API), retorna resposta JSON

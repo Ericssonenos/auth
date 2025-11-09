@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Registra middleware personalizado para controle de acesso de usuários
         $middleware->alias([
-            'usuarioMiddleware' => \App\Http\Middleware\UsuarioMiddleware::class, //[ ] excluir
+            'usuarioMiddleware' => \App\Http\Middleware\UsuarioMiddleware::class,
         ]);
 
         $middleware->append([
