@@ -130,6 +130,108 @@ create table if not exists wf.tb_status (
     unique (cod_status)
 );
 
+-- tabela de configuração chave-valor para perguntas e tipos de resposta no workflow
+CREATE TABLE IF NOT EXISTS wf.tb_chave_valor (
+    id_chave_valor INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    cod_chave VARCHAR(100) NOT NULL, -- código único da pergunta/configuração
+    pergunta VARCHAR(500) NOT NULL, -- texto da pergunta ou descrição da configuração
+    tipo_resposta VARCHAR(50) NOT NULL, -- tipo esperado da resposta: 'texto', 'numero', 'boolean', 'data', 'lista', etc.
+    valor_padrao VARCHAR(1000), -- valor padrão opcional
+    obrigatoria BOOLEAN NOT NULL DEFAULT FALSE, -- indica se a pergunta é obrigatória
+    observacao VARCHAR(2000), -- observações sobre a configuração
+
+    -- auditoria / soft-delete (padrão usado no projeto)
+    criado_usuario_id INTEGER NOT NULL DEFAULT 1,
+    dat_criado_em TIMESTAMP(3) NOT NULL DEFAULT NOW(),
+    atualizado_usuario_id INTEGER,
+    dat_atualizado_em TIMESTAMP(3),
+    cancelamento_usuario_id INTEGER,
+    dat_cancelamento_em TIMESTAMP(3),
+
+    -- garante unicidade do código enquanto ativo
+    CONSTRAINT ck_tb_chave_valor_tipo_resposta CHECK (tipo_resposta IN ('texto', 'numero', 'boolean', 'data', 'lista', 'decimal'))
+);
+
+-- índice único por código enquanto ativo
+CREATE UNIQUE INDEX IF NOT EXISTS uq_tb_chave_valor_cod_ativo
+    ON wf.tb_chave_valor (cod_chave)
+    WHERE dat_cancelamento_em IS NULL;
+
+-- tabela de opções para perguntas do tipo 'lista'
+CREATE TABLE IF NOT EXISTS wf.tb_chave_valor_opcao (
+    id_opcao INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_chave_valor INTEGER NOT NULL
+        REFERENCES wf.tb_chave_valor (id_chave_valor)
+        ON UPDATE CASCADE ON DELETE CASCADE, -- quando a pergunta for removida, remove as opções
+    cod_opcao VARCHAR(100) NOT NULL, -- código da opção (ex: 'SIM', 'NAO', 'TALVEZ')
+    texto_opcao VARCHAR(500) NOT NULL, -- texto exibido para o usuário (ex: 'Sim', 'Não', 'Talvez')
+    ordem_exibicao INTEGER DEFAULT 0, -- ordem de exibição das opções
+    ativa BOOLEAN NOT NULL DEFAULT TRUE, -- se a opção está ativa para seleção
+
+    -- auditoria / soft-delete (padrão usado no projeto)
+    criado_usuario_id INTEGER NOT NULL DEFAULT 1,
+    dat_criado_em TIMESTAMP(3) NOT NULL DEFAULT NOW(),
+    atualizado_usuario_id INTEGER,
+    dat_atualizado_em TIMESTAMP(3),
+    cancelamento_usuario_id INTEGER,
+    dat_cancelamento_em TIMESTAMP(3)
+);
+
+-- índice único por código da opção dentro da mesma chave-valor (enquanto ativo)
+CREATE UNIQUE INDEX IF NOT EXISTS uq_tb_chave_valor_opcao_cod_ativo
+    ON wf.tb_chave_valor_opcao (id_chave_valor, cod_opcao)
+    WHERE dat_cancelamento_em IS NULL;
+
+-- índice para busca por chave-valor e ordem
+CREATE INDEX IF NOT EXISTS ix_tb_chave_valor_opcao_ordem
+    ON wf.tb_chave_valor_opcao (id_chave_valor, ordem_exibicao, id_opcao)
+    WHERE dat_cancelamento_em IS NULL;
+
+-- tabela relacional para armazenar respostas das chaves-valor em movimentos
+CREATE TABLE IF NOT EXISTS wf.tr_movimento_resposta (
+    id_movimento_resposta INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_movimento INTEGER NOT NULL
+        REFERENCES wf.tw_movimento (id_movimento)
+        ON UPDATE CASCADE ON DELETE CASCADE, -- quando movimento for removido, remove as respostas
+    id_chave_valor INTEGER NOT NULL
+        REFERENCES wf.tb_chave_valor (id_chave_valor)
+        ON UPDATE CASCADE ON DELETE RESTRICT, -- impede remoção de chave-valor com respostas
+    id_opcao INTEGER
+        REFERENCES wf.tb_chave_valor_opcao (id_opcao)
+        ON UPDATE CASCADE ON DELETE RESTRICT, -- usado quando tipo_resposta = 'lista'
+    resposta_texto VARCHAR(2000), -- resposta em texto livre (para todos os tipos de resposta)
+
+    -- auditoria / soft-delete (padrão usado no projeto)
+    criado_usuario_id INTEGER NOT NULL DEFAULT 1,
+    dat_criado_em TIMESTAMP(3) NOT NULL DEFAULT NOW(),
+    atualizado_usuario_id INTEGER,
+    dat_atualizado_em TIMESTAMP(3),
+    cancelamento_usuario_id INTEGER,
+    dat_cancelamento_em TIMESTAMP(3),
+
+    -- garante que não haja resposta duplicada para a mesma pergunta no mesmo movimento
+    CONSTRAINT ck_movimento_resposta_opcao_ou_texto CHECK (
+        (id_opcao IS NOT NULL AND resposta_texto IS NULL) OR  -- para tipo 'lista': usar id_opcao
+        (id_opcao IS NULL AND resposta_texto IS NOT NULL) OR  -- para outros tipos: usar resposta_texto
+        (id_opcao IS NOT NULL AND resposta_texto IS NOT NULL) -- permite ambos para flexibilidade
+    )
+);
+
+-- índice único para evitar respostas duplicadas para a mesma chave-valor no mesmo movimento
+CREATE UNIQUE INDEX IF NOT EXISTS uq_tr_movimento_resposta_ativo
+    ON wf.tr_movimento_resposta (id_movimento, id_chave_valor)
+    WHERE dat_cancelamento_em IS NULL;
+
+-- índice para busca por movimento
+CREATE INDEX IF NOT EXISTS ix_tr_movimento_resposta_movimento
+    ON wf.tr_movimento_resposta (id_movimento)
+    WHERE dat_cancelamento_em IS NULL;
+
+-- índice para busca por chave-valor (relatórios/auditoria)
+CREATE INDEX IF NOT EXISTS ix_tr_movimento_resposta_chave
+    ON wf.tr_movimento_resposta (id_chave_valor, dat_criado_em DESC)
+    WHERE dat_cancelamento_em IS NULL;
+
 
 
 

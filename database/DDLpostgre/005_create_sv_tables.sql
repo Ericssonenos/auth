@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS sv.tb_solicitacao_venda (
 
 -- tabela de itens da solicitação
 CREATE TABLE IF NOT EXISTS sv.tb_solicitacao_venda_item (
-    id_item INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_item INTEGER GENERATED ALWAYS Aid_solicitacao_vendaEY,
     id_solicitacao_venda INTEGER NOT NULL
         REFERENCES sv.tb_solicitacao_venda (id_solicitacao_venda)
         ON UPDATE CASCADE ON DELETE CASCADE,
@@ -35,8 +35,7 @@ CREATE TABLE IF NOT EXISTS sv.tb_solicitacao_venda_item (
     -- Observação: este fluxo representa um orçamento; NUNCA armazenar descrições
     -- ou preços unitários aqui. Esses dados serão calculados/determinados em etapas
     -- posteriores do fluxo (margem, impostos, comissão, etc.).
-    produto_id INTEGER NOT NULL, -- OID do produto no master (somente referência)
-    quantidade NUMERIC(14,4) NOT NULL DEFAULT 1,
+    produto_id INTEGER NOT NULL, -- OID do pade NUMERIC(14,4) NOT NULL DEFAULT 1,
 
     -- vínculo com workflow: cada item tem sua instância de WF
     id_instancia INTEGER NOT NULL
@@ -62,12 +61,3 @@ CREATE INDEX IF NOT EXISTS ix_tb_solicitacao_venda_item_instancia
 CREATE INDEX IF NOT EXISTS ix_tb_solicitacao_venda_item_solicitacao
     ON sv.tb_solicitacao_venda_item (id_solicitacao_venda);
 
--- Observações:
--- - Use este arquivo como a migration inicial (005_...) para a camada SV.
--- - A FK para wf.tw_instancia garante que cada item tenha uma instância de workflow
---   onde o WF irá rastrear a história daquele item.
--- - Em bases existentes, aplicar ALTER TABLE deve ser feito em passos:
---     1) Criar colunas novas (se necessário) e popular id_instancia
---     2) Criar FK com RESTRICT / validar dados
---     3) Remover colunas antigas (se houver)
--- - Se quiser, gero também um script de migração ALTER TABLE seguro para sua base.
