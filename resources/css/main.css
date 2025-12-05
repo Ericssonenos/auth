@@ -501,7 +501,20 @@ body {
         font-size: 0.95rem;
     }
 }
+ @media print {
+            body * {
+                visibility: hidden;
 
+
+            }
+            .container{
+                all:unset !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border-style: hidden !important;
+            }
+
+        }
 
 /* ====================================
    ESTILOS GLOBAIS PARA DATATABLES

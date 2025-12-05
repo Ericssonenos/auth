@@ -25,17 +25,45 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <label for="id_cliente_modal" class="form-label">Cliente *</label>
-                                    <select id="id_cliente_modal" name="id_cliente" class="form-select" required>
-                                        <option value="">Selecione um cliente</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="contato_cliente_modal" class="form-label">Contato</label>
-                                    <input type="text" id="contato_cliente_modal" name="contato_cliente"
-                                           class="form-control" maxlength="255"
-                                           placeholder="Nome do contato no cliente">
+                                    <div class="d-flex gap-2 align-items-start">
+                                        <div class="flex-grow-1 position-relative">
+                                            <input type="text" id="id_cliente_modal_search" class="form-control"
+                                                placeholder="Digite para buscar cliente..." autocomplete="off">
+                                            <div id="client_suggestions" class="list-group position-absolute w-100"
+                                                style="z-index:1000; display:none;"></div>
+                                        </div>
+                                        <input type="hidden" id="id_cliente_modal" name="id_cliente">
+                                        <button type="button" id="btn_add_cliente_teste"
+                                            class="btn btn-outline-secondary">Criar cliente teste</button>
+                                    </div>
+                                    <div id="cliente_info_display" class="mt-2 d-flex flex-wrap gap-2" style="display:none;">
+                                        <div class="flex-fill mb-2" style="min-width: 300px;">
+                                            <label class="form-label">Nome</label>
+                                            <input type="text" id="cli_nome" class="form-control" readonly>
+                                        </div>
+                                        <div class="flex-fill mb-2" style="min-width: 200px;">
+                                            <label class="form-label">CNPJ/CPF</label>
+                                            <input type="text" id="cli_cnpj" class="form-control" readonly>
+                                        </div>
+                                        <div class="w-100 mb-2">
+                                            <label class="form-label">Endereço</label>
+                                            <input type="text" id="cli_endereco" class="form-control" readonly>
+                                        </div>
+                                        <div class="flex-fill mb-2" style="min-width: 180px;">
+                                            <label class="form-label">Telefone</label>
+                                            <input type="text" id="cli_telefone" class="form-control" readonly>
+                                        </div>
+                                        <div class="flex-fill mb-2" style="min-width: 200px;">
+                                            <label class="form-label">E-mail</label>
+                                            <input type="text" id="cli_email" class="form-control" readonly>
+                                        </div>
+                                        <div class="flex-fill mb-2" style="min-width: 180px;">
+                                            <label class="form-label">Contato</label>
+                                            <input type="text" id="cli_contato" class="form-control" readonly>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -53,28 +81,38 @@
                             <div class="row mb-3">
                                 <div class="col-md-12">
                                     <label for="descricao_modal" class="form-label">Descrição *</label>
-                                    <input type="text" id="descricao_modal" name="descricao"
-                                           class="form-control" maxlength="255" required
-                                           placeholder="Descrição do orçamento">
+                                    <input type="text" id="descricao_modal" name="descricao" class="form-control"
+                                        maxlength="255" required placeholder="Descrição do orçamento">
                                 </div>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
+                            <div class="d-flex gap-3 mb-3">
+                                <div class="flex-fill">
                                     <label for="prazo_entrega_modal" class="form-label">Prazo de Entrega</label>
                                     <input type="date" id="prazo_entrega_modal" name="prazo_entrega"
-                                           class="form-control">
+                                        class="form-control">
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="validade_orcamento_modal" class="form-label">Validade do Orçamento</label>
+                                <div class="flex-fill">
+                                    <label for="validade_orcamento_modal" class="form-label">Validade do
+                                        Orçamento</label>
                                     <input type="date" id="validade_orcamento_modal" name="validade_orcamento"
-                                           class="form-control">
+                                        class="form-control">
+                                </div>
+                                <div id="div_comissao_modal" class="flex-fill">
+                                    <label for="comissao_modal" class="form-label">Comissão (%)</label>
+                                    <input type="number" id="comissao_modal" name="comissao" class="form-control"
+                                        min="0" max="100" step="0.01" placeholder="0.00">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <label for="observacoes_modal" class="form-label">Observações</label>
-                                    <textarea id="observacoes_modal" name="observacoes" class="form-control"
-                                            rows="2" placeholder="Observações adicionais"></textarea>
+                                    <label for="id_vendedor_modal" class="form-label">Vendedor *</label>
+                                    <div class="position-relative">
+                                        <input type="text" id="id_vendedor_modal_search" class="form-control"
+                                            placeholder="Digite para buscar vendedor..." autocomplete="off" required>
+                                        <div id="vendedor_suggestions" class="list-group position-absolute w-100"
+                                            style="z-index:1000; display:none;"></div>
+                                    </div>
+                                    <input type="hidden" id="id_vendedor_modal" name="id_vendedor">
                                 </div>
                             </div>
                         </div>
@@ -82,7 +120,8 @@
 
                     <!-- Itens do Orçamento -->
                     <div class="card">
-                        <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                        <div
+                            class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
                             <h6 class="mb-0">
                                 <i class="bi bi-list"></i>
                                 Itens do Orçamento
@@ -116,9 +155,12 @@
                                             </div>
                                             <hr class="my-1">
                                             <div class="row">
-                                                <div class="col-6"><h6><strong>Total:</strong></h6></div>
+                                                <div class="col-6">
+                                                    <h6><strong>Total:</strong></h6>
+                                                </div>
                                                 <div class="col-6 text-end">
-                                                    <h6><strong><span id="total_geral_modal">R$ 0,00</span></strong></h6>
+                                                    <h6><strong><span id="total_geral_modal">R$ 0,00</span></strong>
+                                                    </h6>
                                                 </div>
                                             </div>
                                         </div>
@@ -156,37 +198,34 @@
 <template id="template_item_orcamento_modal">
     <div class="item-orcamento-modal card mb-2" data-item-index="INDEX">
         <div class="card-body p-3">
-            <div class="row">
-                <div class="col-md-4">
+            <div class="d-flex gap-2 align-items-end flex-wrap">
+                <div class="flex-fill" style="min-width: 250px;">
                     <label class="form-label">Produto/Serviço *</label>
                     <select name="itens[INDEX][id_produto]" class="form-select produto-select-modal" required>
                         <option value="">Selecione um produto/serviço</option>
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div style="min-width: 120px;">
                     <label class="form-label">Quantidade *</label>
-                    <input type="number" name="itens[INDEX][quantidade]"
-                           class="form-control quantidade-input-modal"
-                           min="1" step="0.01" required>
+                    <input type="number" name="itens[INDEX][quantidade]" class="form-control quantidade-input-modal"
+                        min="1" step="0.01" required>
                 </div>
-                <div class="col-md-2">
+                <div style="min-width: 130px;">
                     <label class="form-label">Valor Unitário *</label>
                     <input type="number" name="itens[INDEX][valor_unitario]"
-                           class="form-control valor-unitario-input-modal"
-                           min="0" step="0.01" required>
+                        class="form-control valor-unitario-input-modal" min="0" step="0.01" required>
                 </div>
-                <div class="col-md-2">
+                <div style="min-width: 120px;">
                     <label class="form-label">Desconto (%)</label>
                     <input type="number" name="itens[INDEX][desconto_percentual]"
-                           class="form-control desconto-input-modal"
-                           min="0" max="100" step="0.01">
+                        class="form-control desconto-input-modal" min="0" max="100" step="0.01">
                 </div>
-                <div class="col-md-1">
+                <div style="min-width: 120px;">
                     <label class="form-label">Total</label>
                     <input type="text" class="form-control total-item-display-modal" readonly>
                     <input type="hidden" name="itens[INDEX][valor_total]" class="total-item-hidden-modal">
                 </div>
-                <div class="col-md-1 d-flex align-items-end">
+                <div>
                     <button type="button" class="btn btn-outline-danger btn-sm btn-remover-item-modal">
                         <i class="bi bi-trash"></i>
                     </button>
@@ -195,10 +234,67 @@
             <div class="row mt-2">
                 <div class="col-md-12">
                     <label class="form-label">Observações do Item</label>
-                    <textarea name="itens[INDEX][observacoes]" class="form-control observacoes-item-modal"
-                            rows="1" placeholder="Observações específicas deste item"></textarea>
+                    <textarea name="itens[INDEX][observacoes]" class="form-control observacoes-item-modal" rows="1"
+                        placeholder="Observações específicas deste item"></textarea>
                 </div>
             </div>
         </div>
     </div>
 </template>
+@push('styles')
+    <style>
+        /* Impressão: mostrar apenas o modal quando imprimir se ele estiver aberto */
+        @media print {
+
+            body * {
+                visibility: hidden;
+            }
+
+            body {
+                zoom: 75%
+            }
+
+            #modal_orcamento,
+            #modal_orcamento * {
+                visibility: visible;
+            }
+
+
+            #modal_orcamento>.modal-dialog {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                --bs-modal-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            /* Garantir que d-flex e flex-wrap funcionem corretamente na impressão */
+            #modal_orcamento .d-flex {
+                display: flex !important;
+            }
+
+            #modal_orcamento .flex-wrap {
+                flex-wrap: wrap !important;
+            }
+
+            #modal_orcamento .flex-fill {
+                flex: 1 1 auto !important;
+            }
+
+            /* Ocultar todos os botões na impressão */
+            #modal_orcamento button,
+            #modal_orcamento .btn,
+            #modal_orcamento .modal-footer {
+                display: none !important;
+            }
+            #div_comissao_modal{
+               display: none !important;
+            }
+
+        }
+    </style>
+@endpush
+
+<!-- client autocomplete and behavior moved to public JS file: /public/views/orcamento/modal/orcamento-modal.js -->
