@@ -6,6 +6,7 @@ use App\Http\Controllers\rh\GrupoController;
 use App\Http\Controllers\rh\PermissaoController;
 use App\Http\Controllers\rh\CategoriaController;
 use App\Http\Controllers\rh\LoginController;
+use App\Http\Controllers\orcamento\OrcamentoController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,7 +20,7 @@ use App\Http\Controllers\rh\LoginController;
 
 
 
-
+Route::middleware('web')->post('logar', [LoginController::class, 'processarLogin'])->name('logar');
 
 Route::middleware(['web', 'usuarioMiddleware'])->prefix('rh')->group(function () {
 
@@ -63,4 +64,14 @@ Route::middleware(['web', 'usuarioMiddleware'])->prefix('rh')->group(function ()
     Route::prefix('categoria')->group(function () {
         Route::post('dados', [CategoriaController::class, 'ObterCategorias']);
     });
+});
+
+Route::middleware(['web', 'usuarioMiddleware'])->prefix('orcamento')->group(function () {
+    Route::post('obter-dados-orcamentos', [OrcamentoController::class, 'obterDadosOrcamentos']);
+    Route::post('salvar', [OrcamentoController::class, 'salvarOrcamento']);
+    Route::post('obter-detalhes/{id}', [OrcamentoController::class, 'obterDetalhesOrcamento']);
+    Route::post('excluir/{id}', [OrcamentoController::class, 'excluirOrcamento']);
+    Route::post('enviar-workflow/{id}', [OrcamentoController::class, 'enviarOrcamentoParaWorkflow']);
+    Route::post('duplicar/{id}', [OrcamentoController::class, 'duplicarOrcamento']);
+    Route::get('gerar-pdf/{id}', [OrcamentoController::class, 'gerarPdfOrcamento']);
 });

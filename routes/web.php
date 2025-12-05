@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\rh\LoginController;
 use App\Http\Controllers\rh\UsuarioController;
 use App\Http\Controllers\rh\GrupoController;
+use App\Http\Controllers\orcamento\OrcamentoController;
 
 
 Route::get('/', function () {
@@ -15,7 +16,7 @@ Route::view('em-desenvolvimento', 'pages.em-desenvolvimento')->name('em-desenvol
 
 // rotas para login
 Route::get('login', [LoginController::class, 'exibirFormularioLogin'])->name('login');
-Route::post('logar', [LoginController::class, 'processarLogin'])->name('logar');
+
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 Route::post('alterar-senha', [LoginController::class, 'processarAlterarSenha'])->name('alterar.senha');
 
@@ -33,3 +34,8 @@ Route::prefix('rh')->group(function () {
         ->name('grupos.view')
         ->middleware('usuarioMiddleware');
 });
+
+ // Rotas orcamento - Views
+ Route::prefix('orcamento')->group(function () {
+     Route::get('/', [OrcamentoController::class, 'listarOrcamentosDisponiveis'])->name('orcamento.listar')->middleware('usuarioMiddleware');
+ });

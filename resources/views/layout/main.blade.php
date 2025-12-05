@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield('title', 'Sistema rh')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <script>
+     <script>
         window.AppErro = @json(session('erro', (object) []));
     </script>
     @stack('styles')
@@ -146,7 +146,7 @@
                             aria-hidden="true"></i>Ofertas</a>
                 </li>
                 <li class="nav-item">
-                    <a class=" btn btn-outline-warning" href="#orcamento" aria-label="Solicitar orçamento">
+                     <a class=" btn btn-outline-warning" href="{{ route('orcamento.listar') }}" aria-label="Solicitar orçamento">
                         <i class="bi bi-clipboard-check me-1" aria-hidden="true"></i>
                         Solicitar Orçamento
                     </a>
