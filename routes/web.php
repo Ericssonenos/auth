@@ -19,7 +19,7 @@ Route::get('login', [LoginController::class, 'exibirFormularioLogin'])->name('lo
 
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 Route::post('alterar-senha', [LoginController::class, 'processarAlterarSenha'])->name('alterar.senha');
-
+Route::post('logar', [LoginController::class, 'processarLogin'])->name('logar');
 
 // alteração de senha obrigatória (exibir formulário e processar)
 Route::get('alterar-senha', [LoginController::class, 'exibirAlterarSenha'])->name('alterar.senha.view');
