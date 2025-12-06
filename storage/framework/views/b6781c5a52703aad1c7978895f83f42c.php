@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?php echo $__env->yieldContent('title', 'Sistema rh'); ?></title>
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
-    <script>
+     <script>
         window.AppErro = <?php echo json_encode(session('erro', (object) []), 512) ?>;
     </script>
     <?php echo $__env->yieldPushContent('styles'); ?>
@@ -146,7 +146,8 @@
                             aria-hidden="true"></i>Ofertas</a>
                 </li>
                 <li class="nav-item">
-                    <a class=" btn btn-outline-warning" href="#orcamento" aria-label="Solicitar orçamento">
+                     <a class=" btn btn-outline-warning" href="<?php echo e(route('orcamento.listar')); ?>" aria-label="Solicitar orçamento">
+
                         <i class="bi bi-clipboard-check me-1" aria-hidden="true"></i>
                         Solicitar Orçamento
                     </a>

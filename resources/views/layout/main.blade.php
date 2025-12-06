@@ -147,6 +147,7 @@
                 </li>
                 <li class="nav-item">
                      <a class=" btn btn-outline-warning" href="{{ route('orcamento.listar') }}" aria-label="Solicitar orçamento">
+
                         <i class="bi bi-clipboard-check me-1" aria-hidden="true"></i>
                         Solicitar Orçamento
                     </a>
