@@ -50,7 +50,7 @@
                 @endif
 
 
-                <form method="POST" action="{{ url('/logar') }}" class="mt-3">
+                <form method="POST" action="{{ url('api/logar') }}" class="mt-3">
                     @csrf
 
                     <div class="mb-3">
